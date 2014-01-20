@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    class FunctionNode : Node
+    class FunctionNode : Node , LocalScope
     {
         private LinkedList<ParamNode> parameters;
 
         private Token returnType;
         private Token functionName;
+
+        private Dictionary<string, Node> localVars = new Dictionary<string, Node>();
 
         public FunctionNode(Token returnType, Token functionName)
         {
@@ -24,6 +26,7 @@ namespace Compiler
 
         public void addParam(ParamNode param)
         {
+            localVars.Add(param.label(), param);
             parameters.AddLast(param);
 
         }

@@ -9,14 +9,15 @@ namespace Compiler
     {
         private Token dataType;
         private Token variableName;
-        private Node value;
+        private ExpressionNode expr;
 
-        public DeclarationNode(Token dataType, Token variableName, Node value)
+        public DeclarationNode(Token dataType, Token variableName, ExpressionNode value)
         {
             // TODO: Complete member initialization
             this.dataType = dataType;
             this.variableName = variableName;
-            this.value = value;
+            this.expr = value;
+
         }
         
     }

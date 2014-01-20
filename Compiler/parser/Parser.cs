@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Compiler.Parser;
 
 namespace Compiler
 {
@@ -69,20 +70,21 @@ namespace Compiler
             return null;
         }
 
-        private LinkedList<Node> parseStatements()
+        private LinkedList<Node> parseStatements(LocalScope scope)
         {
             LinkedList<Node> children = new LinkedList<Node>();
             while (tokens[index].getValue() != "}")
             {
                 // Parse Declaration
                 if (ofType(tokens[index], dataTypes))
-                    children.AddLast(parseDeclaration());
+                    children.AddLast(parseDeclaration(scope));
 
+                // some sort of reference. either local var or function call
                 else if (tokens[index].getType() == TokenType.REF)
                 {
                     // Parse assignment.      ex:  var = expression;
                     if (tokens[index + 1].getValue() == "=")
-                        children.AddLast(parseAssignment() );
+                        children.AddLast(parseAssignment(scope) );
                     // Parse function call
                     else if (tokens[index + 1].getValue() == "(")
                         children.AddLast(parseCall() );
@@ -102,26 +104,75 @@ namespace Compiler
             return children;
         }
 
-        private Node parseDeclaration()
+        private AssignmentNode parseAssignment(LocalScope scope)
         {
+            AssignmentNode assignment;
+            ExpressionNode expr;
+            Token varName;
+
+            varName = tokens[index++];
+
+            // check that the token is in scope
+            if (!scope.inScope(varName))
+                throw new Exception("token: " + index + "  " + varName.getValue() + " is not in scope");
+
+            // make sure its an assignment
+            if (tokens[index].getValue() != "=")
+                throw new Exception("error 15 at token:" + index);
+
+            index++;
+
+            // get the expression;
+            expr = parseExpression();
+
+            assignment = new AssignmentNode(varName, expr);
+
+            return assignment;
+        }
+
+        private ExpressionNode parseExpression()
+        {
+            CallNode call;
+            Literal
+
+            throw new NotImplementedException();
+        }
+
+        private DeclarationNode parseDeclaration(LocalScope scope)
+        {
+            DeclarationNode dec;
             Token dataType;
             Token variableName;
-            Node value;
+            ExpressionNode expr = null;
 
+            // check that its has a valid data type
             if (!ofType(tokens[index], dataTypes)) throw new Exception("error 9 at token:" + index);
             dataType = tokens[index++];
 
+            // make sure its a reference token and get its label.
             if (tokens[index].getType() != TokenType.REF ) throw new Exception("error 10 at token:" + index);
             variableName = tokens[index++];
 
+            // make sure its not in scope.
+            if (scope.inScope(variableName))
+                throw new Exception("Token :" + index + "  " + variableName.getValue() + " is already in scope.");
+           
+            // check for an assignment
             if (tokens[index].getValue() == "=")
             {
                 index++;
-                value = parseExpression();
+                expr = parseExpression();
             }
-            else if ( ! tokens[index].getValue() == ";") throw new Exception("error 11 at token:" + index);
+            // make sure that it terminates with a semicolon
+            else if ( tokens[index].getValue() != ";") 
+                throw new Exception("error 11 at token:" + index);
 
-            return new DeclarationNode(dataType,variableName,value);
+
+            dec= new DeclarationNode(dataType,variableName,expr);
+
+            // add the variable to local scope.
+            scope.addToScope(dec);
+            return dec;
         }
 
         private LinkedList<ParamNode> parseParameter()

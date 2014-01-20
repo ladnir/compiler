@@ -21,5 +21,11 @@ namespace Compiler
         {
             throw new NotImplementedException();
         }
+
+        internal string label()
+        {
+            return paramName.getValue();
+            throw new NotImplementedException();
+        }
     }
 }
