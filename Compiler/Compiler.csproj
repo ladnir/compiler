@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="FunctionNode.cs" />
     <Compile Include="Node.cs" />
+    <Compile Include="ParamNode.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Program.cs" />

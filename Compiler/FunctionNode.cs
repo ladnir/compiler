@@ -9,22 +9,53 @@ namespace Compiler
     class FunctionNode : Node
     {
         private string name;
+        private string returnType;
+        private LinkedList<ParamNode> parameters;
 
-
-        public FunctionNode()
+        public FunctionNode(Token nameToken) : base()
         {
-            children = new LinkedList<Node>();
+            parameters = new LinkedList<ParamNode>();   
         }
 
-        virtual public string print()
+        public void addParam(ParamNode param)
         {
-
-            return null;
+            parameters.AddLast(param);
         }
 
-        virtual public void addChild(Node child)
+        override public string output()
         {
+            StringBuilder sb = new StringBuilder();
 
+            sb.Append(returnType);
+            sb.Append(" ");
+            sb.Append(name);
+            sb.Append("(");
+
+            LinkedListNode<ParamNode> cur = parameters.First;
+            for (int i = 0; i < parameters.Count; i++) 
+            {
+                if (i != 0) sb.Append(",");
+                sb.Append(cur.Value.output());
+
+                cur = cur.Next;
+            }
+
+            sb.Append("){ \n");
+
+            LinkedListNode<Node> child = children.First;
+            for (int i = 0; i < children.Count; i++)
+            {
+                sb.Append(child.Value.output());
+            }
+
+            sb.Append("}\n");
+
+            return sb.ToString();
+        }
+
+        public override void addChild(Node child)
+        {
+            children.AddLast(child);
         }
     }
 }

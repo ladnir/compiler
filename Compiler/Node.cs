@@ -15,15 +15,24 @@ namespace Compiler
             children = new LinkedList<Node>();
         }
 
-        virtual public string print()
+        virtual public string output()
         {
+            StringBuilder sb = new StringBuilder();
 
-            return null;
+            LinkedListNode<Node> child = children.First;
+            for (int i = 0; i < children.Count; i++)
+            {
+                sb.Append(child.Value.output());
+            }
+
+            return sb.ToString();
         }
 
         virtual public void addChild(Node child)
         {
-
+            children.AddLast(child);
         }
+
+      
     }
 }
