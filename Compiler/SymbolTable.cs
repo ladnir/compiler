@@ -6,10 +6,28 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    class SymbolTable
+    public class SymbolTable
     {
-        static String[] keyWords = {"for", "while","switch","case" , "int", 
-                                 "boolean","real","string", "true", "false"};
+        private static SymbolTable instance;
+
+        static String[] keyWords = {"for", "while","switch","case" , "if","else","int", 
+                                 "boolean","real","string", "void", "true", "false"};
+        static string[] dataTypes = { "int", "bool", "real", "string", "void" };
+        static string[] constructs = { "for", "while", "if" };
+
+        Dictionary<string, FunctionNode> FunctionTable = new Dictionary<string, FunctionNode>();
+
+        public static SymbolTable Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new SymbolTable();
+                }
+                return instance;
+            }
+        }
 
         public static bool isKeyWord(string word)
         {
@@ -18,6 +36,11 @@ namespace Compiler
                 if (s.Equals(word)) return true;
             }
             return false;
+        }
+
+        internal void addFunction(FunctionNode fn)
+        {
+            throw new NotImplementedException();
         }
     }
 }

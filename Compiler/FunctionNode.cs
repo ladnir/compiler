@@ -8,27 +8,33 @@ namespace Compiler
 {
     class FunctionNode : Node
     {
-        private string name;
-        private string returnType;
         private LinkedList<ParamNode> parameters;
 
-        public FunctionNode(Token nameToken) : base()
+        private Token returnType;
+        private Token functionName;
+
+        public FunctionNode(Token returnType, Token functionName)
         {
-            parameters = new LinkedList<ParamNode>();   
+            // TODO: Complete member initialization
+            this.returnType = returnType;
+            this.functionName = functionName;
+
+
         }
 
         public void addParam(ParamNode param)
         {
             parameters.AddLast(param);
+
         }
 
         override public string output()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(returnType);
+            sb.Append(returnType.getValue() );
             sb.Append(" ");
-            sb.Append(name);
+            sb.Append(functionName.getValue() );
             sb.Append("(");
 
             LinkedListNode<ParamNode> cur = parameters.First;
@@ -53,9 +59,5 @@ namespace Compiler
             return sb.ToString();
         }
 
-        public override void addChild(Node child)
-        {
-            children.AddLast(child);
-        }
     }
 }

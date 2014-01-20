@@ -16,6 +16,8 @@ namespace Compiler
             Console.WriteLine("input:" + source);
 
             Tokenizer t = new Tokenizer();
+            SymbolTable s = new SymbolTable();
+            Parser p = new Parser(s);
 
             Console.WriteLine("Tokenizing...");
             Token[] tokens = t.GetTokens(source);

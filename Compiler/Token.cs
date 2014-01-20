@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Compiler
 {
     [FlagsAttribute]
-    enum DataType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON};
+    enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON};
 
     abstract class Token
     {
-        protected DataType type;
+        protected TokenType type;
         protected string value;
         protected bool literal;
 
@@ -21,7 +21,7 @@ namespace Compiler
             literal = true;
         }
         public String getValue() { return value; }
-        public DataType getType() { return type; }
+        public TokenType getType() { return type; }
         public bool isLiteral() { return literal; }
 
         public virtual String toString() { 
@@ -34,7 +34,7 @@ namespace Compiler
     {
         public MyInt(string p) : base(p)
         {
-            type = DataType.INT;
+            type = TokenType.INT;
         }
 
     }
@@ -42,7 +42,7 @@ namespace Compiler
     {
         public MyReal(string p) : base(p)
         {
-            type = DataType.REAL;
+            type = TokenType.REAL;
         }
     }
     class MyBoolean : Token
@@ -50,7 +50,7 @@ namespace Compiler
         
         public MyBoolean(string p)  : base(p)
         {
-            type = DataType.BOOL;
+            type = TokenType.BOOL;
         }
         
     }
@@ -58,14 +58,14 @@ namespace Compiler
     {
         public MyString(string p) : base(p)
         {
-            type = DataType.STRING;
+            type = TokenType.STRING;
         }
     }
     class MyOperator : Token
     {
         public MyOperator(string p) : base(p)
         {
-            type = DataType.OP;
+            type = TokenType.OP;
             literal = false;
         }
     }
@@ -73,7 +73,7 @@ namespace Compiler
     {
         public Reference(string p) : base(p)
         {
-            type = DataType.REF;
+            type = TokenType.REF;
             literal = false;
         }
     }
@@ -82,7 +82,7 @@ namespace Compiler
         public KeyWord(string p) : base(p)
         {
             if (!SymbolTable.isKeyWord(p)) throw new Exception("Not a Keyword");
-            type = DataType.KEYWORD;
+            type = TokenType.KEYWORD;
             literal = false;
         }
 
@@ -91,7 +91,7 @@ namespace Compiler
     {
         public Brace(char brace) : base(""+brace)
         {
-            type = DataType.BRACE;
+            type = TokenType.BRACE;
             literal = false;
         }
 
@@ -100,7 +100,7 @@ namespace Compiler
     {
         public SemiColon() : base(";")
         {
-           type = DataType.SEMICOLON;
+           type = TokenType.SEMICOLON;
            literal = false;
         }
     }
