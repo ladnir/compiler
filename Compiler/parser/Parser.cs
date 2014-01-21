@@ -4,11 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Compiler.Parser;
+using Compiler.parser;
 
 namespace Compiler
 {
     class Parser
     {
+        private string[] Op1Tpyes = { "==", "<=", ">=",">","<"};
+        private string[] Op2Tpyes = { "*", "/", "%" };
+        private string[] Op3Tpyes = { "+", "-" };
+
         private string[] dataTypes = { "int", "bool", "real", "string", "void" };
         private string[] constructs = { "for", "while","if"};
         
@@ -37,6 +42,7 @@ namespace Compiler
 
         private Node parseFunction()
         {
+            FunctionNode fn;
             Token returnType;
             Token functionName;
             LinkedList<ParamNode> parameters;
@@ -50,7 +56,7 @@ namespace Compiler
                 throw new Exception("error 2 at token:" + index);
             functionName = tokens[index++];
 
-            FunctionNode fn = new FunctionNode(returnType, functionName);
+            fn = new FunctionNode(returnType, functionName);
 
             if (tokens[index].getValue() != "(" ) 
                 throw new Exception("error 3 at token:" + index);
@@ -61,13 +67,13 @@ namespace Compiler
                 throw new Exception("error 5 at token:" + index);
             index++;
 
-            children = parseStatements();
+            children = parseStatements(fn);
 
             if (tokens[index].getValue() != "}") 
                 throw new Exception("error 6 at token:" + index);
             index++;
 
-            return null;
+            return fn;
         }
 
         private LinkedList<Node> parseStatements(LocalScope scope)
@@ -85,6 +91,7 @@ namespace Compiler
                     // Parse assignment.      ex:  var = expression;
                     if (tokens[index + 1].getValue() == "=")
                         children.AddLast(parseAssignment(scope) );
+
                     // Parse function call
                     else if (tokens[index + 1].getValue() == "(")
                         children.AddLast(parseCall() );
@@ -113,7 +120,7 @@ namespace Compiler
             varName = tokens[index++];
 
             // check that the token is in scope
-            if (!scope.inScope(varName))
+            if (!scope.inScope(varName) )
                 throw new Exception("token: " + index + "  " + varName.getValue() + " is not in scope");
 
             // make sure its an assignment
@@ -123,18 +130,85 @@ namespace Compiler
             index++;
 
             // get the expression;
-            expr = parseExpression();
+            expr = parseExpression( );
 
             assignment = new AssignmentNode(varName, expr);
 
             return assignment;
         }
 
-        private ExpressionNode parseExpression()
+        private ExpressionNode parseExpression(Token[] exprList,LocalScope scope)
         {
-            CallNode call;
-            Literal
+            if (singleExpression(exprList))
+            {
+                if (exprList[0].isLiteral())
+                    return new LiteralNode(exprList[0]);
+                else if (scope.inScope(exprList[0]))
+                    return new VariableNode(exprList[0]);
 
+                else throw new Exception("error 17 at token:" + index);
+                
+            }
+            else
+            {
+
+            }
+
+            throw new NotImplementedException();
+        }
+        //{
+        //    CallNode call;
+        //    LiteralNode lit;
+
+        //    // single expression
+        //    if( isSingleExpression(exprList )){
+        //        if (tokens[index].isLiteral())
+        //            lit = parseLiteral();
+            
+        //        else if (tokens[index].getType() == TokenType.REF)
+        //        {
+        //            call = parseCall();
+        //            if( !symbolTable.funcInScope(call) )
+        //                throw new Exception("error 16 at token:" + index);
+        //        }
+        //        else throw new Exception("error 17 at token:" + index);
+
+        //    // composite expression
+        //    }else{
+
+        //    }
+           
+
+
+        //    throw new NotImplementedException();
+        //}
+
+        //private bool isSingleExpression(Token[] exprList)
+        //{
+        //    if (exprList.Length == 1 && exprList[0].isLiteral())
+        //        return true;
+        //    else if(e)
+        //}
+
+        //private Token[] getExpressionList()
+        //{
+        //    LinkedList<Token> list = new LinkedList<Token>();
+
+        //    while (tokens[index].getValue() != ";" &&
+        //        tokens[index].getValue() != "," &&
+        //        tokens[index].getValue() != ")" )
+        //        list.AddLast(tokens[index++]);
+
+        //    throw new Exception();
+        //}
+
+        private CallNode parseCall()
+        {
+            throw new NotImplementedException();
+        }
+
+        private LiteralNode parseLiteral()
+        {
             throw new NotImplementedException();
         }
 

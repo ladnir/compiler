@@ -42,5 +42,10 @@ namespace Compiler
         {
             throw new NotImplementedException();
         }
+
+        public bool funcInScope(CallNode function)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
