@@ -114,22 +114,63 @@ namespace Compiler
             return children;
         }
 
-        private Node parseConstruct()
+        private Node parseConstruct(LocalScope scope)
         {
             if (tokens[index].getValue() == "for")
-                return parseForLoop();
+                return parseForLoop(scope);
             else if (tokens[index].getValue() == "while")
-                return parseWhileLoop();
+                return parseWhileLoop(scope);
             else if (tokens[index].getValue() == "if")
-                return parseIf();
-
-            throw new NotImplementedException(); 
+                return parseIf(scope);
+            else
+                throw new Exception("error, unknow construct at token:" + index);
         }
 
-        private Node parseForLoop()
+        private Node parseForLoop(LocalScope scope)
         {
+            AssignmentNode assignment;
 
-            throw new NotImplementedException();
+            if (tokens[index].getValue() != "for")
+                throw new Exception("error 31 at token:" + index);
+            index++;
+
+            if (tokens[index].getValue() != "(")
+                throw new Exception("error 32 at token:" + index);
+            index++;
+
+            if (tokens[index].getValue() != ";")
+            {
+                assignment = parseAssignment(scope);
+                index--; // so that we can check the semicolon
+            }
+
+            if (tokens[index].getValue() != ";")
+                throw new Exception("error 33 at token:" + index);
+            index++;
+
+            Token[] exprList = getTokensToSemicolon();
+            ExpressionNode eval = parseExpression(exprList,scope);
+
+            if (eval.isEmpty())
+                throw new Exception("error 35 at token:" + index);
+
+            if(eval.getReturnType() != "bool" )
+                throw new Exception("error 34 at token:" + index);
+
+
+            exprList = getClosingTokens();
+            ExpressionNode incrementer = parseExpression(exprList,scope);
+            
+        }
+
+        private Token[] getClosingTokens()
+        {
+            LinkedList<Token> tl = new LinkedList<Token>();
+            
+            while (tokens[index].getValue() != ")" && tokens[index + 1].getValue() != "{")
+                tl.AddLast(tokens[index++]);
+
+            return tl.ToArray();
         }
 
         private AssignmentNode parseAssignment(LocalScope scope)
@@ -216,6 +257,9 @@ namespace Compiler
 
         private ExpressionNode parseExpression(Token[] exprList,LocalScope scope)
         {
+            if (exprList.Length == 0)
+                return new EmptyNode();
+
             // single literal or variable or function call
             if (isSingleExpression(exprList,scope))
             {
@@ -334,6 +378,8 @@ namespace Compiler
 
             return new OperationNode(exprList[i], leftExpr, rightExpr);
         }
+
+
 
         private OperationNode parseBooleanExpression(int i,Token[] exprList, LocalScope scope)
         {

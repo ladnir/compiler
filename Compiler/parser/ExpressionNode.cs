@@ -7,5 +7,14 @@ namespace Compiler
 {
     class ExpressionNode : Node
     {
+        internal string getReturnType()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal virtual bool isEmpty()
+        {
+            return false;
+        }
     }
 }
