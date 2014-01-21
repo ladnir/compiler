@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class VariableNode
+    class VariableNode : ExpressionNode
     {
     }
 }

@@ -49,6 +49,7 @@
     <Compile Include="parser\LiteralNode.cs" />
     <Compile Include="parser\LocalScope.cs" />
     <Compile Include="parser\Node.cs" />
+    <Compile Include="parser\OperationNode.cs" />
     <Compile Include="parser\ParamNode.cs" />
     <Compile Include="parser\Parser.cs" />
     <Compile Include="parser\VariableNode.cs" />

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class CallNode
+    class CallNode : ExpressionNode
     {
     }
 }

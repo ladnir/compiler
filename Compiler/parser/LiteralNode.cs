@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class LiteralNode
+    class LiteralNode : ExpressionNode
     {
     }
 }
