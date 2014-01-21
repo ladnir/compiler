@@ -7,5 +7,12 @@ namespace Compiler.parser
 {
     class VariableNode : ExpressionNode
     {
+        private Token nameToken;
+
+        public VariableNode(Token nameToken)
+        {
+            // TODO: Complete member initialization
+            this.nameToken = nameToken;
+        }
     }
 }

@@ -114,6 +114,24 @@ namespace Compiler
             return children;
         }
 
+        private Node parseConstruct()
+        {
+            if (tokens[index].getValue() == "for")
+                return parseForLoop();
+            else if (tokens[index].getValue() == "while")
+                return parseWhileLoop();
+            else if (tokens[index].getValue() == "if")
+                return parseIf();
+
+            throw new NotImplementedException(); 
+        }
+
+        private Node parseForLoop()
+        {
+
+            throw new NotImplementedException();
+        }
+
         private AssignmentNode parseAssignment(LocalScope scope)
         {
             AssignmentNode assignment;
@@ -419,13 +437,42 @@ namespace Compiler
 
         private CallNode parseCall(Token[] tokens, LocalScope scope)
         {
-            throw new NotImplementedException();
+            SymbolTable sym = new SymbolTable();
+
+            Token nameToken;
+
+            if(tokens[0].getType() != TokenType.REF )
+                throw new Exception("error 33 at token:" + index);
+
+            if(tokens[1].getValue() != "(")
+                throw new Exception("error 34 at token:" + index);
+
+            nameToken = tokens[0];
+            CallNode funcCall = new CallNode(nameToken);
+
+            int i = 2;
+            while (i + 1 < tokens.Length && 
+                (tokens[i].getType() == TokenType.REF || tokens[i].isLiteral()))
+            {
+                if (tokens[i].getType() != TokenType.REF || !tokens[i].isLiteral())
+                    throw new Exception("error 35 at token:" + index);
+
+                funcCall.addParam(tokens[i]);
+
+                if (tokens[i + 1].getValue() != "," || tokens[i + 1].getValue() != ")" )
+                    throw new Exception("error 36 at token:" + index);
+
+                i = i + 2;
+            }
+            if (tokens[i - 1].getValue() != ")")
+                throw new Exception("error 37 at token:" + index);
+
+            if (!sym.funcInScope(funcCall))
+                throw new Exception("error 38 at token:" + index);
+
+            return funcCall;
         }
 
-        private LiteralNode parseLiteral()
-        {
-            throw new NotImplementedException(); 
-        }
 
         private LinkedList<ParamNode> parseParameter()
         {
@@ -453,7 +500,6 @@ namespace Compiler
             index++;
             return paramList;
 
-            //throw new NotImplementedException();
         }
 
         private bool ofType(Token token, string[] set)
