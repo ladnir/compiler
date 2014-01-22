@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class VariableNode : ExpressionNode
+    public class VariableNode : ExpressionNode
     {
         private Token nameToken;
 

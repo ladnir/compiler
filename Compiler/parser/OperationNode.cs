@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class OperationNode : ExpressionNode
+    public class OperationNode : ExpressionNode
     {
         private Token token;
         private ExpressionNode leftExpr;

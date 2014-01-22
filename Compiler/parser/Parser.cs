@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class Parser
+    public class Parser
     {
         private string[] Op1Tpyes = { "==", "<=", ">=",">","<"};
         private string[] Op2Tpyes = { "+", "-" };
@@ -18,7 +18,6 @@ namespace Compiler
         private Node root;
         private int index,length;
         private Token[] tokens;
-        private SymbolTable symbolTable;
 
 
         public Node parseTokens(Token[] tokens)
@@ -172,10 +171,10 @@ namespace Compiler
         {
             if (tokens[index].getValue() == "for")
                 return parseForLoop(scope);
-            else if (tokens[index].getValue() == "while")
-                return parseWhileLoop(scope);
-            else if (tokens[index].getValue() == "if")
-                return parseIf(scope);
+            else if (tokens[index].getValue() == "while") return null;
+            //return parseWhileLoop(scope);
+            else if (tokens[index].getValue() == "if") return null;
+            //return parseIf(scope);
             else
                 throw new Exception("error, unknow construct at token:" + index);
         }

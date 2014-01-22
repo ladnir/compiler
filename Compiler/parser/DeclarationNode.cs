@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class DeclarationNode : Node 
+    public class DeclarationNode : Node 
     {
         private Token dataType;
         private Token variableName;

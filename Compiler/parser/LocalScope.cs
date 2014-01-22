@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    interface LocalScope
+    public interface LocalScope
     {
         bool inScope(Token name);
         void addToScope(DeclarationNode localVar);

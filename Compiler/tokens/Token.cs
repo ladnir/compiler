@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Compiler
 {
     [FlagsAttribute]
-    enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON};
+    public enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON};
 
-    abstract class Token
+    abstract public class Token
     {
         protected TokenType type;
         protected string value;

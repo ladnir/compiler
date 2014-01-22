@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class EmptyNode : ExpressionNode
+    public class EmptyNode : ExpressionNode
     {
         internal override bool isEmpty()
         {

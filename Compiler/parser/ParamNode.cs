@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class ParamNode : Node
+    public class ParamNode : Node
     {
         private Token paramType;
         private Token paramName;
@@ -17,7 +17,7 @@ namespace Compiler
             this.paramName = paramName;
         }
 
-        internal string output()
+        public override string output()
         {
             throw new NotImplementedException();
         }

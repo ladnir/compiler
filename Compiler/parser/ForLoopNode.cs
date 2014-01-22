@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class ForLoopNode : Node , LocalScope
+    public class ForLoopNode : Node , LocalScope
     {
         private AssignmentNode assignment;
         private ExpressionNode eval;
@@ -26,6 +26,16 @@ namespace Compiler.parser
         internal void addChildren(LinkedList<Node> children)
         {
             this.children = children;
+        }
+
+        public bool inScope(Token name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addToScope(DeclarationNode localVar)
+        {
+            throw new NotImplementedException();
         }
     }
 }

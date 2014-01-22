@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class ExpressionNode : Node
+    public class ExpressionNode : Node
     {
         internal string getReturnType()
         {

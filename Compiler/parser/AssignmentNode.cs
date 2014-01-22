@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class AssignmentNode : Node 
+    public class AssignmentNode : Node 
     {
         private Token varName;
         private ExpressionNode expr;

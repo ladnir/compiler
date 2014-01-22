@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    class Node
+    public class Node
     {
         protected LinkedList<Node> children;
 

@@ -11,7 +11,7 @@ namespace Compiler
         static void Main(string[] args)
         {
 
-            string source = "int x; 3 + 3; 3.6*3;";
+            string source = "int x; x= 3 + 3; int y= x+3.6*3;";
 
             Console.WriteLine("input:" + source);
 

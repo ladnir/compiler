@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    class FunctionNode : Node , LocalScope
+    public class FunctionNode : Node , LocalScope
     {
         private LinkedList<ParamNode> parameters;
 
@@ -65,6 +65,16 @@ namespace Compiler
         internal void addChildren(LinkedList<Node> children)
         {
             this.children = children;
+        }
+
+        public bool inScope(Token name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void addToScope(DeclarationNode localVar)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class CallNode : ExpressionNode
+    public class CallNode : ExpressionNode
     {
         private Token refName;
         private LinkedList<Token> parameters;
