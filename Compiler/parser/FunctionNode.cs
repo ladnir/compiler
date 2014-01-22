@@ -12,7 +12,6 @@ namespace Compiler
 
         private Token returnType;
         private Token functionName;
-
         private Dictionary<string, Node> localVars = new Dictionary<string, Node>();
 
         public FunctionNode(Token returnType, Token functionName)
@@ -62,5 +61,10 @@ namespace Compiler
             return sb.ToString();
         }
 
+
+        internal void addChildren(LinkedList<Node> children)
+        {
+            this.children = children;
+        }
     }
 }

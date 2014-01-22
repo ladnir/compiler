@@ -46,6 +46,7 @@
     <Compile Include="parser\DeclarationNode.cs" />
     <Compile Include="parser\EmptyNode.cs" />
     <Compile Include="parser\ExpressionNode.cs" />
+    <Compile Include="parser\ForLoopNode.cs" />
     <Compile Include="parser\FunctionNode.cs" />
     <Compile Include="parser\LiteralNode.cs" />
     <Compile Include="parser\LocalScope.cs" />
