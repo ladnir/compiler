@@ -5,21 +5,15 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class IfNode : Node , LocalScope
+    class ElseNode : Node , LocalScope
     {
+        private LocalScope scope;
 
-        private ExpressionNode eval;
-        private LocalScope parentScope;
-
-        private ElseNode elseNode;
-
-        public IfNode(ExpressionNode eval, LocalScope scope)
+        public ElseNode(LocalScope scope)
         {
             // TODO: Complete member initialization
-            this.eval = eval;
-            this.parentScope = scope;
+            this.scope = scope;
         }
-
         public bool inScope(Token name)
         {
             throw new NotImplementedException();
@@ -28,11 +22,6 @@ namespace Compiler.parser
         public void addToScope(DeclarationNode localVar)
         {
             throw new NotImplementedException();
-        }
-
-        internal void addElse(ElseNode elseNode)
-        {
-            this.elseNode = elseNode;
         }
     }
 }

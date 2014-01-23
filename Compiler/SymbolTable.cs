@@ -38,12 +38,17 @@ namespace Compiler
             return false;
         }
 
-        internal void addFunction(FunctionNode fn)
+        public void addFunction(FunctionNode fn)
         {
             throw new NotImplementedException();
         }
 
         public bool funcInScope(CallNode function)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal bool funcInScope(FunctionNode fn)
         {
             throw new NotImplementedException();
         }

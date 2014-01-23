@@ -23,13 +23,6 @@ namespace Compiler
 
         }
 
-        public void addParam(ParamNode param)
-        {
-            localVars.Add(param.label(), param);
-            parameters.AddLast(param);
-
-        }
-
         override public string output()
         {
             StringBuilder sb = new StringBuilder();
@@ -75,6 +68,11 @@ namespace Compiler
         public void addToScope(DeclarationNode localVar)
         {
             throw new NotImplementedException();
+        }
+
+        internal void addParameters(LinkedList<ParamNode> parameters)
+        {
+            this.parameters = parameters;
         }
     }
 }
