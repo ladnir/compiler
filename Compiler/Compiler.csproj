@@ -48,6 +48,7 @@
     <Compile Include="parser\ExpressionNode.cs" />
     <Compile Include="parser\ForLoopNode.cs" />
     <Compile Include="parser\FunctionNode.cs" />
+    <Compile Include="parser\IfNode.cs" />
     <Compile Include="parser\LiteralNode.cs" />
     <Compile Include="parser\LocalScope.cs" />
     <Compile Include="parser\Node.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="parser\ParamNode.cs" />
     <Compile Include="parser\Parser.cs" />
     <Compile Include="parser\VariableNode.cs" />
+    <Compile Include="parser\WhileLoopNode.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

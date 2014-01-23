@@ -171,12 +171,113 @@ namespace Compiler
         {
             if (tokens[index].getValue() == "for")
                 return parseForLoop(scope);
-            else if (tokens[index].getValue() == "while") return null;
-            //return parseWhileLoop(scope);
-            else if (tokens[index].getValue() == "if") return null;
-            //return parseIf(scope);
+            else if (tokens[index].getValue() == "while")
+                return parseWhileLoop(scope);
+            else if (tokens[index].getValue() == "if")
+                return parseIf(scope);
             else
                 throw new Exception("error, unknow construct at token:" + index);
+        }
+
+        /// <summary>
+        /// Expects the local scope that it lives in. 
+        /// Expects the index to point at the if token.
+        /// 
+        /// Sets the index after the closing brace.
+        /// Returns a if node.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private Node parseIf(LocalScope scope)
+        {
+            IfNode ifNode;
+            ExpressionNode eval;
+            LinkedList<Node> children;
+
+            // check for the opening of the for loop
+            if (tokens[index].getValue() != "while") throw new Exception("error 48 at token:" + index++);
+            if (tokens[index].getValue() != "(") throw new Exception("error 49 at token:" + index++);
+
+            // get the evaluation tokens and parse them into a boolean node
+            Token[] exprList = getTokensToSemicolon();
+            eval = parseExpression(exprList, scope);
+
+            // check that the eval node returns a boolean
+            if (eval.isEmpty()) throw new Exception("error 50 at token:" + index);
+            if (eval.getReturnType() != "bool") throw new Exception("error 51 at token:" + index);
+
+            //check that we have the closing brace and openning brace to state the forloop body
+            if (tokens[index].getValue() != ")") throw new Exception("error 52 at token:" + index++);
+            if (tokens[index].getValue() != "{") throw new Exception("error 53 at token:" + index++);
+
+            // create the forloop node so that the parse statements call will have a local scope to use
+            ifNode = new IfNode(eval, scope);
+
+            // get the for loop's statments and use it as the local scope
+            children = parseStatements(ifNode);
+
+            // add the children to the for loop
+            ifNode.addChildren(children);
+
+            // check for closing brace
+            if (tokens[index].getValue() != "}") throw new Exception("error 54 at token:" + index++);
+
+            // check for an else statement and add it to the IfNode if it exists.
+            if (tokens[index].getValue() == "else")
+                ifNode.addElse(parseElse(scope));
+
+            return ifNode;
+        }
+
+        private LinkedList<Node> parseElse(LocalScope scope)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Expects the local scope that it lives in. 
+        /// Expects the index to point at the while token.
+        /// 
+        /// Sets the index after the closing brace.
+        /// Returns a while loop node.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private Node parseWhileLoop(LocalScope scope)
+        {
+            WhileLoopNode wl;
+            ExpressionNode eval;
+            LinkedList<Node> children;
+
+            // check for the opening of the for loop
+            if (tokens[index].getValue() != "while") throw new Exception("error 41 at token:" + index++);
+            if (tokens[index].getValue() != "(") throw new Exception("error 42 at token:" + index++);
+
+            // get the evaluation tokens and parse them into a boolean node
+            Token[] exprList = getTokensToSemicolon();
+            eval = parseExpression(exprList, scope);
+
+            // check that the eval node returns a boolean
+            if (eval.isEmpty()) throw new Exception("error 43 at token:" + index);
+            if (eval.getReturnType() != "bool") throw new Exception("error 44 at token:" + index);
+
+            //check that we have the closing brace and openning brace to state the forloop body
+            if (tokens[index].getValue() != ")") throw new Exception("error 45 at token:" + index++);
+            if (tokens[index].getValue() != "{") throw new Exception("error 46 at token:" + index++);
+
+            // create the forloop node so that the parse statements call will have a local scope to use
+            wl = new WhileLoopNode( eval, scope);
+
+            // get the for loop's statments and use it as the local scope
+            children = parseStatements(wl);
+
+            // add the children to the for loop
+            wl.addChildren(children);
+
+            // check for closing brace
+            if (tokens[index].getValue() != "}") throw new Exception("error 47 at token:" + index++);
+
+            return wl;
         }
 
         /// <summary>
@@ -189,7 +290,11 @@ namespace Compiler
         /// <param name="scope"></param>
         private Node parseForLoop(LocalScope scope)
         {
+            ForLoopNode fl;
             Node assignment;
+            ExpressionNode eval;
+            ExpressionNode incrementer;
+            LinkedList<Node> children;
 
             // check for the opening of the for loop
             if (tokens[index].getValue() != "for")throw new Exception("error 31 at token:" + index++);
@@ -207,7 +312,7 @@ namespace Compiler
 
             // get the evaluation tokens and parse them into a boolean node
             Token[] exprList = getTokensToSemicolon();
-            ExpressionNode eval = parseExpression(exprList,scope);
+            eval = parseExpression(exprList,scope);
 
             // check that the eval node returns a boolean
             if (eval.isEmpty())  throw new Exception("error 35 at token:" + index);
@@ -215,17 +320,17 @@ namespace Compiler
 
             // get the optional incrementer expression and then parse it
             exprList = getClosingTokens();
-            ExpressionNode incrementer = parseExpression(exprList,scope);
+            incrementer = parseExpression(exprList,scope);
 
             //check that we have the closing brace and openning brace to state the forloop body
             if (tokens[index].getValue() != ")") throw new Exception("error 36 at token:" + index++);
             if (tokens[index].getValue() != "{") throw new Exception("error 37 at token:" + index++);
 
             // create the forloop node so that the parse statements call will have a local scope to use
-            ForLoopNode fl = new ForLoopNode(assignment,eval,incrementer,scope);
+            fl = new ForLoopNode(assignment,eval,incrementer,scope);
 
             // get the for loop's statments and use it as the local scope
-            LinkedList<Node> children = parseStatements(fl);
+            children = parseStatements(fl);
 
             // add the children to the for loop
             fl.addChildren(children);
@@ -330,16 +435,16 @@ namespace Compiler
                 // get the expression;
                 Token[] exprList = getTokensToSemicolon();
 
-                // parse the expression into Node(s)
+                // parse the expression into a Node.
                 expr = parseExpression(exprList , scope);
 
-                // checks to see if the expression is empty
+                // checks to see if the expression is empty.
                 if (expr.isEmpty() ) throw new Exception("error 40 at token:" + index);
             }
-            // make sure that it terminates with a semicolon
+            // make sure that it terminates with a semicolon.
             else if (tokens[index].getValue() != ";") throw new Exception("error 11 at token:" + index);
 
-
+            // construct the declaration node.
             dec = new DeclarationNode(dataType, variableName, expr);
 
             // add the variable to local scope.

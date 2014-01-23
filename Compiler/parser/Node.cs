@@ -33,6 +33,11 @@ namespace Compiler
             children.AddLast(child);
         }
 
+
+        virtual public void addChildren(LinkedList<Node> children)
+        {
+            this.children = children;
+        }
       
     }
 }
