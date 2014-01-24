@@ -798,7 +798,7 @@ namespace Compiler
             {
                 // check the local scope to see if its a variable.
                 if (scope.inScope( refName ) && tokens.Length == 1) return true;
-
+                 
                 // Check to see if its a 
                 
 
