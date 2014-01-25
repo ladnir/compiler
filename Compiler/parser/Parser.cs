@@ -549,7 +549,6 @@ namespace Compiler
         /// <para> Expects the scope that it lives in.                                  </para>
         /// <para> Expects an array of the whole expression (i.e.  3*4+foo()  ) .       </para>
         /// <para>  - </para>   
-        /// <para> Sets index to point to the node after the closing brace { .          </para>
         /// <para> Returns an possible EMPTY Expression node.                           </para>
         /// </summary>
         /// <param name="exprList"></param>
@@ -580,7 +579,8 @@ namespace Compiler
         /// <para> Then it will look for a + or - to split the expression on.               </para>
         /// <para> Finally it will look for a * , / , or % to split the expression on.      </para>
         /// <para> It will throw an error if the expression does not have anything to split.</para>
-        /// <para> It will also recurrsively split the statement until it has all terminals like literals, variables, and function calls.  </para>
+        /// <para> It will also recurrsively split the statement until it has all terminals 
+        ///        like literals, variables, and function calls.                            </para>
         /// <para>  - </para>
         /// <para> Returns the root Operation node that has a expression tree below it.     </para>
         /// </summary>
@@ -641,32 +641,37 @@ namespace Compiler
         private OperationNode parseOp3Expression(int i, Token[] exprList, LocalScope scope)
         {
             int j = 0;
-            while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes) && !ofType(exprList[j], Op2Tpyes)) j++;
-            if (j < exprList.Length) // we found an == , + or something equivalent which is bad because they should have taken presidence in the recursion
-                throw new Exception("error 24 at token:" + index);
-
-            if (!ofType(exprList[i], Op3Tpyes))
-                throw new Exception("error 27 at token:" + index); 
-
             Token[] left, right;
+            ExpressionNode leftExpr, rightExpr;
+            
+            // look for a Op1type or a Op2type
+            while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes) && !ofType(exprList[j], Op2Tpyes)) j++;
+            // break if we found an == , + or something equivalent which is  
+            // bad because they should have taken presidence in the recursion.
+            if (j < exprList.Length) throw new Exception("error 24 at token:" + index);
 
+            // throw an error if i done not point to a Op3type.
+            if (!ofType(exprList[i], Op3Tpyes)) throw new Exception("error 27 at token:" + index); 
+
+            // create arrays for the tokens on either side of the split.
             left = new Token[i];
             right = new Token[exprList.Length - i - 1];
 
+            // copy the left tokens into the left array.
             for ( j = 0; j < i; j++)
                 left[j] = exprList[j];
 
+            // copy the right tokens.
             for ( j = i; j < exprList.Length; j++)
                 right[j] = exprList[j];
 
-            ExpressionNode leftExpr, rightExpr;
-
-            if (isSingleExpression(left,scope))
-                leftExpr = parseSingleExpression(left, scope);
+            // check if we have a single expression on the left. and if so parse it.
+            if (isSingleExpression(left,scope)) leftExpr = parseSingleExpression(left, scope);
+            // else split the expression again.
             else leftExpr = splitExpression(left, scope);
 
-            if (isSingleExpression(right,scope))
-                rightExpr = parseSingleExpression(right, scope);
+            // same as above but for the right side.
+            if (isSingleExpression(right,scope)) rightExpr = parseSingleExpression(right, scope);
             else rightExpr = splitExpression(right, scope);
 
             return new OperationNode(exprList[i], leftExpr, rightExpr);
@@ -688,32 +693,37 @@ namespace Compiler
         private OperationNode parseOp2Expression(int i, Token[] exprList, LocalScope scope)
         {
             int j = 0;
-            while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes)) j++;
-            if (j < exprList.Length) // we found an == or something equivalent which is bad because they should have taken presidence in the recursion
-                throw new Exception("error 24 at token:" + index); 
-
-            if(!ofType(exprList[i], Op2Tpyes))
-                throw new Exception("error 25 at token:" + index); 
-
             Token[] left, right;
+            ExpressionNode leftExpr, rightExpr;
 
+            // look for a Op1type 
+            while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes)) j++;
+            // break if we found an == or something equivalent which is bad 
+            // because they should have taken presidence in the recursion.
+            if (j < exprList.Length) throw new Exception("error 24 at token:" + index); 
+
+            // make sure there is an Op2Type at index i.
+            if(!ofType(exprList[i], Op2Tpyes)) throw new Exception("error 25 at token:" + index); 
+
+            // allocate arrays the hold the left and right part of the splits.
             left = new Token[i];
             right = new Token[exprList.Length - i - 1];
 
+            // copy the tokens into the left array.
             for ( j = 0; j < i; j++)
                 left[j] = exprList[j];
 
+            // copy the tokens into the right array.
             for ( j = i; j < exprList.Length; j++)
                 right[j] = exprList[j];
 
-            ExpressionNode leftExpr, rightExpr;
-
-            if (isSingleExpression(left,scope))
-                leftExpr = parseSingleExpression(left, scope);
+            // check if we have a single expression on the left. and if so parse it.
+            if (isSingleExpression(left,scope)) leftExpr = parseSingleExpression(left, scope);
+            // else split the expression again.
             else leftExpr = splitExpression(left, scope);
 
-            if (isSingleExpression(right,scope))
-                rightExpr = parseSingleExpression(right, scope);
+            // same as above but for the right side
+            if (isSingleExpression(right,scope)) rightExpr = parseSingleExpression(right, scope);
             else rightExpr = splitExpression(right, scope);
 
             return new OperationNode(exprList[i], leftExpr, rightExpr);
@@ -733,21 +743,24 @@ namespace Compiler
         /// <returns></returns>
         private OperationNode parseOp1Expression(int i,Token[] exprList, LocalScope scope)
         {
-
-            if (!ofType(exprList[i], Op1Tpyes))
-                throw new Exception("error 26 at token:" + index); 
-
             Token[] left, right;
+            ExpressionNode leftExpr, rightExpr;
 
+            // make sure i is pointing at an Op1 type.
+            if (!ofType(exprList[i], Op1Tpyes)) throw new Exception("error 26 at token:" + index); 
+
+            // allocate space for the left and right splits.
             left = new Token[i];
             right = new Token[exprList.Length - i - 1];
 
+            // copy the left side tokens and make sure there isnt extry Op1 types.
             for (int j = 0; j < i; j++)
             {
                 left[j] = exprList[j];
                 if (ofType(left[j], Op1Tpyes))
                     throw new Exception("error 20 at token:" + index);
             }
+            // copy the right side.
             for (int j = i; j < exprList.Length; j++)
             {
                 right[j] = exprList[j];
@@ -755,22 +768,33 @@ namespace Compiler
                     throw new Exception("error 21 at token:" + index);
             }
 
-            ExpressionNode leftExpr, rightExpr;
-
-            if (isSingleExpression(left,scope))
-                leftExpr = parseSingleExpression(left, scope);
+            // check if we have a single expression on the left. and if so parse it.
+            if (isSingleExpression(left,scope)) leftExpr = parseSingleExpression(left, scope);
+            // else split the expression again.
             else leftExpr = splitExpression(left, scope);
 
-            if (isSingleExpression(right,scope))
-                rightExpr = parseSingleExpression(right, scope);
+            // same as above but for the right side.
+            if (isSingleExpression(right,scope)) rightExpr = parseSingleExpression(right, scope);
             else rightExpr = splitExpression(right, scope);
 
             return new OperationNode(exprList[i], leftExpr, rightExpr);
         }
 
+        /// <summary>
+        /// <para> - </para>
+        /// <para> Expects an array of tokens containing the expression.                    </para>
+        /// <para> Expects the scope that the expression lives in.                          </para>
+        /// <para> - </para>
+        /// <para> Returns wheather the expression is a single expression or a composite.   </para>
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
         private bool isSingleExpression(Token[] tokens , LocalScope scope)
         {
+            // get the global sysmbol table SINGLETON.
             SymbolTable sym = new SymbolTable ();
+
             // single literal
             if (tokens[0].isLiteral() && tokens.Length == 1) return true;
 
@@ -778,41 +802,11 @@ namespace Compiler
             Token refName =tokens[0];
             if (refName.getType() == TokenType.REF)
             {
-                // single local variable
+                // check the local scope to see if its a variable.
                 if (scope.inScope( refName ) && tokens.Length == 1) return true;
 
-                // cant have a function call without 3 tokens  ex:  REF  (  )
-                if(tokens.Length <= 3) return false;
-
-                if (tokens[1].getValue() != "(") return false;
-
-                int i = 2;
-                CallNode funcCall = new CallNode(refName);
-
-                // walk over the function params checking the format
-                while (i + 1 < tokens.Length && (tokens[i].getType() == TokenType.REF || tokens[i].isLiteral() ))
-                {
-                    if (tokens[i].getType() != TokenType.REF || !tokens[i].isLiteral())
-                        throw new Exception("error 31 at token:" + index);
-
-                    funcCall.addParam(tokens[i]);
-
-                    if (tokens[i + 1].getValue() == ")" && i + 2 == tokens.Length)
-                    {
-                        if (sym.funcInScope(funcCall))
-                        {
-                            if (i + 2 == tokens.Length)
-                                return true;
-                        }
-                        else
-                            throw new Exception("error 28 at token:" + index);
-                    }
-
-                    if(tokens[i+1].getValue() != ","  )
-                        throw new Exception("error 27 at token:" + index);
-
-                    i = i + 2;
-                }
+                // Check to see if its a 
+                
 
                 throw new Exception("error 29 at token:" + index);
             }
@@ -828,7 +822,7 @@ namespace Compiler
                 return new VariableNode(exprList[0]);
 
             else throw new Exception("error 17 at token:" + index);
-            throw new NotImplementedException();
+            
         }
 
         private CallNode parseCall(Token[] tokens, LocalScope scope)
