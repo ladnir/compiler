@@ -20,7 +20,12 @@ namespace Compiler
         private int index,length;
         private Token[] tokens;
 
-
+        /// <summary>
+        /// Entery point.
+        /// 
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
         public Node parseTokens(Token[] tokens)
         {
             this.tokens = tokens;
@@ -102,12 +107,13 @@ namespace Compiler
         }
 
         /// <summary>
-        /// Usered to parse the paramiters out of a funtion declaration. 
-        /// NOT to be misstaken with a function call. 
-        /// Expects index to point at the opening brace ( .
-        /// 
-        /// Sets index to point to the closing brace ) .
-        /// returns a linked list of ParamNodes.
+        /// <para> - Corrected </para>
+        /// <para> Usered to parse the paramiters out of a funtion declaration.  </para>
+        /// <para> NOT to be misstaken with a function call.                           </para>
+        /// <para> Expects index to point at the opening brace ( .                     </para>
+        /// <para> - </para>
+        /// <para> Sets index to point to the closing brace ) .                        </para>
+        /// <para> returns a linked list of ParamNodes.                                </para>
         /// </summary>
         /// <returns></returns>
         private LinkedList<ParamNode> parseParameter()
@@ -119,14 +125,14 @@ namespace Compiler
 
             // loop until we have no mpre parameters.
             while (tokens[index].getValue() != ")")
-            {
-                // check that there is a valid data type for the parameter.
-                if (!ofType(tokens[index], dataTypes)) throw new Exception("error 13 at token:" + index);
-                Token paramType = tokens[index++];
-
+            {               
                 // check that the parameter has a name.
                 if (tokens[index].getType() != TokenType.REF) throw new Exception("error 14 at token:" + index);
                 Token paramName = tokens[index++];
+
+                // check that there is a valid data type for the parameter.
+                if (!ofType(tokens[index], dataTypes)) throw new Exception("error 13 at token:" + index);
+                Token paramType = tokens[index++];
 
                 // add the paramter to the parameter list.
                 paramList.AddLast(new ParamNode(paramType, paramName));
