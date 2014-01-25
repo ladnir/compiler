@@ -66,7 +66,7 @@ namespace Compiler
             {
                 index++;
                 while (source[index] != '*' && source[index + 1] != '/') 
-                    index++;
+                    index = index + 2 ;
             }
             else // inline comment
             {
@@ -149,7 +149,6 @@ namespace Compiler
 
         private Token getNumber()
         {
-            //Console.WriteLine("makking number");
             StringBuilder sb = new StringBuilder();
             sb.Append(source[index]);
             index++;
