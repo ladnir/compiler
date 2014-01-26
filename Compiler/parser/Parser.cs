@@ -63,19 +63,19 @@ namespace Compiler
             SymbolTable sym = new SymbolTable();
 
             // make sure the token is a return type ( i.e. int, void , ... ) .
-            if (!ofType(tokens[index], dataTypes)) throw new Exception("error 1 at token:" + index);
+            if (!ofType(tokens[index], dataTypes)) throw new Exception("error 1 at token:" + tokens[index].locate() );
 
             returnType = tokens[index++];
 
             // make sure the next token is a refernce type that can be used as a name.
-            if (tokens[index].getType() != TokenType.REF)  throw new Exception("error 2 at token:" + index);
+            if (tokens[index].getType() != TokenType.REF)  throw new Exception("error 2 at token:" + tokens[index].locate() );
 
             // get the name and construct the function node.
             functionName = tokens[index++];
             fn = new FunctionNode(returnType, functionName);
 
             // make sure there is an open brace before the parameters are given.
-            if (tokens[index].getValue() != "(" )  throw new Exception("error 3 at token:" + index);
+            if (tokens[index].getValue() != "(" )  throw new Exception("error 3 at token:" + tokens[index].locate() );
             
             // parse the parameters. This should return with index pointing to the closing brace.
             parameters = parseParameter();
@@ -127,11 +127,11 @@ namespace Compiler
             while (tokens[index].getValue() != ")")
             {               
                 // check that the parameter has a name.
-                if (tokens[index].getType() != TokenType.REF) throw new Exception("error 14 at token:" + index);
+                if (tokens[index].getType() != TokenType.REF) throw new Exception("error 14 at token:" + tokens[index].locate() );
                 Token paramName = tokens[index++];
 
                 // check that there is a valid data type for the parameter.
-                if (!ofType(tokens[index], dataTypes)) throw new Exception("error 13 at token:" + index);
+                if (!ofType(tokens[index], dataTypes)) throw new Exception("error 13 at token:" + tokens[index].locate() );
                 Token paramType = tokens[index++];
 
                 // add the paramter to the parameter list.
@@ -139,7 +139,7 @@ namespace Compiler
 
                 // make sure we have either a closing brace 
                 if (tokens[index].getValue() != "," || tokens[index].getValue() != ")")
-                    throw new Exception("error 14.1 at token:" + index);
+                    throw new Exception("error 14.1 at token:" + tokens[index].locate() );
 
                 // if there is a comma then increment the pointer to the next token. 
                 if (tokens[index++].getValue() == ",") index++;
@@ -183,7 +183,7 @@ namespace Compiler
                         children.AddLast(parseCall(exprList,scope));
                     }
                     // something went wrong if we get here. 
-                    else throw new Exception("error 7 at token:" + index);
+                    else throw new Exception("error 7 at token:" + tokens[index].locate() );
                 }
 
                 // Parse construct.   ex: for(;;)
@@ -193,7 +193,7 @@ namespace Compiler
                 else
                 {
                     // something went wrong if we get here.
-                    throw new Exception("error 8 at token:" + index);
+                    throw new Exception("error 8 at token:" + tokens[index].locate() );
                 }
                     
             }
@@ -221,7 +221,7 @@ namespace Compiler
             else if (tokens[index].getValue() == "if")
                 return parseIf(scope);
             else
-                throw new Exception("error, unknow construct at token:" + index);
+                throw new Exception("error, unknow construct at token:" + tokens[index].locate() );
         }
 
         /// <summary>
@@ -248,8 +248,8 @@ namespace Compiler
             eval = parseExpression(exprList, scope);
 
             // check that the eval node returns a boolean.
-            if (eval.isEmpty()) throw new Exception("error 50 at token:" + index);
-            if (eval.getReturnType() != "bool") throw new Exception("error 51 at token:" + index);
+            if (eval.isEmpty()) throw new Exception("error 50 at token:" + tokens[index].locate() );
+            if (eval.getReturnType() != "bool") throw new Exception("error 51 at token:" + tokens[index].locate() );
 
             //check that we have the closing brace and openning brace to state the forloop body.
             if (tokens[index].getValue() != ")") throw new Exception("error 52 at token:" + index++);
@@ -329,8 +329,8 @@ namespace Compiler
             eval = parseExpression(exprList, scope);
 
             // check that the eval node returns a boolean
-            if (eval.isEmpty()) throw new Exception("error 43 at token:" + index);
-            if (eval.getReturnType() != "bool") throw new Exception("error 44 at token:" + index);
+            if (eval.isEmpty()) throw new Exception("error 43 at token:" + tokens[index].locate() );
+            if (eval.getReturnType() != "bool") throw new Exception("error 44 at token:" + tokens[index].locate() );
 
             //check that we have the closing brace and openning brace to state the forloop body
             if (tokens[index].getValue() != ")") throw new Exception("error 45 at token:" + index++);
@@ -387,8 +387,8 @@ namespace Compiler
             eval = parseExpression(exprList,scope);
 
             // check that the eval node returns a boolean
-            if (eval.isEmpty())  throw new Exception("error 35 at token:" + index);
-            if(eval.getReturnType() != "bool" )  throw new Exception("error 34 at token:" + index);
+            if (eval.isEmpty())  throw new Exception("error 35 at token:" + tokens[index].locate() );
+            if(eval.getReturnType() != "bool" )  throw new Exception("error 34 at token:" + tokens[index].locate() );
 
             // get the optional incrementer expression and then parse it
             exprList = getClosingTokens();
@@ -426,7 +426,7 @@ namespace Compiler
             while (tokens[index].getValue() != ")" && tokens[index + 1].getValue() != "{")
             {
                 // if something goes wrong catch it. like there is a token between ){ or if one of them is missing
-                if (tokens[index].getValue() == "{" || tokens[index].getValue() == "}") throw new Exception("error 39 at token:" + index);
+                if (tokens[index].getValue() == "{" || tokens[index].getValue() == "}") throw new Exception("error 39 at token:" + tokens[index].locate() );
                 tl.AddLast(tokens[index++]);
             }
 
@@ -457,7 +457,7 @@ namespace Compiler
 
             // make sure its an assignment
             if (tokens[index].getValue() != "=")
-                throw new Exception("error 15 at token:" + index);
+                throw new Exception("error 15 at token:" + tokens[index].locate() );
 
             index++;
 
@@ -491,11 +491,11 @@ namespace Compiler
             ExpressionNode expr = null;
 
             // check that its has a valid data type
-            if (!ofType(tokens[index], dataTypes)) throw new Exception("error 9 at token:" + index);
+            if (!ofType(tokens[index], dataTypes)) throw new Exception("error 9 at token:" + tokens[index].locate() );
             dataType = tokens[index++];
 
             // make sure its a reference token and get its label.
-            if (tokens[index].getType() != TokenType.REF) throw new Exception("error 10 at token:" + index);
+            if (tokens[index].getType() != TokenType.REF) throw new Exception("error 10 at token:" + tokens[index].locate() );
             variableName = tokens[index++];
 
             // make sure its not in scope.
@@ -513,10 +513,10 @@ namespace Compiler
                 expr = parseExpression(exprList , scope);
 
                 // checks to see if the expression is empty.
-                if (expr.isEmpty() ) throw new Exception("error 40 at token:" + index);
+                if (expr.isEmpty() ) throw new Exception("error 40 at token:" + tokens[index].locate() );
             }
             // make sure that it terminates with a semicolon.
-            else if (tokens[index].getValue() != ";") throw new Exception("error 11 at token:" + index);
+            else if (tokens[index].getValue() != ";") throw new Exception("error 11 at token:" + tokens[index].locate() );
 
             // construct the declaration node.
             dec = new DeclarationNode(dataType, variableName, expr);
@@ -590,11 +590,11 @@ namespace Compiler
         private OperationNode splitExpression(Token[] exprList, LocalScope scope)
         {
             // make sure we arent trying to parse a single expression.
-            if (isSingleExpression(exprList,scope)) throw new Exception("error 19 at token:" + index);
+            if (isSingleExpression(exprList,scope)) throw new Exception("error 19 at token:" + tokens[index].locate() );
             
             // make sure the left most part of the expression is a value.
             if(exprList[0].getType() != TokenType.REF || ! exprList[0].isLiteral())
-                throw new Exception("error 18 at token:" + index); 
+                throw new Exception("error 18 at token:" + tokens[index].locate() ); 
 
             int  i = 1;
 
@@ -623,7 +623,7 @@ namespace Compiler
 
 
             // shouldnt get here 
-            throw new Exception("error 23 at token:" + index); 
+            throw new Exception("error 23 at token:" + tokens[index].locate() ); 
         }
 
         /// <summary>
@@ -648,10 +648,10 @@ namespace Compiler
             while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes) && !ofType(exprList[j], Op2Tpyes)) j++;
             // break if we found an == , + or something equivalent which is  
             // bad because they should have taken presidence in the recursion.
-            if (j < exprList.Length) throw new Exception("error 24 at token:" + index);
+            if (j < exprList.Length) throw new Exception("error 24 at token:" + tokens[index].locate() );
 
             // throw an error if i done not point to a Op3type.
-            if (!ofType(exprList[i], Op3Tpyes)) throw new Exception("error 27 at token:" + index); 
+            if (!ofType(exprList[i], Op3Tpyes)) throw new Exception("error 27 at token:" + tokens[index].locate() ); 
 
             // create arrays for the tokens on either side of the split.
             left = new Token[i];
@@ -700,10 +700,10 @@ namespace Compiler
             while (j < exprList.Length && !ofType(exprList[j], Op1Tpyes)) j++;
             // break if we found an == or something equivalent which is bad 
             // because they should have taken presidence in the recursion.
-            if (j < exprList.Length) throw new Exception("error 24 at token:" + index); 
+            if (j < exprList.Length) throw new Exception("error 24 at token:" + tokens[index].locate() ); 
 
             // make sure there is an Op2Type at index i.
-            if(!ofType(exprList[i], Op2Tpyes)) throw new Exception("error 25 at token:" + index); 
+            if(!ofType(exprList[i], Op2Tpyes)) throw new Exception("error 25 at token:" + tokens[index].locate() ); 
 
             // allocate arrays the hold the left and right part of the splits.
             left = new Token[i];
@@ -747,7 +747,7 @@ namespace Compiler
             ExpressionNode leftExpr, rightExpr;
 
             // make sure i is pointing at an Op1 type.
-            if (!ofType(exprList[i], Op1Tpyes)) throw new Exception("error 26 at token:" + index); 
+            if (!ofType(exprList[i], Op1Tpyes)) throw new Exception("error 26 at token:" + tokens[index].locate() ); 
 
             // allocate space for the left and right splits.
             left = new Token[i];
@@ -758,14 +758,14 @@ namespace Compiler
             {
                 left[j] = exprList[j];
                 if (ofType(left[j], Op1Tpyes))
-                    throw new Exception("error 20 at token:" + index);
+                    throw new Exception("error 20 at token:" + tokens[index].locate() );
             }
             // copy the right side.
             for (int j = i; j < exprList.Length; j++)
             {
                 right[j] = exprList[j];
                 if (ofType(right[j], Op1Tpyes))
-                    throw new Exception("error 21 at token:" + index);
+                    throw new Exception("error 21 at token:" + tokens[index].locate() );
             }
 
             // check if we have a single expression on the left. and if so parse it.
@@ -808,9 +808,9 @@ namespace Compiler
                 // Check to see if its a 
                 
 
-                throw new Exception("error 29 at token:" + index);
+                throw new Exception("error 29 at token:" + tokens[index].locate() );
             }
-            throw new Exception("error 30 at token:" + index);
+            throw new Exception("error 30 at token:" + tokens[index].locate() );
         }
 
         private ExpressionNode parseSingleExpression(Token[] exprList, LocalScope scope)
@@ -821,7 +821,7 @@ namespace Compiler
             else if (scope.inScope(exprList[0]))
                 return new VariableNode(exprList[0]);
 
-            else throw new Exception("error 17 at token:" + index);
+            else throw new Exception("error 17 at token:" + tokens[index].locate() );
             
         }
 
@@ -832,10 +832,10 @@ namespace Compiler
             Token nameToken;
 
             if(tokens[0].getType() != TokenType.REF )
-                throw new Exception("error 33 at token:" + index);
+                throw new Exception("error 33 at token:" + tokens[index].locate() );
 
             if(tokens[1].getValue() != "(")
-                throw new Exception("error 34 at token:" + index);
+                throw new Exception("error 34 at token:" + tokens[index].locate() );
 
             nameToken = tokens[0];
             CallNode funcCall = new CallNode(nameToken);
@@ -845,20 +845,20 @@ namespace Compiler
                 (tokens[i].getType() == TokenType.REF || tokens[i].isLiteral()))
             {
                 if (tokens[i].getType() != TokenType.REF || !tokens[i].isLiteral())
-                    throw new Exception("error 35 at token:" + index);
+                    throw new Exception("error 35 at token:" + tokens[index].locate() );
 
                 funcCall.addParam(tokens[i]);
 
                 if (tokens[i + 1].getValue() != "," || tokens[i + 1].getValue() != ")" )
-                    throw new Exception("error 36 at token:" + index);
+                    throw new Exception("error 36 at token:" + tokens[index].locate() );
 
                 i = i + 2;
             }
             if (tokens[i - 1].getValue() != ")")
-                throw new Exception("error 37 at token:" + index);
+                throw new Exception("error 37 at token:" + tokens[index].locate() );
 
             if (!sym.funcInScope(funcCall))
-                throw new Exception("error 38 at token:" + index);
+                throw new Exception("error 38 at token:" + tokens[index].locate() );
 
             return funcCall;
         }

@@ -7,9 +7,10 @@ namespace Compiler
 {
     class Tokenizer
     {
+
         int index = 0;
-        int length;
-        int count = 0;
+        int length,count=0;
+        int line = 1,num=1;
         string source;
         
         public Token[] GetTokens(String p)
@@ -36,8 +37,13 @@ namespace Compiler
         {
             Token token;
 
-            while (source[index] == ' ')
+            while (source[index] == ' ' || source[index] == '\n')
             {
+                if (source[index] == '\n')
+                {
+                    num = 1;
+                    line++;
+                }
                 index++;
                 if (index >= length) return null;
             }
@@ -65,19 +71,29 @@ namespace Compiler
             if (source[index] == '*')  // multi line comment
             {
                 index++;
-                while (source[index] != '*' && source[index + 1] != '/') 
-                    index = index + 2 ;
+                while (source[index] != '*' && source[index + 1] != '/')
+                {
+                    if (source[index] == '\n')
+                    {
+                        num = 1;
+                        line++;
+                    }
+                    index = index ++;
+                }
             }
             else // inline comment
             {
                 while (source[index] != '\n') index++;
+
+                line++;
+                num = 1;
             }
         }
 
         private Token getSemiColon()
         {
             index++;
-            return new SemiColon();
+            return new SemiColon(line,num);
         }
 
         private Token getString()
@@ -90,12 +106,12 @@ namespace Compiler
 
             index++;
 
-            return new MyString(sb.ToString());
+            return new MyString(sb.ToString(), line, num);
         }
 
         private Token getBrace()
         {
-            return new Brace(source[index]);
+            return new Brace(source[index], line, num);
         }
 
         private Token getWord()
@@ -108,10 +124,10 @@ namespace Compiler
                 sb.Append(source[index++]);
 
             string word = sb.ToString();
-            if (isBool(word)) return new MyBoolean(word);
-            if (SymbolTable.isKeyWord(word)) return new KeyWord(word);
-            
-            return new Reference(word);
+            if (isBool(word)) return new MyBoolean(word, line, num);
+            if (SymbolTable.isKeyWord(word)) return new KeyWord(word, line, num);
+
+            return new Reference(word, line, num);
         }
 
         private Token getOperator()
@@ -144,7 +160,7 @@ namespace Compiler
                     break;
             }
 
-            return new MyOperator(sb.ToString());
+            return new MyOperator(sb.ToString(), line, num);
         }
 
         private Token getNumber()
@@ -160,12 +176,12 @@ namespace Compiler
                 sb.Append(source[index++]);
                 while (isNumber(source[index])) sb.Append(source[index++]);
 
-                MyReal real = new MyReal(sb.ToString());
+                MyReal real = new MyReal(sb.ToString(), line, num);
                 return real;
             }
             else
             {
-                return new MyInt(sb.ToString());
+                return new MyInt(sb.ToString(), line, num);
             }
         }
 

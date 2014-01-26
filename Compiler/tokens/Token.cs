@@ -11,12 +11,15 @@ namespace Compiler
 
     abstract public class Token
     {
+        protected int line, num;
         protected TokenType type;
         protected string value;
         protected bool literal;
 
-        public Token(string p)
+        public Token(string p, int line, int num)
         {
+            this.line = line;
+            this.num = num;
             value = p;
             literal = true;
         }
@@ -28,11 +31,16 @@ namespace Compiler
             return " <_  " + type.ToString() +
                    " , " + value + " _> ";
         }
+
+        internal string locate()
+        {
+            return line + ", " + num;
+        }
     }
 
     class MyInt : Token
     {
-        public MyInt(string p) : base(p)
+        public MyInt(string p,int line, int num) : base(p,line,num)
         {
             type = TokenType.INT;
         }
@@ -40,15 +48,17 @@ namespace Compiler
     }
     class MyReal : Token
     {
-        public MyReal(string p) : base(p)
+        public MyReal(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.REAL;
         }
     }
     class MyBoolean : Token
     {
-        
-        public MyBoolean(string p)  : base(p)
+
+        public MyBoolean(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.BOOL;
         }
@@ -56,14 +66,16 @@ namespace Compiler
     }
     class MyString : Token
     {
-        public MyString(string p) : base(p)
+        public MyString(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.STRING;
         }
     }
     class MyOperator : Token
     {
-        public MyOperator(string p) : base(p)
+        public MyOperator(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.OP;
             literal = false;
@@ -71,7 +83,8 @@ namespace Compiler
     }
     class Reference : Token
     {
-        public Reference(string p) : base(p)
+        public Reference(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.REF;
             literal = false;
@@ -79,7 +92,8 @@ namespace Compiler
     }
     class KeyWord : Token
     {
-        public KeyWord(string p) : base(p)
+        public KeyWord(string p, int line, int num)
+            : base(p, line, num)
         {
             if (!SymbolTable.isKeyWord(p)) throw new Exception("Not a Keyword");
             type = TokenType.KEYWORD;
@@ -89,7 +103,8 @@ namespace Compiler
     }
     class Brace : Token
     {
-        public Brace(char brace) : base(""+brace)
+        public Brace(char brace, int line, int num)
+            : base("" + brace, line, num)
         {
             type = TokenType.BRACE;
             literal = false;
@@ -98,7 +113,8 @@ namespace Compiler
     }
     class SemiColon : Token
     {
-        public SemiColon() : base(";")
+        public SemiColon(int line, int num)
+            : base(";", line, num)
         {
            type = TokenType.SEMICOLON;
            literal = false;
