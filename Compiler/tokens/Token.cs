@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Compiler
 {
     [FlagsAttribute]
-    public enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON};
+    public enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON, COMMA};
 
     abstract public class Token
     {
@@ -28,19 +28,29 @@ namespace Compiler
         public bool isLiteral() { return literal; }
 
         public virtual String toString() { 
-            return " <_  " + type.ToString() +
-                   " , " + value + " _> ";
+            return " " + type.ToString() +
+                   " \t " + value ;
         }
 
         internal string locate()
         {
-            return line + ", " + num;
+            return "  line>"+line + ", token>" + num;
         }
     }
 
+    class MyComma : Token
+    {
+        public MyComma( int line, int num)
+            : base(",", line, num)
+        {
+            type = TokenType.COMMA;
+        }
+
+    }
     class MyInt : Token
     {
-        public MyInt(string p,int line, int num) : base(p,line,num)
+        public MyInt(string p, int line, int num)
+            : base(p, line, num)
         {
             type = TokenType.INT;
         }
@@ -111,9 +121,9 @@ namespace Compiler
         }
 
     }
-    class SemiColon : Token
+    class MySemiColon : Token
     {
-        public SemiColon(int line, int num)
+        public MySemiColon(int line, int num)
             : base(";", line, num)
         {
            type = TokenType.SEMICOLON;

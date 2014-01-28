@@ -11,7 +11,18 @@ namespace Compiler
         static void Main(string[] args)
         {
 
-            string source = "int x; x= 3 + 3; int y= x+3.6*3;";
+            string source = "";
+            source += " int myFunction( int i, string b ){\n";
+            source += "     int x;\n";
+            source += "     x= 3 + i;\n";
+            source += "     if(x> 23){\n";
+            source += "         print(b);\n";
+            source += "         return 1.0;\n";
+            source += "     }else{\n";
+            source += "         print(\"hi\");//what up\n";
+            source += "         return 0;\n";
+            source += "     }a\n";
+            source += " }\n";
 
             Console.WriteLine("input:" + source);
 
