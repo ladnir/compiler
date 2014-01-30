@@ -11,24 +11,26 @@ namespace Compiler
         static void Main(string[] args)
         {
 
-            string source = "";
-            source += " int myFunction( int i, string b ){\n";
-            source += "     int x;\n";
-            source += "     x= 3 + i;\n";
-            source += "     if(x> 23){\n";
-            source += "         print(b);\n";
-            source += "         return 1.0;\n";
-            source += "     }else{\n";
-            source += "         print(\"hi\");//what up\n";
-            source += "         return 0;\n";
-            source += "     }a\n";
-            source += " }\n";
+            string source;
+
+            source =  " [                                           \n";
+            source += "     [let [myFunction i b][int int string]   \n";
+            source += "         [x int]                             \n";
+            source += "         [:= x [+ 3  i]]                     \n";
+            source += "         [if  [>= x 23] [                    \n";
+            source += "             [stdout b]                      \n";
+            source += "             [return 1.0]                    \n";
+            source += "         ][//else                            \n";
+            source += "             [stdout \"hi\" ] //what up      \n";
+            source += "             [return 0]                      \n";
+            source += "         ]                                   \n";
+            source += "     ]                                       \n";
+            source += " ]                                           \n";
 
             Console.WriteLine("input:" + source);
 
             Tokenizer t = new Tokenizer();
-            SymbolTable s = new SymbolTable();
-            Parser p = new Parser();
+            //Parser p = new Parser();
 
             Console.WriteLine("Tokenizing...");
             Token[] tokens = t.GetTokens(source);

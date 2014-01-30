@@ -11,5 +11,9 @@ namespace Compiler
         bool inScope(Token name);
         void addToScope(DeclarationNode localVar);
 
+        bool funcInScope(CallNode function);
+        bool funcInScope(FunctionNode fn);
+
+        string getDataType(Token varName);
     }
 }

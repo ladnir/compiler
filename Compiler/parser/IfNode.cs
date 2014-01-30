@@ -34,5 +34,21 @@ namespace Compiler.parser
         {
             this.elseNode = elseNode;
         }
+
+
+        public bool funcInScope(CallNode function)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool funcInScope(FunctionNode fn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getDataType(Token varName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

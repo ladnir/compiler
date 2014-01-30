@@ -14,13 +14,29 @@ namespace Compiler
         private Token functionName;
         private Dictionary<string, Node> localVars = new Dictionary<string, Node>();
 
-        public FunctionNode(Token returnType, Token functionName)
+
+        public FunctionNode(Token returnType, Token functionName, LinkedList<Token> parameterNames, LinkedList<Token> parameterTypes)
         {
-            // TODO: Complete member initialization
+            
+            this.parameters = new LinkedList<ParamNode>();
+
             this.returnType = returnType;
             this.functionName = functionName;
 
+            // check param counts
+            if (parameterNames.Count != parameterTypes.Count)
+                throw new Exception("error f1, paramiter name count doesnt match paramter type count for function "+functionName.getValue() );
 
+            // add the parameters to the function.
+            LinkedList<Token>.Enumerator types = parameterTypes.GetEnumerator();
+            foreach (Token name in parameterNames)
+            {
+                ParamNode param = new ParamNode(types.Current, name);
+                types.MoveNext();
+
+                parameters.AddLast(param);
+                localVars.Add(name.getValue(), param);
+            }
         }
 
         override public string output()
@@ -55,11 +71,6 @@ namespace Compiler
         }
 
 
-        internal void addChildren(LinkedList<Node> children)
-        {
-            this.children = children;
-        }
-
         public bool inScope(Token name)
         {
             throw new NotImplementedException();
@@ -70,9 +81,22 @@ namespace Compiler
             throw new NotImplementedException();
         }
 
-        internal void addParameters(LinkedList<ParamNode> parameters)
+
+
+        public bool funcInScope(CallNode function)
         {
-            this.parameters = parameters;
+            throw new NotImplementedException();
+        }
+
+        public bool funcInScope(FunctionNode fn)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public string getDataType(Token varName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

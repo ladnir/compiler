@@ -7,24 +7,23 @@ using System.Threading.Tasks;
 namespace Compiler
 {
     [FlagsAttribute]
-    public enum TokenType : byte { INT, REAL, BOOL, STRING, REF, OP, KEYWORD, BRACE ,SEMICOLON, COMMA};
+    public enum TokenType : byte { INT, FLOAT, BOOL, STRING, REF, OP, DATATYPE, CONSTRUCT, FUNCTION, BRACE,  ASSIGNMENT };
 
     abstract public class Token
     {
         protected int line, num;
         protected TokenType type;
         protected string value;
-        protected bool literal;
+        protected bool literal =true;
 
         public Token(string p, int line, int num)
         {
             this.line = line;
             this.num = num;
             value = p;
-            literal = true;
         }
         public String getValue() { return value; }
-        public TokenType getType() { return type; }
+        public TokenType getTokenType() { return type; }
         public bool isLiteral() { return literal; }
 
         public virtual String toString() { 
@@ -38,82 +37,103 @@ namespace Compiler
         }
     }
 
-    class MyComma : Token
+    class AssignmentToken : Token
     {
-        public MyComma( int line, int num)
-            : base(",", line, num)
+        public AssignmentToken(int line, int num)
+            : base(":=", line, num)
         {
-            type = TokenType.COMMA;
+            type = TokenType.ASSIGNMENT;
+            literal = false;
         }
 
     }
-    class MyInt : Token
+
+    class DataTypeToken : Token
     {
-        public MyInt(string p, int line, int num)
+        public DataTypeToken(string p, int line, int num)
+            : base(p, line, num)
+        {
+            type = TokenType.DATATYPE;
+            literal = false;
+        }
+
+    }
+    class ConstructToken : Token
+    {
+        public ConstructToken(string p, int line, int num)
+            : base(p, line, num)
+        {
+            type = TokenType.CONSTRUCT;
+            literal = false;
+        }
+
+    } 
+    class FunctionToken : Token
+    {
+        public FunctionToken(string p, int line, int num)
+            : base(p, line, num)
+        {
+            type = TokenType.FUNCTION;
+            literal = false;
+        }
+
+    }
+    class IntToken : Token
+    {
+        public IntToken(string p, int line, int num)
             : base(p, line, num)
         {
             type = TokenType.INT;
         }
 
     }
-    class MyReal : Token
+    class FloatToken : Token
     {
-        public MyReal(string p, int line, int num)
+        public FloatToken(string p, int line, int num)
             : base(p, line, num)
         {
-            type = TokenType.REAL;
+            type = TokenType.FLOAT;
         }
     }
-    class MyBoolean : Token
+    class BooleanToken : Token
     {
 
-        public MyBoolean(string p, int line, int num)
+        public BooleanToken(string p, int line, int num)
             : base(p, line, num)
         {
             type = TokenType.BOOL;
         }
         
     }
-    class MyString : Token
+    class StringToken : Token
     {
-        public MyString(string p, int line, int num)
+        public StringToken(string p, int line, int num)
             : base(p, line, num)
         {
             type = TokenType.STRING;
         }
     }
-    class MyOperator : Token
+    class OperatorToken : Token
     {
-        public MyOperator(string p, int line, int num)
+        public OperatorToken(string p, int line, int num)
             : base(p, line, num)
         {
             type = TokenType.OP;
             literal = false;
         }
     }
-    class Reference : Token
+    class ReferenceToken : Token
     {
-        public Reference(string p, int line, int num)
+        public ReferenceToken(string p, int line, int num)
             : base(p, line, num)
         {
             type = TokenType.REF;
             literal = false;
         }
     }
-    class KeyWord : Token
+    class BraceToken : Token
     {
-        public KeyWord(string p, int line, int num)
-            : base(p, line, num)
-        {
-            if (!SymbolTable.isKeyWord(p)) throw new Exception("Not a Keyword");
-            type = TokenType.KEYWORD;
-            literal = false;
-        }
-
-    }
-    class Brace : Token
-    {
-        public Brace(char brace, int line, int num)
+        public BraceToken(char brace, int line, int num)
             : base("" + brace, line, num)
         {
             type = TokenType.BRACE;
@@ -121,13 +141,5 @@ namespace Compiler
         }
 
     }
-    class MySemiColon : Token
-    {
-        public MySemiColon(int line, int num)
-            : base(";", line, num)
-        {
-           type = TokenType.SEMICOLON;
-           literal = false;
-        }
-    }
+
 }

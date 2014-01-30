@@ -7,6 +7,9 @@ namespace Compiler
 {
     class Tokenizer
     {
+        static string[] Functions = { "sin", "cos"," tan", "stdout", "not", "and" , "or"};
+        static string[] dataTypes = { "int", "bool", "float", "string" };
+        static string[] constructs = { "while", "if", "let" , "return" }; // for
 
         int index = 0;
         int length,count=0;
@@ -53,24 +56,30 @@ namespace Compiler
             {
                 skipComment();
                 return null;
-            }else if (isNumber(source[index])) token = getNumber();
-            else if (isQuote(source[index])) token = getString();
-            else if (isOperator(source[index])) token = getOperator();
-            else if (isLetter(source[index])) token = getWord();
-            else if (isBrace(source[index])) token = getBrace();
-            else if (isSemiColon(source[index])) token = getSemiColon();
-            else if (isComma(source[index])) token = getComma();
-            else throw new Exception("unknow char: " + source[index]);
+            }
+            else if (isNumber(source[index]))   token = getNumber();
+            else if (assignment(source[index])) token = getAssignment();
+            else if (isQuote(source[index]))    token = getString();
+            else if (isOperator())              token = getOperator();
+            else if (isLetter(source[index]))   token = getWord();
+            else if (isBrace(source[index]))    token = getBrace();
+            else throw new Exception("unknow char at line " + line + " , token " + num + 1);
 
             num++;
             return token;
         }
 
-        private Token getComma()
+        private Token getAssignment()
         {
-            index++;
-            return new MyComma(line,num);
+            if (source[index++] != ':')
+                throw new Exception("error t5: expecting a := at line " + line + " , token " + num+1);
+            if (source[index++] != '=')
+                throw new Exception("error t6: expecting a := at line " + line + " , token " + num+1);
+
+            return new AssignmentToken( line, num++);
+            
         }
+
 
 
         private void skipComment()
@@ -98,11 +107,6 @@ namespace Compiler
             }
         }
 
-        private Token getSemiColon()
-        {
-            index++;
-            return new MySemiColon(line,num);
-        }
 
         private Token getString()
         {
@@ -116,12 +120,12 @@ namespace Compiler
                 throw new Exception("error t3: end of file while reading a string. add closing quote");
             index++;
 
-            return new MyString(sb.ToString(), line, num);
+            return new StringToken(sb.ToString(), line, num);
         }
 
         private Token getBrace()
         {
-            return new Brace(source[index++], line, num);
+            return new BraceToken(source[index++], line, num);
         }
 
         private Token getWord()
@@ -134,12 +138,15 @@ namespace Compiler
                 sb.Append(source[index++]);
 
             string word = sb.ToString();
-            if (isBool(word)) return new MyBoolean(word, line, num);
-            if (SymbolTable.isKeyWord(word)) return new KeyWord(word, line, num);
 
-            return new Reference(word, line, num);
+            if (isBool(word))       return new BooleanToken(word, line, num);
+            if (isDataType(word))   return new DataTypeToken(word, line, num);
+            if (isConstruct(word))  return new ConstructToken(word, line, num);
+            if (isFunction(word))   return new FunctionToken(word, line, num);
+
+            return new ReferenceToken(word, line, num);
         }
-
+        
         private Token getOperator()
         {
             StringBuilder sb = new StringBuilder();
@@ -171,7 +178,7 @@ namespace Compiler
                         break;
                 }
             }
-            return new MyOperator(sb.ToString(), line, num);
+            return new OperatorToken(sb.ToString(), line, num);
         }
 
         private Token getNumber()
@@ -187,7 +194,7 @@ namespace Compiler
                 sb.Append(source[index++]);
                 while (index < length && isNumber(source[index])) sb.Append(source[index++]);
 
-                MyReal real = new MyReal(sb.ToString(), line, num);
+                FloatToken real = new FloatToken(sb.ToString(), line, num);
 
                 if (index < length && isLetter(source[index]))
                     throw new Exception("error t2 at token:" + real.locate());
@@ -195,11 +202,26 @@ namespace Compiler
             }
             else
             {
-                MyInt mi = new MyInt(sb.ToString(), line, num);
+                IntToken mi = new IntToken(sb.ToString(), line, num);
                 if (index < length && isLetter(source[index]))
                    throw new Exception("error t1 at token:" + mi.locate() );
                 return mi;
             }
+        }
+
+        private bool isFunction(string word)
+        {
+            return isInSet(word, Functions);
+        }
+
+        private bool isConstruct(string word)
+        {
+            return isInSet(word, constructs);
+        }
+
+        private bool isDataType(string word)
+        {
+            return isInSet(word, dataTypes);
         }
 
         private bool isComma(char p)
@@ -207,10 +229,18 @@ namespace Compiler
             if (source[index] == ',') return true;
             return false;
         }
+
         private bool isComment()
         {
             if (source[index] == '/' && index +1 < length &&(source[index+1] == '/' ||source[index+1] == '*') ) 
                 return true;
+            return false;
+        }
+
+        private bool assignment(char p)
+        {
+            if (p == ':') return true;
+
             return false;
         }
 
@@ -228,13 +258,13 @@ namespace Compiler
 
         private bool isQuote(char p)
         {
-            if (p == '\'' || p == '"') return true;
+            if ( p == '"') return true;
             return false;
         }
 
         private bool isBrace(char p)
         {
-            char[] braces = { '{', '}', '[', ']', '(', ')' };
+            char[] braces = { '[', ']' };
             return isInSet(p, braces);
         }
 
@@ -250,11 +280,15 @@ namespace Compiler
             return false;
         }
 
-        private bool isOperator(char p)
+        private bool isOperator()
         {
-            char[] operators = { '+', '-', '/', '*', '&', '|','!', '%', '=', '<', '>' };
+            // or, and, not, sin, cos, tan   will be keywords not operators
 
-            return isInSet(p, operators);
+            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
+
+            if( isInSet(source[index], operators)) return true;
+
+            return false;
         }
 
         private bool isDeliminator(char p)
@@ -271,6 +305,14 @@ namespace Compiler
             foreach (char c in types)
             {
                 if (c == p) return true;
+            }
+            return false;
+        }
+        private bool isInSet(string token, string[] set)
+        {
+            foreach (string s in set)
+            {
+                if (s == token) return true;
             }
             return false;
         }
