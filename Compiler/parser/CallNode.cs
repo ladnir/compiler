@@ -7,28 +7,30 @@ namespace Compiler
 {
     public class CallNode : ExpressionNode
     {
-        private Token refName;
-        private LinkedList<Token> parameters;
         private FunctionNode func;
-        private LinkedList<ExpressionNode> parameters1;
+        private LinkedList<ExpressionNode> parameters;
 
-        public CallNode(Token refName)
-        {
-            // TODO: Complete member initialization
-            parameters = new LinkedList<Token>();
-            this.refName = refName;
-        }
 
         public CallNode(FunctionNode func, LinkedList<ExpressionNode> parameters1)
         {
             // TODO: Complete member initialization
             this.func = func;
-            this.parameters1 = parameters1;
+            this.parameters = parameters1;
         }
 
-        internal void addParam(Token token)
+
+        public override string outputIBTL()
         {
-            parameters.AddLast(token);
+            string output =  "[ " + func.outputIBTL() ;
+
+            foreach (ExpressionNode expr in parameters)
+            {
+                output += " " + expr.outputIBTL();
+            }
+
+            output += " ]";
+
+            return output;
         }
     }
 }

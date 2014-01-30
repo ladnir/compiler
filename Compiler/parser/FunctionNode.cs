@@ -39,7 +39,7 @@ namespace Compiler
             }
         }
 
-        override public string output()
+        override public string outputIBTL()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -52,7 +52,7 @@ namespace Compiler
             for (int i = 0; i < parameters.Count; i++) 
             {
                 if (i != 0) sb.Append(",");
-                sb.Append(cur.Value.output());
+                sb.Append(cur.Value.outputIBTL());
 
                 cur = cur.Next;
             }
@@ -62,7 +62,7 @@ namespace Compiler
             LinkedListNode<Node> child = children.First;
             for (int i = 0; i < children.Count; i++)
             {
-                sb.Append(child.Value.output());
+                sb.Append(child.Value.outputIBTL());
             }
 
             sb.Append("}\n");

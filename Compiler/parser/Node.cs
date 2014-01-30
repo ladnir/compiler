@@ -15,14 +15,14 @@ namespace Compiler
             children = new LinkedList<Node>();
         }
 
-        virtual public string output()
+        virtual public string outputIBTL()
         {
             StringBuilder sb = new StringBuilder();
 
             LinkedListNode<Node> child = children.First;
             for (int i = 0; i < children.Count; i++)
             {
-                sb.Append(child.Value.output());
+                sb.Append(child.Value.outputIBTL());
             }
 
             return sb.ToString();

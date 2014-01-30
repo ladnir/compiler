@@ -9,17 +9,24 @@ namespace Compiler
     {
         private Token dataType;
         private Token variableName;
-        private ExpressionNode expr;
 
-        public DeclarationNode(Token dataType, Token variableName, ExpressionNode value)
+        public DeclarationNode(Token dataType, Token variableName)
         {
             // TODO: Complete member initialization
             this.dataType = dataType;
             this.variableName = variableName;
-            this.expr = value;
 
         }
-        
+
+        public override string outputIBTL()
+        {
+            return "[ " + variableName.getValue() + " " + dataType.getValue() + " ]"; 
+        }
+
+        internal Token getVarName()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

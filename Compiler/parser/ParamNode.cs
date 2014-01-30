@@ -17,7 +17,7 @@ namespace Compiler
             this.paramName = paramName;
         }
 
-        public override string output()
+        public override string outputIBTL()
         {
             throw new NotImplementedException();
         }

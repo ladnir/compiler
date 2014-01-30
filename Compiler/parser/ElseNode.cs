@@ -9,19 +9,29 @@ namespace Compiler.parser
     {
         private LocalScope scope;
 
+        Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
+
         public ElseNode(LocalScope scope)
         {
-            // TODO: Complete member initialization
             this.scope = scope;
         }
         public bool varInScope(Token name)
         {
-            throw new NotImplementedException();
+            if (localVars.ContainsKey(name.getValue())) return true;
+            if (scope.varInScope(name)) return true;
+
+            return false;
         }
 
-        public void addToScope(DeclarationNode localVar)
+        public void addToScope(DeclarationNode dec)
         {
-            throw new NotImplementedException();
+            if(varInScope(dec.getVarName()))
+                throw new Exception("error en1 at "+dec.getVarName().getValue() );
+
+            VariableNode newVar = new VariableNode(dec);
+
+            localVars.Add(dec.getVarName().getValue(), newVar);
+
         }
 
 

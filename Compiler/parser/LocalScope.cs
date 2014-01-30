@@ -9,8 +9,8 @@ namespace Compiler
     public interface LocalScope
     {
         // vars
-        bool varInScope(Token name);
-        ExpressionNode getVarRef(Token token);
+        bool varInScope(Token name); 
+        VariableNode getVarRef(Token token);
         void addToScope(DeclarationNode localVar);
 
 
