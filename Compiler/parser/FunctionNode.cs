@@ -71,7 +71,7 @@ namespace Compiler
         }
 
 
-        public bool inScope(Token name)
+        public bool varInScope(Token name)
         {
             throw new NotImplementedException();
         }
@@ -95,6 +95,11 @@ namespace Compiler
 
 
         public string getDataType(Token varName)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal IEnumerable<ParamNode> getParameters()
         {
             throw new NotImplementedException();
         }

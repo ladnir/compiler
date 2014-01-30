@@ -20,7 +20,7 @@ namespace Compiler.parser
             this.parentScope = scope;
         }
 
-        public bool inScope(Token name)
+        public bool varInScope(Token name)
         {
             throw new NotImplementedException();
         }

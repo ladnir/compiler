@@ -27,5 +27,10 @@ namespace Compiler
             return paramName.getValue();
             throw new NotImplementedException();
         }
+
+        internal string getDataType()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

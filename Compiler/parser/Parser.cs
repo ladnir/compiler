@@ -286,27 +286,23 @@ namespace Compiler
             // check for the opening of the if statement.
             if (tokens[index].getValue() != "if") throw new Exception("error pi1 at token:" + tokens[index].locate());
             index++;
-            if (tokens[index].getValue() != "[") throw new Exception("error pi2 at token:" + tokens[index].locate());
-            index++;
-
+            
             // parse the evaluation node
             eval = parseExpression( scope);
 
             // check that the eval node returns a boolean.
             if (eval.getReturnType() != "bool") throw new Exception("error pi4 at token:" + tokens[index].locate() );
 
-            //check that we have the closing brace and openning brace to state the forloop body.
-            if (tokens[index].getValue() != "]") throw new Exception("error pi5 at token:" + tokens[index].locate());
-            index++;
             if (tokens[index].getValue() != "[") throw new Exception("error pi6 at token:" + tokens[index].locate());
-            index++;
+            
 
             // create the if node so that the parse statements call will have a local scope to use.
             ifNode = new IfNode(eval, scope);
 
             // Parse multi statement if 
-            if (tokens[index].getValue() == "[")
+            if (tokens[index + 1].getValue() == "[")
             {
+                index++;
                 children = parseStatements(ifNode);
 
                 // check for closing brace on the internal if statements.
@@ -399,8 +395,6 @@ namespace Compiler
             // check for the opening of the while statement.
             if (tokens[index].getValue() != "while") throw new Exception("error pw1 at token:" + tokens[index].locate());
             index++;
-            if (tokens[index].getValue() != "[") throw new Exception("error pw2 at token:" + tokens[index].locate());
-            index++;
 
             // parse the evaluation node
             eval = parseExpression(scope);
@@ -408,11 +402,8 @@ namespace Compiler
             // check that the eval node returns a boolean.
             if (eval.getReturnType() != "bool") throw new Exception("error pw4 at token:" + tokens[index].locate());
 
-            //check that we have the closing brace and openning brace to start the while body.
-            if (tokens[index].getValue() != "]") throw new Exception("error pw5 at token:" + tokens[index].locate());
-            index++;
             if (tokens[index].getValue() != "[") throw new Exception("error pw6 at token:" + tokens[index].locate());
-            index++;
+            
 
             // create the if node so that the parse statements call will have a local scope to use.
             wl = new WhileLoopNode(eval, scope);
@@ -534,12 +525,12 @@ namespace Compiler
             varName = tokens[index++];
 
             // check that the token is in scope
-            if (!scope.inScope(varName)) throw new Exception("error pa2 at token:" + tokens[index].locate() + "  " + varName.getValue() + " is not in scope");
+            if (!scope.varInScope(varName)) throw new Exception("error pa2 at token:" + tokens[index].locate() + "  " + varName.getValue() + " is not in scope");
 
             // parse the expression into Node(s)
             expr = parseExpression( scope);
 
-            string dataType = scope.getDataType(varName);
+            string dataType = scope.getVarRef(varName).getReturnType();
 
             // check the that the data types match
             if(expr.getReturnType() != dataType) throw new Exception("error pa3 at token:" + tokens[index].locate() );
@@ -561,68 +552,108 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private DeclarationNode parseLet(LocalScope scope)
+        private Node parseLet(LocalScope scope)
         {
-            DeclarationNode dec;
+            LetNode let = new LetNode();
             Token dataType;
             Token variableName;
             ExpressionNode expr = null;
 
+            
             // check that its has a valid data type
-            //if (!ofType(tokens[index], dataTypes)) throw new Exception("error 9 at token:" + tokens[index].locate() );
-            dataType = tokens[index++];
+            if (tokens[index].getTokenType() == TokenType.ASSIGNMENT ) throw new Exception("error pl1 at token:" + tokens[index].locate() );
+            index++;
 
-            // make sure its a reference token and get its label.
-            if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error 10 at token:" + tokens[index].locate() );
-            variableName = tokens[index++];
+            while (tokens[index].getValue() != "]") { 
 
-            // make sure its not in scope.
-            if (scope.inScope(variableName))
-                throw new Exception("Token :" + index + "  " + variableName.getValue() + " is already in scope.");
+                // make sure its a reference token and get its label.
+                if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tokens[index].locate() );
+                variableName = tokens[index++];
 
-            // check for an assignment
-            if (tokens[index].getValue() == "=")
-            {
+                 // check that its has a valid data type
+                if (tokens[index].getTokenType() == TokenType.DATATYPE ) throw new Exception("error pl3 at token:" + tokens[index].locate() );
+                dataType = tokens[index++];
+
+
+                // make sure its not in scope.
+                if (scope.varInScope(variableName))
+                    throw new Exception("error pl4 at Token " + tokens[index -2].locate() + "  " + variableName.getValue() + " is already in scope.");
+
+                if (tokens[index].getValue() != "]") throw new Exception("error pl5 at token:" + tokens[index].locate() );
                 index++;
 
-                // parse the expression into a Node.
-                expr = parseExpression( scope);
+                // construct the declaration node.
+                DeclarationNode dec = new DeclarationNode(dataType, variableName, expr);
+            
+                // add the variable to local scope.
+                scope.addToScope(dec);
 
-                // checks to see if the expression is empty.
-                if (expr.isEmpty() ) throw new Exception("error 40 at token:" + tokens[index].locate() );
+                let.addChild(dec);
             }
-            // make sure that it terminates with a semicolon.
-            else if (tokens[index].getValue() != ";") throw new Exception("error 11 at token:" + tokens[index].locate() );
-
-            // construct the declaration node.
-            dec = new DeclarationNode(dataType, variableName, expr);
-
-            // add the variable to local scope.
-            scope.addToScope(dec);
-            return dec;
+            return let;   
         }
 
         /// <summary>
         /// <para>  - </para>
         /// <para> Expects the scope that it lives in.                                  </para>
+        /// <para> Expects index to point to the Open brace, reference, or Literal      </para>
         /// <para>  - </para>   
-        /// <para> Returns an possible EMPTY Expression node.                           </para>
+        /// <para> Sets index AFTER the brace.                                          </para>
+        /// <para> Returns an Expression node.                                          </para>
         /// </summary>
         /// <param name="exprList"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
         private ExpressionNode parseExpression(LocalScope scope)
         {
-            return null;
-            //// single literal or variable or function call
-            //if (isSingleExpression(scope))
-            //{
-            //    return parseSingleExpression(scope);
-            //}
+            ExpressionNode expr;
 
-            //// composite expression
-            //return splitExpression(scope);
+            // check for a composite expression.
+            if (tokens[index].getValue() == "[")
+            {
+                index++;
 
+                if(scope.funcInScope(tokens[index])){
+                    expr = parseCall(scope);
+                }
+                else throw new Exception("error pex1 at token:" + tokens[index].locate());
+            }
+
+            // check for a single literal.
+            else if(tokens[index].isLiteral()){
+                expr = new LiteralNode(tokens[index]);
+            }
+
+            // check for a local variable.
+            else if (scope.varInScope(tokens[index])){
+                expr = scope.getVarRef(tokens[index]);
+
+            }
+            else throw new Exception("error pex2 at token:" + tokens[index].locate());
+
+            return expr;
+        }
+
+
+        private CallNode parseCall(LocalScope scope)
+        {
+            FunctionNode func = scope.getFuncRef(tokens[index]);
+            LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
+
+            foreach (ParamNode paramLabel in func.getParameters())
+            {
+
+                ExpressionNode paramExpr = parseExpression(scope);
+
+                // make sure the param data type matchs the function signature,
+                if (paramExpr.getReturnType() != paramLabel.getDataType()) throw new Exception("error pex2 at token:" + tokens[index].locate());
+
+                parameters.AddLast(paramExpr);
+            }
+
+            CallNode call = new CallNode(func, parameters);
+
+            return call;
         }
 
         /// <summary>
@@ -878,41 +909,7 @@ namespace Compiler
             
         //}
 
-        private CallNode parseCall( LocalScope scope)
-        {
-            Token nameToken;
 
-            if(tokens[0].getTokenType() != TokenType.REF )
-                throw new Exception("error 33 at token:" + tokens[index].locate() );
-
-            if(tokens[1].getValue() != "(")
-                throw new Exception("error 34 at token:" + tokens[index].locate() );
-
-            nameToken = tokens[0];
-            CallNode funcCall = new CallNode(nameToken);
-
-            int i = 2;
-            while (i + 1 < tokens.Length && 
-                (tokens[i].getTokenType() == TokenType.REF || tokens[i].isLiteral()))
-            {
-                if (tokens[i].getTokenType() != TokenType.REF || !tokens[i].isLiteral())
-                    throw new Exception("error 35 at token:" + tokens[index].locate() );
-
-                funcCall.addParam(tokens[i]);
-
-                if (tokens[i + 1].getValue() != "," || tokens[i + 1].getValue() != ")" )
-                    throw new Exception("error 36 at token:" + tokens[index].locate() );
-
-                i = i + 2;
-            }
-            if (tokens[i - 1].getValue() != ")")
-                throw new Exception("error 37 at token:" + tokens[index].locate() );
-
-            if (!scope.funcInScope(funcCall))
-                throw new Exception("error 38 at token:" + tokens[index].locate() );
-
-            return funcCall;
-        }
 
 
     }

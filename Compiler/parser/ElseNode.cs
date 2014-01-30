@@ -14,7 +14,7 @@ namespace Compiler.parser
             // TODO: Complete member initialization
             this.scope = scope;
         }
-        public bool inScope(Token name)
+        public bool varInScope(Token name)
         {
             throw new NotImplementedException();
         }

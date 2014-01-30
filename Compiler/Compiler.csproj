@@ -45,11 +45,11 @@
     <Compile Include="parser\CallNode.cs" />
     <Compile Include="parser\DeclarationNode.cs" />
     <Compile Include="parser\ElseNode.cs" />
-    <Compile Include="parser\EmptyNode.cs" />
     <Compile Include="parser\ExpressionNode.cs" />
     <Compile Include="parser\ForLoopNode.cs" />
     <Compile Include="parser\FunctionNode.cs" />
     <Compile Include="parser\IfNode.cs" />
+    <Compile Include="parser\LetNode.cs" />
     <Compile Include="parser\LiteralNode.cs" />
     <Compile Include="parser\LocalScope.cs" />
     <Compile Include="parser\Node.cs" />
