@@ -23,17 +23,29 @@ namespace Compiler.parser
         }
 
 
-        internal void addChildren(LinkedList<Node> children)
-        {
-            this.children = children;
-        }
 
-        public bool inScope(Token name)
+        public bool varInScope(Token name)
         {
             throw new NotImplementedException();
         }
 
         public void addToScope(DeclarationNode localVar)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool funcInScope(CallNode function)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool funcInScope(FunctionNode fn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getDataType(Token varName)
         {
             throw new NotImplementedException();
         }

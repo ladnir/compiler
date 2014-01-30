@@ -20,7 +20,7 @@ namespace Compiler.parser
             this.parentScope = scope;
         }
 
-        public bool inScope(Token name)
+        public bool varInScope(Token name)
         {
             throw new NotImplementedException();
         }
@@ -33,6 +33,22 @@ namespace Compiler.parser
         internal void addElse(ElseNode elseNode)
         {
             this.elseNode = elseNode;
+        }
+
+
+        public bool funcInScope(CallNode function)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool funcInScope(FunctionNode fn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getDataType(Token varName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

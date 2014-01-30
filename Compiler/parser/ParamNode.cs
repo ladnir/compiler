@@ -17,7 +17,7 @@ namespace Compiler
             this.paramName = paramName;
         }
 
-        public override string output()
+        public override string outputIBTL()
         {
             throw new NotImplementedException();
         }
@@ -25,6 +25,11 @@ namespace Compiler
         internal string label()
         {
             return paramName.getValue();
+            throw new NotImplementedException();
+        }
+
+        internal string getDataType()
+        {
             throw new NotImplementedException();
         }
     }

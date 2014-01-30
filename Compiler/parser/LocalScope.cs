@@ -8,8 +8,18 @@ namespace Compiler
 {
     public interface LocalScope
     {
-        bool inScope(Token name);
+        // vars
+        bool varInScope(Token name); 
+        VariableNode getVarRef(Token token);
         void addToScope(DeclarationNode localVar);
+
+
+        // functions
+        bool funcInScope(Token token);
+        FunctionNode getFuncRef(Token token);
+        void AddToScope(FunctionNode func);
+
+
 
     }
 }

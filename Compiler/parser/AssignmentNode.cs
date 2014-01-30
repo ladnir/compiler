@@ -7,14 +7,19 @@ namespace Compiler
 {
     public class AssignmentNode : Node 
     {
-        private Token varName;
         private ExpressionNode expr;
+        private VariableNode varNode;
 
-        public AssignmentNode(Token varName, ExpressionNode expr)
+        public AssignmentNode(VariableNode varNode, ExpressionNode expr)
         {
             // TODO: Complete member initialization
-            this.varName = varName;
+            this.varNode = varNode;
             this.expr = expr;
+        }
+
+        public override string outputIBTL()
+        {
+            return "[ := " + varNode.outputIBTL() + " " + expr.outputIBTL() + " ]";
         }
     }
 }
