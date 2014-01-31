@@ -9,15 +9,15 @@ namespace Compiler
     public interface LocalScope
     {
         // vars
-        bool varInScope(Token name); 
-        VariableNode getVarRef(Token token);
+        bool varInScope(string name);
+        VariableNode getVarRef(string name);
         void addToScope(DeclarationNode localVar);
 
 
         // functions
-        bool funcInScope(Token token);
-        FunctionNode getFuncRef(Token token);
-        void AddToScope(FunctionNode func);
+        bool funcInScope(string token);
+        FunctionNode getFuncRef(string name);
+        void addToScope(FunctionNode func);
 
 
 

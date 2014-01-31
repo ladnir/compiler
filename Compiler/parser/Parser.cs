@@ -108,7 +108,7 @@ namespace Compiler
             // parse the parameters names. This should return with index pointing to the closing brace.
             parameterTypes = parseParameterTypes();
 
-            fn = new FunctionNode(returnType, functionName,parameterNames, parameterTypes);
+            fn = new FunctionNode(returnType, functionName,parameterNames, parameterTypes,root);
 
             // make sure the token is an closing brace
             if (tokens[index].getValue() != "]") throw new Exception("error pf8 at token:" + tokens[index].locate());
@@ -116,11 +116,11 @@ namespace Compiler
             
             // TODO : Need to add support for prototyping. if someone prototype this will throw an error.  <========================================
             // Make sure this function doesnt already exist. 
-            if (root.funcInScope(fn)) throw new Exception("error pf9 at token:" + tokens[index].locate());
+            if (root.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tokens[index].locate());
             index++;
 
             // Add the new function to the root node.
-            root.addFunction(fn);
+            root.addToScope(fn);
 
             // parse the internal function statements. provide the function node as a LocalScope object.
             children = parseStatements(fn);
@@ -231,7 +231,10 @@ namespace Compiler
                return parseConstruct(scope);
 
             else if (tokens[index].getTokenType() == TokenType.FUNCTION)
-                return parseCall(scope);
+                return parseBFunc(scope);
+
+            else if (tokens[index].getTokenType() == TokenType.OP)
+                return parseOp(scope);
 
             else if (tokens[index].getTokenType() == TokenType.REF)
                 return parseCall(scope);
@@ -240,6 +243,44 @@ namespace Compiler
             // something went wrong if we get here.
             throw new Exception("error ps2 at token:" + tokens[index].locate());
             
+        }
+
+        private Node parseBFunc(LocalScope scope)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Node parseOp(LocalScope scope)
+        {
+            OpNode op;
+            Token opToken = tokens[index];
+            index++;
+
+            ExpressionNode leftExpr, rightExpr = null;
+            leftExpr = parseExpression(scope);
+
+            if (isBinOp(opToken))
+            {
+                rightExpr = parseExpression(scope);
+
+                if (leftExpr.getReturnType() != rightExpr.getReturnType()) throw new Exception("pererr fix this.");
+            }
+
+
+            return  new OpNode(opToken, leftExpr, rightExpr);
+
+           
+
+        }
+
+        private bool isBinOp(Token opToken)
+        {
+            string[] binops = { "+", "-", "/", "%", "=", ">", ">=", "<", "<=", "!=" };
+            foreach (string s in binops)
+            {
+                if (opToken.getValue() == s) return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -525,12 +566,12 @@ namespace Compiler
             varName = tokens[index++];
 
             // check that the token is in scope
-            if (!scope.varInScope(varName)) throw new Exception("error pa2 at token:" + tokens[index].locate() + "  " + varName.getValue() + " is not in scope");
+            if (!scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + tokens[index].locate() + "  " + varName.getValue() + " is not in scope");
 
             // parse the expression into Node(s)
             expr = parseExpression( scope);
 
-            VariableNode varNode = scope.getVarRef(varName);
+            VariableNode varNode = scope.getVarRef(varName.getValue() );
 
             // check the that the data types match
             if (expr.getReturnType() != varNode.getReturnType() ) throw new Exception("error pa3 at token:" + tokens[index].locate());
@@ -557,7 +598,6 @@ namespace Compiler
             LetNode let = new LetNode();
             Token dataType;
             Token variableName;
-            ExpressionNode expr = null;
 
             
             // check that its has a valid data type
@@ -576,14 +616,14 @@ namespace Compiler
 
 
                 // make sure its not in scope.
-                if (scope.varInScope(variableName))
+                if (scope.varInScope(variableName.getValue()))
                     throw new Exception("error pl4 at Token " + tokens[index -2].locate() + "  " + variableName.getValue() + " is already in scope.");
 
                 if (tokens[index].getValue() != "]") throw new Exception("error pl5 at token:" + tokens[index].locate() );
                 index++;
 
                 // construct the declaration node.
-                DeclarationNode dec = new DeclarationNode(dataType, variableName, expr); 
+                DeclarationNode dec = new DeclarationNode(dataType, variableName); 
             
                 // add the variable to local scope.
                 scope.addToScope(dec);
@@ -613,7 +653,7 @@ namespace Compiler
             {
                 index++;
 
-                if(scope.funcInScope(tokens[index])){
+                if(scope.funcInScope(tokens[index].getValue())){
                     expr = parseCall(scope);
                 }
                 else throw new Exception("error pex1 at token:" + tokens[index].locate());
@@ -625,8 +665,8 @@ namespace Compiler
             }
 
             // check for a local variable.
-            else if (scope.varInScope(tokens[index])){
-                expr = scope.getVarRef(tokens[index]);
+            else if (scope.varInScope(tokens[index].getValue())){
+                expr = scope.getVarRef(tokens[index].getValue());
 
             }
             else throw new Exception("error pex2 at token:" + tokens[index].locate());
@@ -637,7 +677,7 @@ namespace Compiler
 
         private CallNode parseCall(LocalScope scope)
         {
-            FunctionNode func = scope.getFuncRef(tokens[index]);
+            FunctionNode func = scope.getFuncRef(tokens[index].getValue());
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
 
             foreach (ParamNode paramLabel in func.getParameters())
@@ -655,10 +695,6 @@ namespace Compiler
 
             return call;
         }
-
-    
-
-
 
     }
 }

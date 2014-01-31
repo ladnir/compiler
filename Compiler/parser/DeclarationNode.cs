@@ -18,14 +18,14 @@ namespace Compiler
 
         }
 
-        public override string outputIBTL()
+        public override string outputIBTL(int tabCount)
         {
             return "[ " + variableName.getValue() + " " + dataType.getValue() + " ]"; 
         }
 
-        internal Token getVarName()
+        public virtual string getVarName()
         {
-            throw new NotImplementedException();
+            return variableName.getValue();
         }
     }
 }

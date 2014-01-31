@@ -17,9 +17,11 @@ namespace Compiler
             this.expr = expr;
         }
 
-        public override string outputIBTL()
+        public override string outputIBTL(int tabCount)
         {
-            return "[ := " + varNode.outputIBTL() + " " + expr.outputIBTL() + " ]";
+            string output = "[ := " + varNode.outputIBTL(tabCount) + " " + expr.outputIBTL(tabCount) + " ]";
+
+            return output;
         }
     }
 }

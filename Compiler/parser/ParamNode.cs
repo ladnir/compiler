@@ -5,16 +5,14 @@ using System.Text;
 
 namespace Compiler
 {
-    public class ParamNode : Node
+    public class ParamNode : VariableNode
     {
-        private Token paramType;
-        private Token paramName;
+        
 
         public ParamNode(Token paramType, Token paramName)
+            : base(new DeclarationNode(paramType,paramName))
         {
             // TODO: Complete member initialization
-            this.paramType = paramType;
-            this.paramName = paramName;
         }
 
         public override string outputIBTL()
@@ -22,15 +20,14 @@ namespace Compiler
             throw new NotImplementedException();
         }
 
-        internal string label()
+        internal string getVarName()
         {
-            return paramName.getValue();
-            throw new NotImplementedException();
+            return base.getVarName();
         }
 
         internal string getDataType()
         {
-            throw new NotImplementedException();
+            return base.getReturnType();
         }
     }
 }

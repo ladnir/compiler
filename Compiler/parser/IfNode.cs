@@ -9,7 +9,8 @@ namespace Compiler.parser
     {
 
         private ExpressionNode eval;
-        private LocalScope parentScope;
+        private LocalScope scope;
+        private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
         private ElseNode elseNode;
 
@@ -17,38 +18,76 @@ namespace Compiler.parser
         {
             // TODO: Complete member initialization
             this.eval = eval;
-            this.parentScope = scope;
+            this.scope = scope;
         }
 
-        public bool varInScope(Token name)
+        public override string outputIBTL(int tabCount)
         {
-            throw new NotImplementedException();
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("[ if ");
+
+            sb.Append(eval.outputIBTL(tabCount));
+
+            sb.Append(" [\n");
+
+            foreach (Node child in children)
+            {
+                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount) + "\n");
+
+            }
+            sb.Append("]");
+
+            if (elseNode != null) sb.Append(elseNode.outputIBTL(tabCount));
+            else sb.Append("\n");
+
+            return sb.ToString();
         }
 
-        public void addToScope(DeclarationNode localVar)
+        public bool varInScope(string name)
         {
-            throw new NotImplementedException();
+            if (localVars.ContainsKey(name)) return true;
+            if (scope.varInScope(name)) return true;
+
+            return false;
+        }
+
+        public void addToScope(DeclarationNode dec)
+        {
+            if (varInScope(dec.getVarName()))
+                throw new Exception("error ifn1 at " + dec.getVarName());
+
+            VariableNode newVar = new VariableNode(dec);
+
+            localVars.Add(dec.getVarName(), newVar);
+
+        }
+
+        public VariableNode getVarRef(string token)
+        {
+            if (localVars.ContainsKey(token))
+                return localVars[token];
+            else return scope.getVarRef(token);
+        }
+
+        public bool funcInScope(string token)
+        {
+            return scope.funcInScope(token);
+        }
+
+        public FunctionNode getFuncRef(string token)
+        {
+            return scope.getFuncRef(token);
+        }
+
+        public void addToScope(FunctionNode func)
+        {
+            scope.addToScope(func);
         }
 
         internal void addElse(ElseNode elseNode)
         {
             this.elseNode = elseNode;
-        }
-
-
-        public bool funcInScope(CallNode function)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool funcInScope(FunctionNode fn)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string getDataType(Token varName)
-        {
-            throw new NotImplementedException();
         }
     }
 }

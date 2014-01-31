@@ -10,8 +10,10 @@ namespace Compiler.parser
         private AssignmentNode assignment;
         private ExpressionNode eval;
         private ExpressionNode incrementer;
-        private LocalScope parentScope;
+        private LocalScope scope;
         private Node assignment1;
+
+        private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
         public ForLoopNode(Node assignment1, ExpressionNode eval, ExpressionNode incrementer, LocalScope parentScope)
         {
@@ -19,35 +21,49 @@ namespace Compiler.parser
             this.assignment1 = assignment1;
             this.eval = eval;
             this.incrementer = incrementer;
-            this.parentScope = parentScope;
+            this.scope = parentScope;
         }
 
-
-
-        public bool varInScope(Token name)
+        public bool varInScope(string name)
         {
-            throw new NotImplementedException();
+            if (localVars.ContainsKey(name)) return true;
+            if (scope.varInScope(name)) return true;
+
+            return false;
         }
 
-        public void addToScope(DeclarationNode localVar)
+        public void addToScope(DeclarationNode dec)
         {
-            throw new NotImplementedException();
+            if (varInScope(dec.getVarName()))
+                throw new Exception("error fln1 at " + dec.getVarName());
+
+            VariableNode newVar = new VariableNode(dec);
+
+            localVars.Add(dec.getVarName(), newVar);
+
         }
 
-
-        public bool funcInScope(CallNode function)
+        public VariableNode getVarRef(string token)
         {
-            throw new NotImplementedException();
+            if (localVars.ContainsKey(token))
+                return localVars[token];
+            else return scope.getVarRef(token);
         }
 
-        public bool funcInScope(FunctionNode fn)
+        public bool funcInScope(string token)
         {
-            throw new NotImplementedException();
+            return scope.funcInScope(token);
         }
 
-        public string getDataType(Token varName)
+        public FunctionNode getFuncRef(string token)
         {
-            throw new NotImplementedException();
+            return scope.getFuncRef(token);
         }
+
+        public void addToScope(FunctionNode func)
+        {
+            scope.addToScope(func);
+        }
+
     }
 }

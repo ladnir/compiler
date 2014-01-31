@@ -6,30 +6,28 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    public class Node
+    public abstract class Node
     {
         protected LinkedList<Node> children;
 
         public Node()
         {
-            children = new LinkedList<Node>();
+            throw new NotImplementedException();
         }
 
-        virtual public string outputIBTL()
+        virtual public string outputIBTL(int tabCount)
         {
-            StringBuilder sb = new StringBuilder();
+            throw new NotImplementedException();
+        }
+        virtual public string outputC(int tabCount)
+        {
 
-            LinkedListNode<Node> child = children.First;
-            for (int i = 0; i < children.Count; i++)
-            {
-                sb.Append(child.Value.outputIBTL());
-            }
-
-            return sb.ToString();
+            throw new NotImplementedException();
         }
 
         virtual public void addChild(Node child)
         {
+            if (children == null) children = new LinkedList<Node>();
             children.AddLast(child);
         }
 
@@ -38,6 +36,16 @@ namespace Compiler
         {
             this.children = children;
         }
-      
+
+
+        protected static string getTabs(int tabCount)
+        {
+            string output = "";
+            for (int i = 0; i < tabCount; i++)
+            {
+                output += "    ";
+            }
+            return output;
+        }
     }
 }

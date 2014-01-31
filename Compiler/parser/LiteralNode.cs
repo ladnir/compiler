@@ -14,5 +14,22 @@ namespace Compiler.parser
             // TODO: Complete member initialization
             this.nameToken = nameToken;
         }
+
+        public override string outputIBTL(int tabCount)
+        {
+            if (nameToken.getTokenType() == TokenType.BOOL)
+                return nameToken.getValue();
+
+            if (nameToken.getTokenType() == TokenType.FLOAT)
+                return nameToken.getValue();
+
+            if (nameToken.getTokenType() == TokenType.INT)
+                return nameToken.getValue();
+
+            if (nameToken.getTokenType() == TokenType.STRING)
+                return "\"" + nameToken.getValue() + "\"";
+
+            else throw new Exception("unknown literal at "+nameToken.locate());
+        }
     }
 }

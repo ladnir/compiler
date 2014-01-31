@@ -19,13 +19,13 @@ namespace Compiler
         }
 
 
-        public override string outputIBTL()
+        public override string outputIBTL(int tabCount)
         {
-            string output =  "[ " + func.outputIBTL() ;
+            string output =  "[ " + func.outputIBTL(tabCount) ;
 
             foreach (ExpressionNode expr in parameters)
             {
-                output += " " + expr.outputIBTL();
+                output += " " + expr.outputIBTL(tabCount);
             }
 
             output += " ]";

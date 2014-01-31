@@ -7,7 +7,7 @@ namespace Compiler
 {
     class Tokenizer
     {
-        static string[] Functions = { "sin", "cos"," tan", "stdout", "not", "and" , "or"};
+        static string[] Functions = { "sin", "cos"," tan", "stdout", "not", "and" , "or", "^"};
         static string[] dataTypes = { "int", "bool", "float", "string" };
         static string[] constructs = { "while", "if", "let" , "return" }; // for
 
@@ -284,7 +284,7 @@ namespace Compiler
         {
             // or, and, not, sin, cos, tan   will be keywords not operators
 
-            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
+            char[] operators = { '+','~', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
 
             if( isInSet(source[index], operators)) return true;
 
@@ -293,7 +293,7 @@ namespace Compiler
 
         private bool isDeliminator(char p)
         {
-            char[] deliminators = {' ',';',',','\t' ,'&','|', '+','-', '/','*',
+            char[] deliminators = {' ','~',';',',','\t' ,'&','|', '+','-', '/','*',
                                       '%','=','!', '<', '>','{','}','[',']' };
 
             return isInSet(p, deliminators);

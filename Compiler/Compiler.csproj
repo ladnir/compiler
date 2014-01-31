@@ -53,6 +53,7 @@
     <Compile Include="parser\LiteralNode.cs" />
     <Compile Include="parser\LocalScope.cs" />
     <Compile Include="parser\Node.cs" />
+    <Compile Include="parser\OpNode.cs" />
     <Compile Include="parser\ParamNode.cs" />
     <Compile Include="parser\Parser.cs">
       <SubType>Code</SubType>

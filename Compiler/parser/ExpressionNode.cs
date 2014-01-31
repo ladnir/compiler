@@ -5,16 +5,9 @@ using System.Text;
 
 namespace Compiler
 {
-    public class ExpressionNode : Node
+    public abstract class ExpressionNode : Node
     {
-        internal string getReturnType()
-        {
-            throw new NotImplementedException();
-        }
+        internal string getReturnType();
 
-        internal virtual bool isEmpty()
-        {
-            return false;
-        }
     }
 }
