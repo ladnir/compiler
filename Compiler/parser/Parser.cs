@@ -583,7 +583,7 @@ namespace Compiler
                 index++;
 
                 // construct the declaration node.
-                DeclarationNode dec = new DeclarationNode(dataType, variableName, expr);
+                DeclarationNode dec = new DeclarationNode(dataType, variableName, expr); 
             
                 // add the variable to local scope.
                 scope.addToScope(dec);
