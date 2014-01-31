@@ -27,6 +27,11 @@ namespace Compiler
         {
             return variableName.getValue();
         }
+
+        internal string getDataType()
+        {
+            return dataType.getValue();
+        }
     }
 }
 

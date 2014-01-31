@@ -32,5 +32,10 @@ namespace Compiler
 
             return output;
         }
+
+        public override string getReturnType()
+        {
+            return func.getReturnType();
+        }
     }
 }

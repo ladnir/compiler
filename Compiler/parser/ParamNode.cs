@@ -15,15 +15,11 @@ namespace Compiler
             // TODO: Complete member initialization
         }
 
-        public override string outputIBTL()
+        public override string outputIBTL(int tabCount)
         {
             throw new NotImplementedException();
         }
 
-        internal string getVarName()
-        {
-            return base.getVarName();
-        }
 
         internal string getDataType()
         {

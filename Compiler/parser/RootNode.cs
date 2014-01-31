@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class RootNode : Node , LocalScope
+    public class RootNode : Node , LocalScope
     {
         Dictionary<string, FunctionNode> functions = new Dictionary<string, FunctionNode>();
 
@@ -33,9 +33,9 @@ namespace Compiler
             //intiAnd();          // and
             //initNagative();     // ~     or later it will be -
             //initNot();          // not
-            initSin();          // sin
-            initCos();          // cos
-            initTan();          // tan
+            //initSin();          // sin
+            //initCos();          // cos
+            //initTan();          // tan
         }
 
 

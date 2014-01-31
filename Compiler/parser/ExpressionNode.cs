@@ -7,7 +7,7 @@ namespace Compiler
 {
     public abstract class ExpressionNode : Node
     {
-        internal string getReturnType();
+        public abstract string getReturnType();
 
     }
 }

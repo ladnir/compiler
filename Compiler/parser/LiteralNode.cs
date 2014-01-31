@@ -31,5 +31,15 @@ namespace Compiler.parser
 
             else throw new Exception("unknown literal at "+nameToken.locate());
         }
+
+        public override string getReturnType()
+        {
+            if (nameToken.getTokenType() == TokenType.INT) return "int";
+            if (nameToken.getTokenType() == TokenType.STRING) return "string";
+            if (nameToken.getTokenType() == TokenType.FLOAT) return "float";
+            if (nameToken.getTokenType() == TokenType.BOOL) return "bool";
+
+            throw new Exception("error  literal " + nameToken.locate());
+        }
     }
 }

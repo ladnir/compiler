@@ -25,5 +25,10 @@ namespace Compiler
         {
             return dec.getVarName();
         }
+
+        public override string getReturnType()
+        {
+            return dec.getDataType();
+        }
     }
 }

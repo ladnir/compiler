@@ -30,14 +30,18 @@ namespace Compiler
             Console.WriteLine("input:" + source);
 
             Tokenizer t = new Tokenizer();
-            //Parser p = new Parser();
+            Parser p = new Parser();
 
             Console.WriteLine("Tokenizing...");
             Token[] tokens = t.GetTokens(source);
             Console.WriteLine("Tokenized");
             foreach (Token tok in tokens) Console.WriteLine(tok.toString());
 
+            Node root = p.parseTokens(tokens);
 
+            string output = root.outputIBTL(0);
+
+            Console.WriteLine(output);
 
             Console.WriteLine("\n\nPress any key to close.");
 

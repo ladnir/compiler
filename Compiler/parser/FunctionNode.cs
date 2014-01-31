@@ -94,7 +94,7 @@ namespace Compiler
             for (int i = 0; i < parameters.Count; i++)
             {
                 if (i != 0) sb.Append(",");
-                sb.Append(cur.Value.outputIBTL());
+                sb.Append(cur.Value.outputIBTL(tabCount));
 
                 cur = cur.Next;
             }
@@ -162,6 +162,11 @@ namespace Compiler
         internal string getName()
         {
             return functionName.toString();
+        }
+
+        internal string getReturnType()
+        {
+            return returnType.getValue();
         }
     }
 }

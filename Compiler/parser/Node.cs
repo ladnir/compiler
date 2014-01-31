@@ -12,7 +12,7 @@ namespace Compiler
 
         public Node()
         {
-            throw new NotImplementedException();
+            
         }
 
         virtual public string outputIBTL(int tabCount)

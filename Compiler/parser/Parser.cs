@@ -110,14 +110,14 @@ namespace Compiler
 
             fn = new FunctionNode(returnType, functionName,parameterNames, parameterTypes,root);
 
-            // make sure the token is an closing brace
+            // make sure the token is an closing brace to close the data type list
             if (tokens[index].getValue() != "]") throw new Exception("error pf8 at token:" + tokens[index].locate());
             index++;
             
             // TODO : Need to add support for prototyping. if someone prototype this will throw an error.  <========================================
             // Make sure this function doesnt already exist. 
             if (root.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tokens[index].locate());
-            index++;
+            
 
             // Add the new function to the root node.
             root.addToScope(fn);
@@ -252,7 +252,6 @@ namespace Compiler
 
         private Node parseOp(LocalScope scope)
         {
-            OpNode op;
             Token opToken = tokens[index];
             index++;
 

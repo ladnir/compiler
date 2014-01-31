@@ -33,7 +33,7 @@ namespace Compiler
 
         internal string locate()
         {
-            return "  line>"+line + ", token>" + num;
+            return "  line>"+line + ", token>" + num +"  # "+value;
         }
     }
 
