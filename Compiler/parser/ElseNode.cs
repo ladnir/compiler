@@ -20,7 +20,7 @@ namespace Compiler.parser
             if (localVars.ContainsKey(name.getValue())) return true;
             if (scope.varInScope(name)) return true;
 
-            return false; 
+            return false;
         }
 
         public void addToScope(DeclarationNode dec)
