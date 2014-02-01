@@ -8,6 +8,7 @@ namespace Compiler
 {
     public class Parser
     {
+        bool debug = true;
         // TODO add boolean ops    &&, ||
         private static string[] Op1Tpyes = { "==", "!=", "<=", ">=", ">", "<" };
         private static string[] Op2Tpyes = { "+", "-" };
@@ -27,6 +28,9 @@ namespace Compiler
         /// <returns></returns>
         public Node parseTokens(Token[] tokens)
         {
+
+            debugEntering("begin");
+
             this.tokens = tokens;
             index = 0;
             length=tokens.Length;
@@ -63,6 +67,10 @@ namespace Compiler
         /// <returns></returns>
         private Node parseFunction(RootNode root)
         {
+
+
+            debugEntering("func");
+
             FunctionNode fn;
             Token returnType;
             Token functionName;
@@ -145,6 +153,9 @@ namespace Compiler
         /// <returns></returns>
         private LinkedList<Token> parseParameterTypes()
         {
+
+            debugEntering("param type");
+
             LinkedList<Token> types = new LinkedList<Token>();
 
             // loop until we find the closing brace.
@@ -170,6 +181,9 @@ namespace Compiler
         /// <returns></returns>
         private LinkedList<Token> parseParameterNames()
         {
+
+            debugEntering("param names");
+
             LinkedList<Token> names = new LinkedList<Token>();
 
             // loop until we find the closing brace.
@@ -195,6 +209,9 @@ namespace Compiler
         /// </summary>
         private LinkedList<Node> parseStatements(LocalScope scope)
         {
+
+            debugEntering("statements");           
+
             LinkedList<Node> children = new LinkedList<Node>();
 
             // loop until we see the closing brace. 
@@ -220,6 +237,10 @@ namespace Compiler
         /// </summary>
         private Node parseStatement(LocalScope scope)
         {
+
+            debugEntering("statement");
+            
+
             // make sure the token is an opening brace
             if (tokens[index].getValue() != "[") throw new Exception("error ps1 at token:" + tokens[index].locate());
             index++;
@@ -233,9 +254,6 @@ namespace Compiler
             else if (tokens[index].getTokenType() == TokenType.FUNCTION)
                 return parseBFunc(scope);
 
-            else if (tokens[index].getTokenType() == TokenType.OP)
-                return parseOp(scope);
-
             else if (tokens[index].getTokenType() == TokenType.REF)
                 return parseCall(scope);
 
@@ -247,11 +265,20 @@ namespace Compiler
 
         private Node parseBFunc(LocalScope scope)
         {
+
+
+            debugEntering("BFunc");
             throw new NotImplementedException();
         }
 
-        private Node parseOp(LocalScope scope)
+        private ExpressionNode parseOp(LocalScope scope)
         {
+
+
+            debugEntering("OP");
+
+            //if(tokens[index].getValue() != "[")
+            //    throw new Exception("error, parseOp1 at token:" + tokens[index].locate());
             Token opToken = tokens[index];
             index++;
 
@@ -266,6 +293,11 @@ namespace Compiler
             }
 
 
+
+            if (tokens[index].getValue() != "]")
+                throw new Exception("error, parseOp1 at token:" + tokens[index].locate());
+            index++;
+
             return  new OpNode(opToken, leftExpr, rightExpr);
 
            
@@ -274,6 +306,10 @@ namespace Compiler
 
         private bool isBinOp(Token opToken)
         {
+
+
+            debugEntering("isBinOp");
+
             string[] binops = { "+", "-", "/", "%", "=", ">", ">=", "<", "<=", "!=" };
             foreach (string s in binops)
             {
@@ -294,6 +330,9 @@ namespace Compiler
         /// <returns></returns>
         private Node parseConstruct(LocalScope scope)
         {
+
+            debugEntering("construct");
+
             //check the curent token for which kind of construct it is.
             if (tokens[index].getValue() == "while")
                 return parseWhileLoop(scope);
@@ -319,6 +358,9 @@ namespace Compiler
         /// <returns></returns>
         private Node parseIf(LocalScope scope)
         {
+
+            debugEntering("if");
+
             IfNode ifNode;
             ExpressionNode eval;
             LinkedList<Node> children;
@@ -386,6 +428,8 @@ namespace Compiler
         /// <returns></returns>
         private ElseNode parseElse(LocalScope scope)
         {
+            debugEntering("else");
+
             ElseNode elseNode = new ElseNode(scope);
             LinkedList<Node> children;
 
@@ -428,6 +472,9 @@ namespace Compiler
         /// <returns></returns>
         private Node parseWhileLoop(LocalScope scope)
         {
+
+            debugEntering("while");
+
             WhileLoopNode wl;
             ExpressionNode eval;
             LinkedList<Node> children;
@@ -460,87 +507,6 @@ namespace Compiler
             return wl;
         }
 
-        /// <summary>
-        /// <para> - </para>
-        /// <para> Expects the local scope that it lives in.        </para>    
-        /// <para> Expects the index to point at the for token.     </para>
-        /// <para> - </para>
-        /// <para> Sets the index after the closing brace.          </para>
-        /// <para> Returns a for loop node.                         </para>
-        /// </summary>
-        /// <param name="scope"></param>
-        //private Node parseForLoop(LocalScope scope)
-        //{
-        //    ForLoopNode fl;
-        //    Node assignment;
-        //    ExpressionNode eval;
-        //    ExpressionNode incrementer;
-        //    LinkedList<Node> children;
-
-        //    // check for the opening of the for loop
-        //    if (tokens[index].getValue() != "for")throw new Exception("error 31 at token:" + index++);
-        //    if (tokens[index].getValue() != "(") throw new Exception("error 32 at token:" + index++);
-     
-        //    // parse the optional assignment
-        //    if (tokens[index].getValue() != ";")
-        //    {
-        //        assignment = parseAssignment(scope);
-        //        index--; // so that we can check the semicolon. parseAssignment() increments index over it...
-        //    }else assignment = new EmptyNode();
-
-        //    // make sure we have a semicolon after the optional assignment
-        //    if (tokens[index].getValue() != ";") throw new Exception("error 33 at token:" + index++);
-
-        //    // get the evaluation tokens and parse them into a boolean node
-        //    Token[] exprList = getTokensToSemicolon();
-        //    eval = parseExpression(exprList,scope);
-
-        //    // check that the eval node returns a boolean
-        //    if (eval.isEmpty())  throw new Exception("error 35 at token:" + tokens[index].locate() );
-        //    if(eval.getReturnType() != "bool" )  throw new Exception("error 34 at token:" + tokens[index].locate() );
-
-        //    // get the optional incrementer expression and then parse it
-        //    exprList = getClosingTokens();
-        //    incrementer = parseExpression(exprList,scope);
-
-        //    //check that we have the closing brace and openning brace to state the forloop body
-        //    if (tokens[index].getValue() != ")") throw new Exception("error 36 at token:" + index++);
-        //    if (tokens[index].getValue() != "{") throw new Exception("error 37 at token:" + index++);
-
-        //    // create the forloop node so that the parse statements call will have a local scope to use
-        //    fl = new ForLoopNode(assignment,eval,incrementer,scope);
-
-        //    // get the for loop's statments and use it as the local scope
-        //    children = parseStatements(fl);
-
-        //    // add the children to the for loop
-        //    fl.addChildren(children);
-
-        //    // check for closing brace
-        //    if (tokens[index].getValue() != "}") throw new Exception("error 38 at token:" + index++);
-
-        //    return fl;
-        //}
-
-        ///// <summary>
-        ///// <para> - </para>
-        ///// <para> Sets index to point to a closing brace ) .                                               </para>
-        ///// <para> Returns a series of zero of more tokens starting at index and finishing before  ){ .     </para>
-        ///// </summary>
-        ///// <returns></returns>
-        //private Token[] getClosingTokens()
-        //{
-        //    LinkedList<Token> tl = new LinkedList<Token>();
-
-        //    while (tokens[index].getValue() != ")" && tokens[index + 1].getValue() != "{")
-        //    {
-        //        // if something goes wrong catch it. like there is a token between ){ or if one of them is missing
-        //        if (tokens[index].getValue() == "{" || tokens[index].getValue() == "}") throw new Exception("error 39 at token:" + tokens[index].locate() );
-        //        tl.AddLast(tokens[index++]);
-        //    }
-
-        //    return tl.ToArray();
-        //}
 
         /// <summary>
         /// <para> - </para>
@@ -554,6 +520,9 @@ namespace Compiler
         /// <returns></returns>
         private AssignmentNode parseAssignment(LocalScope scope)
         {
+
+            debugEntering("assignment");
+
             AssignmentNode assignment;
             ExpressionNode expr;
             Token varName;
@@ -578,6 +547,11 @@ namespace Compiler
 
             assignment = new AssignmentNode(varNode, expr);
 
+            // make sure its an assignment
+            if (tokens[index].getValue() != "]") throw new Exception("error pa1 at token:" + tokens[index].locate());
+            index++;
+
+
             return assignment;
         }
 
@@ -594,6 +568,10 @@ namespace Compiler
         /// <returns></returns>
         private Node parseLet(LocalScope scope)
         {
+
+
+            debugEntering("let");
+
             LetNode let = new LetNode();
             Token dataType;
             Token variableName;
@@ -603,14 +581,18 @@ namespace Compiler
             if (tokens[index].getTokenType() == TokenType.ASSIGNMENT ) throw new Exception("error pl1 at token:" + tokens[index].locate() );
             index++;
 
-            while (tokens[index].getValue() != "]") { 
+            while (tokens[index].getValue() != "]") {
+
+                // make sure its a open brace token.
+                if (tokens[index].getValue() != "[") throw new Exception("error pl6 at token:" + tokens[index].locate());
+                variableName = tokens[index++];
 
                 // make sure its a reference token and get its label.
-                if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tokens[index].locate() );
+                if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tokens[index].locate());
                 variableName = tokens[index++];
 
                  // check that its has a valid data type
-                if (tokens[index].getTokenType() == TokenType.DATATYPE ) throw new Exception("error pl3 at token:" + tokens[index].locate() );
+                if (tokens[index].getTokenType() != TokenType.DATATYPE ) throw new Exception("error pl3 at token:" + tokens[index].locate() );
                 dataType = tokens[index++];
 
 
@@ -629,6 +611,10 @@ namespace Compiler
 
                 let.addChild(dec);
             }
+
+            if (tokens[index].getValue() != "]") throw new Exception("error pl6 at token:" + tokens[index].locate());
+            index++;
+
             return let;   
         }
 
@@ -645,28 +631,36 @@ namespace Compiler
         /// <returns></returns>
         private ExpressionNode parseExpression(LocalScope scope)
         {
+
+            debugEntering("expr");
+
             ExpressionNode expr;
 
             // check for a composite expression.
             if (tokens[index].getValue() == "[")
             {
                 index++;
+                if (tokens[index].getTokenType() == TokenType.OP)
+                    expr =  parseOp(scope);
 
-                if(scope.funcInScope(tokens[index].getValue())){
+                else if(scope.funcInScope(tokens[index].getValue())){
                     expr = parseCall(scope);
                 }
                 else throw new Exception("error pex1 at token:" + tokens[index].locate());
+
+                
             }
 
             // check for a single literal.
             else if(tokens[index].isLiteral()){
                 expr = new LiteralNode(tokens[index]);
+                index++;
             }
 
             // check for a local variable.
             else if (scope.varInScope(tokens[index].getValue())){
                 expr = scope.getVarRef(tokens[index].getValue());
-
+                index++;
             }
             else throw new Exception("error pex2 at token:" + tokens[index].locate());
 
@@ -676,6 +670,12 @@ namespace Compiler
 
         private CallNode parseCall(LocalScope scope)
         {
+            debugEntering("call");
+            
+            if (!scope.funcInScope(tokens[index].getValue())) 
+                throw new Exception("error Function " + tokens[index].getValue() + " does not exist at " + tokens[index].locate());
+
+
             FunctionNode func = scope.getFuncRef(tokens[index].getValue());
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
 
@@ -695,5 +695,15 @@ namespace Compiler
             return call;
         }
 
+        public void debugEntering(string name)
+        {
+            if (debug) Console.WriteLine("entering  " + name + " at " + tokens[index].locate());
+
+        }
+        public void debugExit(string name)
+        {
+            if (debug) Console.WriteLine("Exiting  " + name + " at " + tokens[index].locate());
+
+        }
     }
 }

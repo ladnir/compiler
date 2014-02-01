@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class OpNode : Node
+    class OpNode : ExpressionNode
     {
         private Token opToken;
         private ExpressionNode leftExpr;
@@ -34,6 +34,18 @@ namespace Compiler.parser
             sb.Append(" ] ");
 
             return sb.ToString();
+        }
+
+        public override string getReturnType()
+        {
+            if (opToken.getValue() == "=" ||
+                opToken.getValue() == ">" ||
+                opToken.getValue() == "<" ||
+                opToken.getValue() == "<=" ||
+                opToken.getValue() == ">=" ||
+                opToken.getValue() == "!=") return "bool";
+
+            return leftExpr.getReturnType();
         }
     }
 }

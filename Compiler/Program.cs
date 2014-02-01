@@ -15,14 +15,15 @@ namespace Compiler
 
             source =  " [                                           \n";
             source += "     [let [myFunction i b][int int string]   \n";
-            source += "         [x int]                             \n";
+            source += "         [ let [x int] ]                     \n";
             source += "         [:= x [+ 3  i]]                     \n";
             source += "         [if  [>= x 23] [                    \n";
-            source += "             [stdout b]                      \n";
-            source += "             [return 1.0]                    \n";
+            source += "             [:= i x ]                       \n";
+            source += "             //[return 1.0]                  \n";
             source += "         ][//else                            \n";
-            source += "             [stdout \"hi\" ] //what up      \n";
-            source += "             [return 0]                      \n";
+            source += "             [:= i [ + x 1] ]                \n";
+            source += "             //[stdout \"hi\" ] //what up    \n";
+            source += "             //[return 0]                    \n";
             source += "         ]                                   \n";
             source += "     ]                                       \n";
             source += " ]                                           \n";
@@ -35,7 +36,7 @@ namespace Compiler
             Console.WriteLine("Tokenizing...");
             Token[] tokens = t.GetTokens(source);
             Console.WriteLine("Tokenized");
-            foreach (Token tok in tokens) Console.WriteLine(tok.toString());
+            //foreach (Token tok in tokens) Console.WriteLine(tok.toString());
 
             Node root = p.parseTokens(tokens);
 

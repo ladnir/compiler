@@ -30,9 +30,12 @@ namespace Compiler
 
             // add the parameters to the function.
             LinkedList<Token>.Enumerator types = parameterTypes.GetEnumerator();
+            Token[] hack = parameterTypes.ToArray<Token>();
+            int i = 0;
             foreach (Token name in parameterNames)
             {
-                ParamNode param = new ParamNode(types.Current, name);
+                
+                ParamNode param = new ParamNode(hack[i++], name);
                 types.MoveNext();
 
                 parameters.AddLast(param);
@@ -116,7 +119,7 @@ namespace Compiler
         public bool varInScope(string name)
         {
             if (localVars.ContainsKey(name)) return true;
-            if (root.varInScope(name)) return true;
+            //if (root.varInScope(name)) return true;
 
             return false;
         }

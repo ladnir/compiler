@@ -28,7 +28,7 @@ namespace Compiler
                 if (token != null)
                 {
                     list.AddLast(token);
-                    Console.WriteLine("token " + count++ + ":" + token.getValue());
+                   // Console.WriteLine("token " + count++ + ":" + token.getValue());
                 }
             }
 
