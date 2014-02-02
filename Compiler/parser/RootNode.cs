@@ -72,7 +72,11 @@ namespace Compiler
 
         public bool funcInScope(string token)
         {
-            return functions.ContainsKey(token); 
+            bool b =functions.ContainsKey(token); 
+            
+            if (Parser.debug) Console.WriteLine("Root funcInScope " + token +" "+b);
+           
+            return b;
         }
 
         public FunctionNode getFuncRef(string token)
@@ -82,6 +86,8 @@ namespace Compiler
 
         public void addToScope(FunctionNode func)
         {
+            if (Parser.debug) Console.WriteLine("Root adding func " + func.getName());
+           
             functions.Add(func.getName(), func);
         }
     }

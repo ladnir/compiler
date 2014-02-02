@@ -61,6 +61,7 @@ namespace Compiler
 
             sb.Append("] [ ");
 
+            sb.Append(returnType.getValue() + " ");
             cur = parameters.First;
             for (int i = 0; i < parameters.Count; i++)
             {
@@ -75,9 +76,10 @@ namespace Compiler
             for (int i = 0; i < children.Count; i++)
             {
                 sb.Append(Node.getTabs(tabCount) + child.Value.outputIBTL(tabCount + 1) + "\n");
+                child = child.Next;
             }
 
-            sb.Append(Node.getTabs(tabCount) + "]\n");
+            sb.Append(Node.getTabs(tabCount-1) + "]");
 
             return sb.ToString();
         }
@@ -164,7 +166,7 @@ namespace Compiler
 
         internal string getName()
         {
-            return functionName.toString();
+            return functionName.getValue();
         }
 
         internal string getReturnType()

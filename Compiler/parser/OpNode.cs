@@ -24,7 +24,7 @@ namespace Compiler.parser
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ " + opToken.getValue() + " " + leftExpr);
+            sb.Append("[ " + opToken.getValue() + " " + leftExpr.outputIBTL(tabCount) );
 
             if (rightExpr != null)
             {

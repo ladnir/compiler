@@ -12,12 +12,12 @@ namespace Compiler
         public ParamNode(Token paramType, Token paramName)
             : base(new DeclarationNode(paramType,paramName))
         {
-            // TODO: Complete member initialization
+            
         }
 
         public override string outputIBTL(int tabCount)
         {
-            throw new NotImplementedException();
+            return base.outputIBTL(tabCount);
         }
 
 

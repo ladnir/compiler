@@ -8,14 +8,8 @@ namespace Compiler
 {
     public class Parser
     {
-        bool debug = true;
-        // TODO add boolean ops    &&, ||
-        private static string[] Op1Tpyes = { "==", "!=", "<=", ">=", ">", "<" };
-        private static string[] Op2Tpyes = { "+", "-" };
-        private static string[] Op3Tpyes = { "*", "/", "%" };
-
-        private static string[] constructs = { "for", "while", "if" };
-        
+        public const bool debug = false;
+      
         private RootNode root;
         private int index,length;
         private Token[] tokens;
@@ -29,9 +23,9 @@ namespace Compiler
         public Node parseTokens(Token[] tokens)
         {
 
+            this.tokens = tokens;
             debugEntering("begin");
 
-            this.tokens = tokens;
             index = 0;
             length=tokens.Length;
             root = new RootNode();
@@ -48,6 +42,8 @@ namespace Compiler
                 root.addChild(function);
 
             }
+
+            debugExit("begin");
 
             // make sure the file ends with closing brce.
             if (tokens[index++].getValue() != "]")
@@ -125,8 +121,7 @@ namespace Compiler
             // TODO : Need to add support for prototyping. if someone prototype this will throw an error.  <========================================
             // Make sure this function doesnt already exist. 
             if (root.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tokens[index].locate());
-            
-
+        
             // Add the new function to the root node.
             root.addToScope(fn);
 
@@ -139,7 +134,8 @@ namespace Compiler
             // make sure there is a closing brace.
             if (tokens[index].getValue() != "]") throw new Exception("error 6 at token:" + tokens[index].locate());
             index++;
-            
+
+            debugExit("func");
             return fn;
         }
 
@@ -168,6 +164,8 @@ namespace Compiler
 
                 index++;
             }
+
+            debugExit("param types");
             return types;
         }
 
@@ -196,6 +194,8 @@ namespace Compiler
 
                 index++;
             }
+
+            debugExit("param names");
             return names;
         }
 
@@ -223,6 +223,8 @@ namespace Compiler
                 children.AddLast(stmt);
             }
 
+
+            debugExit("statements");
             // after the while loop return the statements.
             return children;
         }
@@ -257,7 +259,8 @@ namespace Compiler
             else if (tokens[index].getTokenType() == TokenType.REF)
                 return parseCall(scope);
 
-            
+
+            debugExit("statement");
             // something went wrong if we get here.
             throw new Exception("error ps2 at token:" + tokens[index].locate());
             
@@ -269,6 +272,8 @@ namespace Compiler
 
             debugEntering("BFunc");
             throw new NotImplementedException();
+
+            debugExit("bfunc");
         }
 
         private ExpressionNode parseOp(LocalScope scope)
@@ -298,10 +303,8 @@ namespace Compiler
                 throw new Exception("error, parseOp1 at token:" + tokens[index].locate());
             index++;
 
+            debugExit("op");
             return  new OpNode(opToken, leftExpr, rightExpr);
-
-           
-
         }
 
         private bool isBinOp(Token opToken)
@@ -313,8 +316,14 @@ namespace Compiler
             string[] binops = { "+", "-", "/", "%", "=", ">", ">=", "<", "<=", "!=" };
             foreach (string s in binops)
             {
-                if (opToken.getValue() == s) return true;
+                if (opToken.getValue() == s)
+                {
+                    debugExit("construct");
+                    return true;
+                }
             }
+
+            debugExit("isBinOp");
             return false;
         }
 
@@ -335,15 +344,24 @@ namespace Compiler
 
             //check the curent token for which kind of construct it is.
             if (tokens[index].getValue() == "while")
+            {
+                debugExit("construct");
                 return parseWhileLoop(scope);
+            }
             //else if (tokens[index].getValue() == "for")
             //    return parseForLoop(scope);
             else if (tokens[index].getValue() == "if")
+            {
+                debugExit("construct");
                 return parseIf(scope);
+            }
             else if (tokens[index].getValue() == "let")
-                return parseLet (scope);
+            {
+                debugExit("construct");
+                return parseLet(scope);
+            }
             else
-                throw new Exception("error, unknow construct at token:" + tokens[index].locate() );
+                throw new Exception("error, unknow construct at token:" + tokens[index].locate());
         }
 
         /// <summary>
@@ -408,11 +426,11 @@ namespace Compiler
 
             }
 
-            // check for closing brace for the over all if statement.
-            if (tokens[index].getValue() != "]") throw new Exception("error pi9 at token:" + tokens[index].locate());
+            // check for closing brace on the overall if statements.
+            if (tokens[index].getValue() != "]") throw new Exception("error pif3 at token:" + tokens[index].locate());
             index++;
 
-            
+            debugExit("if");
             return ifNode;
         }
 
@@ -435,11 +453,12 @@ namespace Compiler
 
             // check for the opening of the else statement.
             if (tokens[index].getValue() != "[") throw new Exception("error pel1 at token:" + tokens[index].locate());
-            index++;
+            
 
             // Parse multi statement else 
-            if (tokens[index].getValue() == "[")
+            if (tokens[index + 1].getValue() == "[")
             {
+                index++;
                 children = parseStatements(elseNode);
 
                 // check for closing brace.
@@ -456,7 +475,8 @@ namespace Compiler
             // add the children to the for loop.
             elseNode.addChildren(children);
 
-          
+
+            debugExit("else");
             return elseNode;
         }
 
@@ -504,6 +524,7 @@ namespace Compiler
             if (tokens[index].getValue() != "]") throw new Exception("error pw9 at token:" + tokens[index].locate());
             index++;
 
+            debugExit("while");
             return wl;
         }
 
@@ -534,7 +555,7 @@ namespace Compiler
             varName = tokens[index++];
 
             // check that the token is in scope
-            if (!scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + tokens[index].locate() + "  " + varName.getValue() + " is not in scope");
+            if (!scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + varName.locate() + " is not in scope");
 
             // parse the expression into Node(s)
             expr = parseExpression( scope);
@@ -552,6 +573,7 @@ namespace Compiler
             index++;
 
 
+            debugExit("assign");
             return assignment;
         }
 
@@ -615,6 +637,7 @@ namespace Compiler
             if (tokens[index].getValue() != "]") throw new Exception("error pl6 at token:" + tokens[index].locate());
             index++;
 
+            debugExit("let");
             return let;   
         }
 
@@ -664,6 +687,8 @@ namespace Compiler
             }
             else throw new Exception("error pex2 at token:" + tokens[index].locate());
 
+
+            debugExit("expr");
             return expr;
         }
 
@@ -674,10 +699,11 @@ namespace Compiler
             
             if (!scope.funcInScope(tokens[index].getValue())) 
                 throw new Exception("error Function " + tokens[index].getValue() + " does not exist at " + tokens[index].locate());
-
-
+           
             FunctionNode func = scope.getFuncRef(tokens[index].getValue());
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
+            
+            index++;
 
             foreach (ParamNode paramLabel in func.getParameters())
             {
@@ -692,17 +718,27 @@ namespace Compiler
 
             CallNode call = new CallNode(func, parameters);
 
+            // make sure its has closing brace
+            if (tokens[index].getValue() != "]") throw new Exception("error pcall 1 at token:" + tokens[index].locate());
+            index++;
+
+            debugExit("call");
             return call;
         }
 
         public void debugEntering(string name)
         {
-            if (debug) Console.WriteLine("entering  " + name + " at " + tokens[index].locate());
-
+            if (debug) {
+                Console.Write("entering  " + name + " at " );
+                Console.WriteLine( tokens[index].locate());
+            }
         }
         public void debugExit(string name)
         {
-            if (debug) Console.WriteLine("Exiting  " + name + " at " + tokens[index].locate());
+            if (debug) {
+                Console.Write("Exiting    " + name + " at " );//+ tokens[index].locate());
+                Console.WriteLine( tokens[index].locate());
+            }
 
         }
     }

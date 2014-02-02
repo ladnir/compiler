@@ -11,22 +11,7 @@ namespace Compiler
         static void Main(string[] args)
         {
 
-            string source;
-
-            source =  " [                                           \n";
-            source += "     [let [myFunction i b][int int string]   \n";
-            source += "         [ let [x int] ]                     \n";
-            source += "         [:= x [+ 3  i]]                     \n";
-            source += "         [if  [>= x 23] [                    \n";
-            source += "             [:= i x ]                       \n";
-            source += "             //[return 1.0]                  \n";
-            source += "         ][//else                            \n";
-            source += "             [:= i [ + x 1] ]                \n";
-            source += "             //[stdout \"hi\" ] //what up    \n";
-            source += "             //[return 0]                    \n";
-            source += "         ]                                   \n";
-            source += "     ]                                       \n";
-            source += " ]                                           \n";
+            string source = System.IO.File.ReadAllText(@"C:\Users\peter\Documents\Visual Studio 2013\Projects\Compiler\Compiler\input.ibtl");
 
             Console.WriteLine("input:" + source);
 
@@ -38,12 +23,18 @@ namespace Compiler
             Console.WriteLine("Tokenized");
             //foreach (Token tok in tokens) Console.WriteLine(tok.toString());
 
-            Node root = p.parseTokens(tokens);
+            try
+            {
+                Node root = p.parseTokens(tokens);
 
-            string output = root.outputIBTL(0);
+                string output = root.outputIBTL(1);
 
-            Console.WriteLine(output);
-
+                Console.WriteLine(output);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\n\n" + e.Message + "");
+            }
             Console.WriteLine("\n\nPress any key to close.");
 
             ConsoleKeyInfo key = Console.ReadKey();

@@ -21,15 +21,23 @@ namespace Compiler.parser
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ \n");
-
-            foreach (Node child in children)
+            if (children.Count > 1)
             {
-                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount + 1) + "\n");
+                sb.Append("[ // else \n");
+
+                foreach (Node child in children)
+                {
+                    sb.Append(Node.getTabs(tabCount + 1) + child.outputIBTL(tabCount + 1) + "\n");
+                }
+
+                sb.Append(Node.getTabs(tabCount) + "] \n");
             }
+            else
+            {
+                sb.Append("\n");
 
-            sb.Append(Node.getTabs(tabCount) + "] \n");
-
+                sb.Append(Node.getTabs(tabCount) + children.First.Value.outputIBTL(tabCount + 1) + "\n");
+            }
             return sb.ToString();
         }
 

@@ -1,0 +1,25 @@
+﻿[
+    [let [myFunction i b][int int string] 
+        [ let [x int] ]                   
+        [:= x [+ 3  i]]                   
+        [if [>= x 23] [                
+				[:= i x ] 
+				[if [>= x 23] [                
+						[:= i x ]   
+					]
+				]  
+			][  
+				[:= i [ + x 1] ]   
+			]             
+        ]             
+        [:= x [+ 3  i]]                   
+    ] 
+
+    [let [Main i ][int int ] 
+        [ let [n int] [s string] ]                   
+        
+		[:= s "hello"]
+
+		[:= n [myFunction i "hello" ]]
+    ]                                     
+]     					   

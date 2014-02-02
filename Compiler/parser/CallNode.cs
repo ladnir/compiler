@@ -21,7 +21,7 @@ namespace Compiler
 
         public override string outputIBTL(int tabCount)
         {
-            string output =  "[ " + func.outputIBTL(tabCount) ;
+            string output =  "[ " + func.getName() ;
 
             foreach (ExpressionNode expr in parameters)
             {

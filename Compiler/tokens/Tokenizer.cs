@@ -40,9 +40,9 @@ namespace Compiler
         {
             Token token;
 
-            while (source[index] == ' ' || source[index] == '\n')
+            while (isWhiteSpace())
             {
-                if (source[index] == '\n')
+                if (source[index].Equals('\n'))
                 {
                     num = 1;
                     line++;
@@ -51,7 +51,6 @@ namespace Compiler
                 if (index >= length) return null;
             }
 
-            
             if (isComment())
             {
                 skipComment();
@@ -63,10 +62,18 @@ namespace Compiler
             else if (isOperator())              token = getOperator();
             else if (isLetter(source[index]))   token = getWord();
             else if (isBrace(source[index]))    token = getBrace();
-            else throw new Exception("unknow char at line " + line + " , token " + num + 1);
+            else throw new Exception("unknow char at line " + line + " , token " + (num + 1) +" >"+source[index]+"< ");
 
             num++;
             return token;
+        }
+
+        private bool isWhiteSpace()
+        {
+            return (source[index] == ' ' ||
+                source[index].Equals('\r') ||
+                source[index].Equals('\n') ||
+                source[index].Equals('\t'));
         }
 
         private Token getAssignment()

@@ -29,18 +29,27 @@ namespace Compiler.parser
 
             sb.Append(eval.outputIBTL(tabCount));
 
-            sb.Append(" [\n");
-
-            foreach (Node child in children)
+            if (children.Count > 1)
             {
-                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount) + "\n");
+                sb.Append(" [\n");
+                foreach (Node child in children)
+                {
+                    sb.Append(Node.getTabs(tabCount + 1) + child.outputIBTL(tabCount + 2) + "\n");
 
+                }
+                sb.Append(Node.getTabs(tabCount) + "]");
             }
-            sb.Append("]");
+            else
+            {
+
+                sb.Append("\n");
+                sb.Append(Node.getTabs(tabCount ) + children.First.Value.outputIBTL(tabCount + 1) + "\n");
+            }
 
             if (elseNode != null) sb.Append(elseNode.outputIBTL(tabCount));
             else sb.Append("\n");
 
+            sb.Append(Node.getTabs(tabCount-1) + "]");
             return sb.ToString();
         }
 
