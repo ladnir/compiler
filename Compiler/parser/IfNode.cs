@@ -21,6 +21,13 @@ namespace Compiler.parser
             this.scope = scope;
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            if (children.Count > 1) throw new NotImplementedException();
+
+
+        }
+
         public override string outputIBTL(int tabCount)
         {
             StringBuilder sb = new StringBuilder();

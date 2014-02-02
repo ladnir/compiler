@@ -19,6 +19,10 @@ namespace Compiler
         {
             throw new NotImplementedException();
         }
+        virtual public void outputGForth(int tabCount, StringBuilder sb)
+        {
+            throw new NotImplementedException();
+        }
         virtual public string outputC(int tabCount)
         {
 

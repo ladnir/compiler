@@ -117,6 +117,24 @@ namespace Compiler
             return sb.ToString();
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            sb.Append(": " + functionName.getValue() + "\n");
+
+            foreach (ParamNode p in parameters)
+            {
+                sb.Append(Node.getTabs(tabCount + 1) + p.getVarName() + "\n");
+            }
+
+            foreach (Node n in children)
+            {
+                sb.Append(Node.getTabs(tabCount + 1));
+                n.outputGForth(tabCount,sb);
+                sb.Append("\n");
+            }
+
+            sb.Append("\n");
+        }
 
         public bool varInScope(string name)
         {

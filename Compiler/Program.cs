@@ -21,8 +21,7 @@ namespace Compiler
             Console.WriteLine("Tokenizing...");
             Token[] tokens = t.GetTokens(source);
             Console.WriteLine("Tokenized");
-            //foreach (Token tok in tokens) Console.WriteLine(tok.toString());
-
+            
             try
             {
                 Node root = p.parseTokens(tokens);

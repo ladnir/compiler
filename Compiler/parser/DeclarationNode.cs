@@ -23,6 +23,13 @@ namespace Compiler
             return "[ " + variableName.getValue() + " " + dataType.getValue() + " ]"; 
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            sb.Append("0 \n");
+
+            sb.Append(Node.getTabs(tabCount)+"{ " + variableName + "}");
+        }
+
         public virtual string getVarName()
         {
             return variableName.getValue();

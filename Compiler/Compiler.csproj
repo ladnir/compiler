@@ -65,6 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tokens\Token.cs" />
     <Compile Include="tokens\Tokenizer.cs" />
+    <Compile Include="tokenWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

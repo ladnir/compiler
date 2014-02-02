@@ -32,6 +32,10 @@ namespace Compiler
 
             return output;
         }
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            sb.Append(" "+func.getName()+" ");
+        }
 
         public override string getReturnType()
         {

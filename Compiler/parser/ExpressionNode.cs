@@ -9,9 +9,6 @@ namespace Compiler
     {
         public abstract string getReturnType();
 
-        public override string outputIBTL(int tabCount)
-        {
-            return base.outputIBTL(tabCount);
-        }
+       
     }
 }

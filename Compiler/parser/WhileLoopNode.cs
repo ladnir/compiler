@@ -22,17 +22,14 @@ namespace Compiler.parser
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ while \n");
-
-            sb.Append(eval.outputIBTL(tabCount));
-
+            sb.Append("[ while " + eval.outputIBTL(tabCount) +"\n");
 
             foreach (Node child in children)
             {
                 sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount) + "\n");
 
             }
-            sb.Append("]\n");
+            sb.Append(Node.getTabs(tabCount-1)+"]\n");
 
             return sb.ToString();
         }

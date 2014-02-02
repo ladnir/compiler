@@ -16,6 +16,11 @@ namespace Compiler.parser
             this.scope = scope;
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            
+        }
+
 
         public override string outputIBTL(int tabCount)
         {

@@ -23,5 +23,11 @@ namespace Compiler
 
             return output;
         }
+
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            expr.outputGForth(tabCount, sb);
+            sb.Append(varNode.getVarName());
+        }
     }
 }

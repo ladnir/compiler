@@ -8,11 +8,11 @@ namespace Compiler
 {
     public class Parser
     {
-        public const bool debug = false;
+        public const bool debug = true;
       
         private RootNode root;
         private int index,length;
-        private Token[] tokens;
+        private TokenWrapper tokens;
 
         /// <summary>
         /// Entery point.
@@ -23,7 +23,8 @@ namespace Compiler
         public Node parseTokens(Token[] tokens)
         {
 
-            this.tokens = tokens;
+            this.tokens = new TokenWrapper(tokens);
+
             debugEntering("begin");
 
             index = 0;
@@ -122,14 +123,15 @@ namespace Compiler
             // Make sure this function doesnt already exist. 
             if (root.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tokens[index].locate());
         
-            // Add the new function to the root node.
-            root.addToScope(fn);
-
+          
             // parse the internal function statements. provide the function node as a LocalScope object.
             children = parseStatements(fn);
 
             // add the children to the function node.
             fn.addChildren(children);
+
+            // Add the new function to the root node.
+            root.addToScope(fn);
 
             // make sure there is a closing brace.
             if (tokens[index].getValue() != "]") throw new Exception("error 6 at token:" + tokens[index].locate());
@@ -736,7 +738,7 @@ namespace Compiler
         public void debugExit(string name)
         {
             if (debug) {
-                Console.Write("Exiting    " + name + " at " );//+ tokens[index].locate());
+                Console.Write("Exiting   " + name + " at " );//+ tokens[index].locate());
                 Console.WriteLine( tokens[index].locate());
             }
 
