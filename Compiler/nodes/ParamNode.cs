@@ -14,7 +14,13 @@ namespace Compiler
         {
             
         }
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            //sb.Append("{ ");
+            base.outputGForth(tabCount, sb);
 
+            //sb.Append(" } ");
+        }
         public override string outputIBTL(int tabCount)
         {
             return base.outputIBTL(tabCount);

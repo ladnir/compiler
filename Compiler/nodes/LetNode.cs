@@ -7,6 +7,16 @@ namespace Compiler.parser
 {
     class LetNode :Node
     {
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+
+            foreach (Node child in children)
+            {
+                child.outputGForth(tabCount, sb);
+                sb.Append( "\n" + Node.getTabs(tabCount));
+            }
+        }
+
         public override string outputIBTL(int tabCount)
         {
             StringBuilder sb = new StringBuilder();

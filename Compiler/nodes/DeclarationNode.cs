@@ -17,7 +17,7 @@ namespace Compiler
             this.variableName = variableName;
 
         }
-
+         
         public override string outputIBTL(int tabCount)
         {
             return "[ " + variableName.getValue() + " " + dataType.getValue() + " ]"; 
@@ -25,9 +25,9 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            sb.Append("0 \n");
+            sb.Append("0 ");
 
-            sb.Append(Node.getTabs(tabCount)+"{ " + variableName + "}");
+            sb.Append("{ " + variableName.getValue() + " }");
         }
 
         public virtual string getVarName()

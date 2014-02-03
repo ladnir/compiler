@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Compiler.parser;
 
 namespace Compiler
 {
-    public class FunctionNode : Node , LocalScope
+    public class UserFunctionNode : Node , ILocalScopeNode ,IFunctionNode
     {
         private LinkedList<ParamNode> parameters;
 
@@ -15,9 +16,9 @@ namespace Compiler
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
         private RootNode root;
 
-        public FunctionNode(Token returnType, Token functionName, LinkedList<Token> parameterNames, LinkedList<Token> parameterTypes,RootNode root)
+        public UserFunctionNode(Token returnType, Token functionName, LinkedList<Token> parameterNames, LinkedList<Token> parameterTypes,RootNode root)
         {
-            
+            //UserFunctionNode std = new StdoutNode();
             this.parameters = new LinkedList<ParamNode>();
 
             this.root = root;
@@ -29,19 +30,23 @@ namespace Compiler
                 throw new Exception("error fn1, paramiter name count doesnt match paramter type count for function "+functionName.getValue() );
 
             // add the parameters to the function.
-            LinkedList<Token>.Enumerator types = parameterTypes.GetEnumerator();
+            //LinkedList<Token>.Enumerator types = parameterTypes.GetEnumerator();
             Token[] hack = parameterTypes.ToArray<Token>();
             int i = 0;
             foreach (Token name in parameterNames)
             {
                 
                 ParamNode param = new ParamNode(hack[i++], name);
-                types.MoveNext();
+              //  types.MoveNext();
 
                 parameters.AddLast(param);
                 localVars.Add(name.getValue(), param);
             }
         }
+
+        //============================================================================
+        // output function
+        //============================================================================
 
         override public string outputIBTL(int tabCount)
         {
@@ -119,23 +124,52 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            sb.Append(": " + functionName.getValue() + "\n");
+            if (Parser.debug) Console.Write(functionName.getValue());
+
+            sb.Append(": " + functionName.getValue() + " { ");
 
             foreach (ParamNode p in parameters)
             {
-                sb.Append(Node.getTabs(tabCount + 1) + p.getVarName() + "\n");
+                
+                sb.Append(p.getVarName() + " ");
             }
 
+            sb.Append("}\n");
             foreach (Node n in children)
             {
+
+                if (Parser.debug) Console.Write(" t ");
+
                 sb.Append(Node.getTabs(tabCount + 1));
-                n.outputGForth(tabCount,sb);
+                n.outputGForth(tabCount+1,sb);
                 sb.Append("\n");
             }
 
-            sb.Append("\n");
+            sb.Append(" ; \n");
         }
 
+        //============================================================================
+        // FunctionNode function
+        //============================================================================
+
+        IEnumerable<ParamNode> IFunctionNode.getParameters()
+        {
+            return parameters;
+        }
+
+        string IFunctionNode.getName()
+        {
+            return functionName.getValue();
+        }
+
+        string IFunctionNode.getReturnType()
+        {
+            return returnType.getValue();
+        }
+        //============================================================================
+        // Scoping function
+        //============================================================================
+        
         public bool varInScope(string name)
         {
             if (localVars.ContainsKey(name)) return true;
@@ -167,29 +201,16 @@ namespace Compiler
             return root.funcInScope(token);
         }
 
-        public FunctionNode getFuncRef(string token)
+        public IFunctionNode getFuncRef(string token)
         {
             return root.getFuncRef(token);
         }
 
-        public void addToScope(FunctionNode func)
+        public void addToScope(UserFunctionNode func)
         {
             root.addToScope(func);
         }
 
-        internal IEnumerable<ParamNode> getParameters()
-        {
-            return parameters;
-        }
 
-        internal string getName()
-        {
-            return functionName.getValue();
-        }
-
-        internal string getReturnType()
-        {
-            return returnType.getValue();
-        }
     }
 }

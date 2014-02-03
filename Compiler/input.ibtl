@@ -1,11 +1,11 @@
 ﻿[
-    [let [myFunction i b][int int string] 
+    [let [myFunction i b][int int int] 
         [ let [x int] ]                   
         [:= x [+ 3  i]]     
-		[:= x [myFunction x "hello" ]]
+		//[:= x [myFunction x "hello" ]]
 		              
         [if [>= x 23] [                
-				[:= i x ] 
+				//[:= i x ] 
 				[if [>= x 23] [                
 						[:= i x ]   
 					]
@@ -20,12 +20,14 @@
     [let [Main i ][int int ] 
         [ let [n int] [s string] ]                   
         
-		[:= s "hello"]
-
-		[:= n [myFunction i "hello" ]]
-		[while true 
+		//[:= s "hello"]
+		[stdout i]
+		[:= n [myFunction i 9 ]]
+		[while [< i 10 ]
 			[:= i [+ i i]]
+			[stdout i]
+
 		]
-		[return 1]
+		//[return 1]
     ]                                     
 ]

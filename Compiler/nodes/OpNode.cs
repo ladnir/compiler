@@ -19,6 +19,15 @@ namespace Compiler.parser
             this.rightExpr = rightExpr;
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            if (Parser.debug) Console.Write(opToken.getValue() + " ");
+            
+            leftExpr.outputGForth(tabCount, sb);
+            if(rightExpr!= null) rightExpr.outputGForth(tabCount, sb);
+
+            sb.Append(" " + opToken.getValue());
+        }
 
         public override string outputIBTL(int tabCount)
         {

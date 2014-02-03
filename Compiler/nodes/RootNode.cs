@@ -5,9 +5,10 @@ using System.Text;
 
 namespace Compiler
 {
-    public class RootNode : Node , LocalScope
+    public class RootNode : Node , ILocalScopeNode
     {
-        Dictionary<string, FunctionNode> functions = new Dictionary<string, FunctionNode>();
+        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
+        Dictionary<string, IFunctionNode> builtInFunctions = new Dictionary<string, IFunctionNode>();
 
         public RootNode()
         {
@@ -36,8 +37,21 @@ namespace Compiler
             //initSin();          // sin
             //initCos();          // cos
             //initTan();          // tan
+            //initStdout();         // stdout
         }
 
+        //private void initStdout()
+        //{
+        //    builtInFunctions.Add("stdput", new StdoutNode());
+        //}
+
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            foreach (Node n in children)
+                n.outputGForth(tabCount, sb);
+
+            sb.Append("\n\n 1 Main");
+        }
 
         public override string outputIBTL(int tabCount)
         {
@@ -75,20 +89,25 @@ namespace Compiler
             bool b =functions.ContainsKey(token); 
             
             if (Parser.debug) Console.WriteLine("Root funcInScope " + token +" "+b);
-           
+
+            if (!b) builtInFunctions.ContainsKey(token);
+
             return b;
         }
 
-        public FunctionNode getFuncRef(string token)
+        public IFunctionNode getFuncRef(string token)
         {
-            return functions[token];
+            if(functions.ContainsKey(token))return functions[token];
+            return builtInFunctions[token];
+           
         }
 
-        public void addToScope(FunctionNode func)
+        public void addToScope(UserFunctionNode func)
         {
-            if (Parser.debug) Console.WriteLine("Root adding func " + func.getName());
+            IFunctionNode ifunc = (IFunctionNode)func;
+            if (Parser.debug) Console.WriteLine("Root adding func " + ifunc.getName());
            
-            functions.Add(func.getName(), func);
+            functions.Add(ifunc.getName(), func);
         }
     }
 }

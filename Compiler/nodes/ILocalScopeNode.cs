@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compiler
 {
-    public interface LocalScope
+    public interface ILocalScopeNode
     {
         // vars
         bool varInScope(string name);
@@ -16,8 +16,8 @@ namespace Compiler
 
         // functions
         bool funcInScope(string token);
-        FunctionNode getFuncRef(string name);
-        void addToScope(FunctionNode func);
+        IFunctionNode getFuncRef(string name);
+        void addToScope(UserFunctionNode func);
 
 
 

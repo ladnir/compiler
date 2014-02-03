@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Compiler.parser
+namespace Compiler
 {
-    public class ForLoopNode : Node , LocalScope
+    public class ForLoopNode : Node , ILocalScopeNode
     {
         private AssignmentNode assignment;
         private ExpressionNode eval;
         private ExpressionNode incrementer;
-        private LocalScope scope;
+        private ILocalScopeNode scope;
         private Node assignment1;
 
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
-        public ForLoopNode(Node assignment1, ExpressionNode eval, ExpressionNode incrementer, LocalScope parentScope)
+        public ForLoopNode(Node assignment1, ExpressionNode eval, ExpressionNode incrementer, ILocalScopeNode parentScope)
         {
             // TODO: Complete member initialization
             this.assignment1 = assignment1;
@@ -55,12 +55,12 @@ namespace Compiler.parser
             return scope.funcInScope(token);
         }
 
-        public FunctionNode getFuncRef(string token)
+        public IFunctionNode getFuncRef(string token)
         {
             return scope.getFuncRef(token);
         }
 
-        public void addToScope(FunctionNode func)
+        public void addToScope(UserFunctionNode func)
         {
             scope.addToScope(func);
         }

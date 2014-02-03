@@ -5,17 +5,34 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class WhileLoopNode : Node , LocalScope
+    class WhileLoopNode : Node , ILocalScopeNode
     {
         private ExpressionNode eval;
-        private LocalScope scope;
+        private ILocalScopeNode scope;
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
-        public WhileLoopNode(ExpressionNode eval, LocalScope scope)
+        public WhileLoopNode(ExpressionNode eval, ILocalScopeNode scope)
         {
             // TODO: Complete member initialization
             this.eval = eval;
             this.scope = scope;
+        }
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            if (Parser.debug) Console.Write(" while \n");
+            
+            sb.Append("begin \n"+Node.getTabs(tabCount));
+            eval.outputGForth(tabCount, sb);
+            sb.Append(" while \n");
+
+            foreach (Node n in children)
+            {
+                sb.Append(Node.getTabs(tabCount + 1));
+                n.outputGForth(tabCount, sb);
+                sb.Append("\n");
+            }
+
+            sb.Append(Node.getTabs(tabCount) + "repeat \n");
         }
 
         public override string outputIBTL(int tabCount)
@@ -26,7 +43,7 @@ namespace Compiler.parser
 
             foreach (Node child in children)
             {
-                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount) + "\n");
+                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount) + " \n");
 
             }
             sb.Append(Node.getTabs(tabCount-1)+"]\n");
@@ -65,12 +82,12 @@ namespace Compiler.parser
             return scope.funcInScope(token);
         }
 
-        public FunctionNode getFuncRef(string token)
+        public IFunctionNode getFuncRef(string token)
         {
             return scope.getFuncRef(token);
         }
 
-        public void addToScope(FunctionNode func)
+        public void addToScope(UserFunctionNode func)
         {
             scope.addToScope(func);
         }

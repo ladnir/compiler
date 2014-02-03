@@ -7,11 +7,11 @@ namespace Compiler
 {
     public class CallNode : ExpressionNode
     {
-        private FunctionNode func;
+        private IFunctionNode func;
         private LinkedList<ExpressionNode> parameters;
 
 
-        public CallNode(FunctionNode func, LinkedList<ExpressionNode> parameters1)
+        public CallNode(IFunctionNode func, LinkedList<ExpressionNode> parameters1)
         {
             // TODO: Complete member initialization
             this.func = func;
@@ -21,6 +21,8 @@ namespace Compiler
 
         public override string outputIBTL(int tabCount)
         {
+            
+
             string output =  "[ " + func.getName() ;
 
             foreach (ExpressionNode expr in parameters)
@@ -34,7 +36,20 @@ namespace Compiler
         }
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            sb.Append(" "+func.getName()+" ");
+            if (Parser.debug) Console.Write(" " + func.getName() + " ");
+
+            if (func.getName() == "stdout")
+            {
+                ((StdoutNode)(IFunctionNode)func).outputGForth(tabCount, sb);
+                
+            }else{
+
+                foreach (Node n in parameters)
+                {
+                    n.outputGForth(tabCount, sb);
+                }
+                sb.Append(" "+func.getName()+" ");
+            }
         }
 
         public override string getReturnType()

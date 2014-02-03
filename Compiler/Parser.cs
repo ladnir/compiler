@@ -29,6 +29,8 @@ namespace Compiler
 
             index = 0;
             length=tokens.Length;
+
+
             root = new RootNode();
 
 
@@ -68,7 +70,7 @@ namespace Compiler
 
             debugEntering("func");
 
-            FunctionNode fn;
+            UserFunctionNode fn;
             Token returnType;
             Token functionName;
             LinkedList<Token> parameterNames;
@@ -113,7 +115,7 @@ namespace Compiler
             // parse the parameters names. This should return with index pointing to the closing brace.
             parameterTypes = parseParameterTypes();
 
-            fn = new FunctionNode(returnType, functionName,parameterNames, parameterTypes,root);
+            fn = new UserFunctionNode(returnType, functionName,parameterNames, parameterTypes,root);
 
             // make sure the token is an closing brace to close the data type list
             if (tokens[index].getValue() != "]") throw new Exception("error pf8 at token:" + tokens[index].locate());
@@ -209,7 +211,7 @@ namespace Compiler
         /// <para> Sets the index TO the closing brace ] .                     </para>
         /// <para> Returns a LinkedList of all statements.                              </para>
         /// </summary>
-        private LinkedList<Node> parseStatements(LocalScope scope)
+        private LinkedList<Node> parseStatements(ILocalScopeNode scope)
         {
 
             debugEntering("statements");           
@@ -239,7 +241,7 @@ namespace Compiler
         /// <para> Sets the index AFTER the closing brace ] .                       </para>
         /// <para> Returns a statement.                                             </para>
         /// </summary>
-        private Node parseStatement(LocalScope scope)
+        private Node parseStatement(ILocalScopeNode scope)
         {
 
             debugEntering("statement");
@@ -268,17 +270,27 @@ namespace Compiler
             
         }
 
-        private Node parseBFunc(LocalScope scope)
+
+        private Node parseBFunc(ILocalScopeNode scope)
         {
-
-
             debugEntering("BFunc");
+
+            if (tokens[index].getValue() == "stdout")
+            {
+                index++;
+                ExpressionNode expr = parseExpression(scope);
+
+                if(tokens[index].getValue()!= "]") throw new Exception("error, expenting a closing brace after stdout call at"+tokens[index].locate());
+                index++;
+
+                return new StdoutNode(expr);
+            }
             throw new NotImplementedException();
 
             debugExit("bfunc");
         }
 
-        private ExpressionNode parseOp(LocalScope scope)
+        private ExpressionNode parseOp(ILocalScopeNode scope)
         {
 
 
@@ -339,7 +351,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private Node parseConstruct(LocalScope scope)
+        private Node parseConstruct(ILocalScopeNode scope)
         {
 
             debugEntering("construct");
@@ -376,7 +388,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private Node parseIf(LocalScope scope)
+        private Node parseIf(ILocalScopeNode scope)
         {
 
             debugEntering("if");
@@ -446,7 +458,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private ElseNode parseElse(LocalScope scope)
+        private ElseNode parseElse(ILocalScopeNode scope)
         {
             debugEntering("else");
 
@@ -492,7 +504,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private Node parseWhileLoop(LocalScope scope)
+        private Node parseWhileLoop(ILocalScopeNode scope)
         {
 
             debugEntering("while");
@@ -541,7 +553,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private AssignmentNode parseAssignment(LocalScope scope)
+        private AssignmentNode parseAssignment(ILocalScopeNode scope)
         {
 
             debugEntering("assignment");
@@ -590,7 +602,7 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private Node parseLet(LocalScope scope)
+        private Node parseLet(ILocalScopeNode scope)
         {
 
 
@@ -654,7 +666,7 @@ namespace Compiler
         /// <param name="exprList"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private ExpressionNode parseExpression(LocalScope scope)
+        private ExpressionNode parseExpression(ILocalScopeNode scope)
         {
 
             debugEntering("expr");
@@ -695,14 +707,14 @@ namespace Compiler
         }
 
 
-        private CallNode parseCall(LocalScope scope)
+        private CallNode parseCall(ILocalScopeNode scope)
         {
             debugEntering("call");
             
             if (!scope.funcInScope(tokens[index].getValue())) 
                 throw new Exception("error Function " + tokens[index].getValue() + " does not exist at " + tokens[index].locate());
            
-            FunctionNode func = scope.getFuncRef(tokens[index].getValue());
+            IFunctionNode func = scope.getFuncRef(tokens[index].getValue());
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
             
             index++;

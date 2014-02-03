@@ -16,6 +16,12 @@ namespace Compiler
             this.dec = dec;
         }
 
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            if (Parser.debug) Console.Write(dec.getVarName()+" ");
+            
+            sb.Append( dec.getVarName() + " ");
+        }
         public override string outputIBTL(int tabCount)
         {
             return dec.getVarName();
