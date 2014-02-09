@@ -9,6 +9,7 @@ namespace Compiler
     {
         Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
         Dictionary<string, IFunctionNode> builtInFunctions = new Dictionary<string, IFunctionNode>();
+        Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
         public RootNode()
         {
@@ -71,17 +72,27 @@ namespace Compiler
 
         public bool varInScope(string name)
         {
-            throw new NotImplementedException();
+            if (localVars.ContainsKey(name)) return true;
+
+            return false;
+        }
+
+        public void addToScope(DeclarationNode dec)
+        {
+            if (varInScope(dec.getVarName()))
+                throw new Exception("error ifn1 at " + dec.getVarName());
+
+            VariableNode newVar = new VariableNode(dec);
+
+            localVars.Add(dec.getVarName(), newVar);
+
         }
 
         public VariableNode getVarRef(string token)
         {
-            throw new NotImplementedException();
-        }
-
-        public void addToScope(DeclarationNode localVar)
-        {
-            throw new NotImplementedException();
+            
+            return localVars[token];
+            
         }
 
         public bool funcInScope(string token)

@@ -14,14 +14,18 @@ namespace Compiler
         private Token returnType;
         private Token functionName;
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
-        private RootNode root;
+        private ILocalScopeNode scope;
 
-        public UserFunctionNode(Token returnType, Token functionName, LinkedList<Token> parameterNames, LinkedList<Token> parameterTypes,RootNode root)
+        public UserFunctionNode(Token returnType, 
+                                Token functionName, 
+                                LinkedList<Token> parameterNames, 
+                                LinkedList<Token> parameterTypes,
+                                ILocalScopeNode scope)
         {
             //UserFunctionNode std = new StdoutNode();
             this.parameters = new LinkedList<ParamNode>();
 
-            this.root = root;
+            this.scope = scope;
             this.returnType = returnType;
             this.functionName = functionName;
 
@@ -193,22 +197,22 @@ namespace Compiler
         {
             if (localVars.ContainsKey(token))
                 return localVars[token];
-            else return root.getVarRef(token);
+            else return scope.getVarRef(token);
         }
 
         public bool funcInScope(string token)
         {
-            return root.funcInScope(token);
+            return scope.funcInScope(token);
         }
 
         public IFunctionNode getFuncRef(string token)
         {
-            return root.getFuncRef(token);
+            return scope.getFuncRef(token);
         }
 
         public void addToScope(UserFunctionNode func)
         {
-            root.addToScope(func);
+            scope.addToScope(func);
         }
 
 

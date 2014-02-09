@@ -10,6 +10,7 @@ namespace Compiler.parser
         private ILocalScopeNode scope;
 
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
+        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
 
         public ElseNode(ILocalScopeNode scope)
         {
@@ -82,17 +83,21 @@ namespace Compiler.parser
 
         public bool funcInScope(string token)
         {
+            if (functions.ContainsKey(token)) return true;
             return scope.funcInScope(token);
         }
 
         public IFunctionNode getFuncRef(string token)
         {
+            if (functions.ContainsKey(token)) return functions[token];
             return scope.getFuncRef(token);
         }
 
         public void addToScope(UserFunctionNode func)
         {
-            scope.addToScope(func);
+            IFunctionNode ifunc = (IFunctionNode)func;
+            functions.Add(ifunc.getName(), ifunc);
+            //scope.addToScope(func);
         }
     }
 }

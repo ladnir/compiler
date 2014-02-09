@@ -11,8 +11,83 @@ namespace Compiler
         public const bool debug = true;
       
         private RootNode root;
-        private int index,length;
-        private TokenWrapper tokens;
+        private Tokenizer tok;
+
+        public Node parseT(Tokenizer t)
+        {
+            tok = t;
+            RootNode root = new RootNode();
+            debugEntering("parseT");
+
+            // make sure the file starts with an opening brace.
+            if (tok.peep().getValue() != "[")
+                throw new Exception("error pT1 at token:" + tok.peep().locate());
+            tok.pop();
+            if(tok.peep().getValue() !="]"){
+                root.addChild( parseS(root));
+               
+            }
+
+            // make sure the file ends with closing brce.
+            if (tok.peep().getValue() != "]")
+                throw new Exception("error pT2 at token:" + tok.peep().locate());
+
+            debugExit("parseT");
+            tok.pop();
+            
+            return root;
+        }
+
+        private Node parseS(ILocalScopeNode scope)
+        {
+            debugEntering("parseS");
+            SNode s = new SNode();
+
+           
+            while (tok.peep().getValue() != "]") // parse until we see a closing brace for parent
+            {
+                if (tok.peep().getValue() == "[") 
+                    // S' has an open brace. can either be another S or an assigment, binop,unop or stmts
+                {
+                    tok.pop();           
+         
+                    // check to see if the open brace belongs to a oper/stmts
+                    if (tok.peep().getTokenType() == TokenType.ASSIGNMENT)
+                        s.addChild(parseAssignment(scope));
+                    else if (tok.peep().getTokenType() == TokenType.CONSTRUCT)
+                        s.addChild(parseConstruct(scope));
+                    else if (tok.peep().getTokenType() == TokenType.OP)
+                        s.addChild(parseOp(scope));
+
+                    else // ok, We now know that the open brace belongs to S
+                    {
+                        Console.WriteLine("found a nesting");
+                        s.setBraces(); // let S know it has braces.
+                        s.addChild(parseS(scope)); // and recurs
+
+                        if (tok.peep().getValue() != "]")
+                            throw new Exception("error pS2 at token:" + tok.peep().locate());
+
+                        tok.pop();
+                    }
+
+                } // S does not have an openbrace brace. we can assume its wither a refernce or a literal
+                else if (tok.peep().getTokenType() == TokenType.REF)
+                    s.addChild(parseExpression(scope));
+                else if (tok.peep().isLiteral())
+                    s.addChild(new LiteralNode(tok.pop()));
+                else
+                {
+                    throw new Exception("error pS1 ,unknown tokens at " + tok.peep().locate());
+                }
+                
+            } 
+            
+
+
+            debugExit("parseS");
+            return s;
+        }
 
         /// <summary>
         /// Entery point.
@@ -20,37 +95,35 @@ namespace Compiler
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
-        public Node parseTokens(Token[] tokens)
+        private Node parseTokens(Tokenizer t)
         {
 
-            this.tokens = new TokenWrapper(tokens);
+            this.tok = t;
 
             debugEntering("begin");
-
-            index = 0;
-            length=tokens.Length;
 
 
             root = new RootNode();
 
 
             // make sure the file starts with an opening brace.
-            if(tokens[index++].getValue() != "[")
-                throw new Exception("error pt1 at token:" + tokens[index].locate());
+            if(tok.pop().getValue() != "[")
+                throw new Exception("error pt1 at token:" + tok.peep().locate());
 
             // parse functions. still need to add code for gobal vars.
-            while (index < length - 1)
+            while (tok.peep().getValue() == "[")
             {
-                Node function = parseFunction(root);
-                root.addChild(function);
+                throw new NotImplementedException();
+                //Node function = parseFunction(root);
+                //root.addChild(function);
 
             }
 
             debugExit("begin");
 
             // make sure the file ends with closing brce.
-            if (tokens[index++].getValue() != "]")
-                throw new Exception("error pt2 at token:" + tokens[index].locate());
+            if (tok.pop().getValue() != "]")
+                throw new Exception("error pt2 at token:" + tok.peep().locate());
 
             return root;
         }
@@ -60,11 +133,11 @@ namespace Compiler
         /// <para> Expects index to point to the return type of the function.</para>
         /// <para> -  </para>
         /// <para> Add the function to the symble table.         </para>
-        /// <para> sets the index to the token after the }       </para>
+        /// <para> sets the index to the token on the ]          </para>
         /// <para> Returns a node containing the function.       </para>
         /// </summary>
         /// <returns></returns>
-        private Node parseFunction(RootNode root)
+        private Node parseFunction(Token functionName,ILocalScopeNode scope)
         {
 
 
@@ -72,58 +145,37 @@ namespace Compiler
 
             UserFunctionNode fn;
             Token returnType;
-            Token functionName;
             LinkedList<Token> parameterNames;
             LinkedList<Token> parameterTypes;
             LinkedList<Node> children;
-
-            // TODO make sure this let is a function let.
-            
-            // make sure the token is an opening brace
-            if (tokens[index].getValue() != "[") throw new Exception("error pf1 at token:" + tokens[index].locate());
-            index++;
-
-            // make sure the token is a let statement.
-            if (tokens[index].getValue() != "let") throw new Exception("error pf2 at token:" + tokens[index].locate());
-            index++;
-
-            // make sure the token is an opening brace
-            if (tokens[index].getValue() != "[") throw new Exception("error pf3 at token:" + tokens[index].locate());
-            index++;
-
-            // make sure the next token is a refernce type that can be used as a name.
-            if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error pf4 at token:" + tokens[index].locate());
-
-            // get the name and construct the function node.
-            functionName = tokens[index++];
 
             // parse the parameters names. This should return with index pointing to the closing brace.
             parameterNames = parseParameterNames();
 
             // make sure the token is an closing brace
-            if (tokens[index].getValue() != "]") throw new Exception("error pf5 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pf5 at token:" + tok.peep().locate());
+            tok.pop();
 
             // make sure the token is an opening brace
-            if (tokens[index].getValue() != "[") throw new Exception("error pf6 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "[") throw new Exception("error pf6 at token:" + tok.peep().locate());
+            tok.pop();
 
             // make sure the token is a return type ( i.e. int, bool , ... ) .
-            if ( tokens[index].getTokenType() != TokenType.DATATYPE ) throw new Exception("error pf7 at token:" + tokens[index].locate() );
-            returnType = tokens[index++];
+            if ( tok.peep().getTokenType() != TokenType.DATATYPE ) throw new Exception("error pf7 at token:" + tok.peep().locate() );
+            returnType = tok.pop();;
 
             // parse the parameters names. This should return with index pointing to the closing brace.
             parameterTypes = parseParameterTypes();
 
-            fn = new UserFunctionNode(returnType, functionName,parameterNames, parameterTypes,root);
+            fn = new UserFunctionNode(returnType, functionName,parameterNames, parameterTypes,scope);
 
             // make sure the token is an closing brace to close the data type list
-            if (tokens[index].getValue() != "]") throw new Exception("error pf8 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pf8 at token:" + tok.peep().locate());
+            tok.pop();
             
             // TODO : Need to add support for prototyping. if someone prototype this will throw an error.  <========================================
             // Make sure this function doesnt already exist. 
-            if (root.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tokens[index].locate());
+            if (scope.funcInScope(functionName.getValue() )) throw new Exception("error pf9 at token:" + tok.peep().locate());
         
           
             // parse the internal function statements. provide the function node as a LocalScope object.
@@ -133,11 +185,11 @@ namespace Compiler
             fn.addChildren(children);
 
             // Add the new function to the root node.
-            root.addToScope(fn);
+            scope.addToScope(fn);
 
             // make sure there is a closing brace.
-            if (tokens[index].getValue() != "]") throw new Exception("error 6 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error 6 at token:" + tok.peep().locate());
+            
 
             debugExit("func");
             return fn;
@@ -159,14 +211,14 @@ namespace Compiler
             LinkedList<Token> types = new LinkedList<Token>();
 
             // loop until we find the closing brace.
-            while (tokens[index].getValue() != "]")
+            while (tok.peep().getValue() != "]")
             {
                 // make sure the token has refernce type.
-                if (tokens[index].getTokenType() != TokenType.DATATYPE) throw new Exception("error ppn1 at token:" + tokens[index].locate());
+                if (tok.peep().getTokenType() != TokenType.DATATYPE) throw new Exception("error ppn1 at token:" + tok.peep().locate());
 
-                types.AddLast(tokens[index]);
+                types.AddLast(tok.peep());
 
-                index++;
+                tok.pop();
             }
 
             debugExit("param types");
@@ -189,14 +241,14 @@ namespace Compiler
             LinkedList<Token> names = new LinkedList<Token>();
 
             // loop until we find the closing brace.
-            while (tokens[index].getValue() != "]")
+            while (tok.peep().getValue() != "]")
             {
                 // make sure the token has refernce type.
-                if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error ppn1 at token:" + tokens[index].locate());
+                if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error ppn1 at token:" + tok.peep().locate());
 
-                names.AddLast(tokens[index]);
+                names.AddLast(tok.peep());
 
-                index++;
+                tok.pop();
             }
 
             debugExit("param names");
@@ -220,7 +272,7 @@ namespace Compiler
 
             // loop until we see the closing brace. 
             // nested braces will be taken care of be recursive calls to this function. 
-            while (tokens[index].getValue() != "]")
+            while (tok.peep().getValue() != "]")
             {
 
                 Node stmt = parseStatement(scope);
@@ -248,25 +300,25 @@ namespace Compiler
             
 
             // make sure the token is an opening brace
-            if (tokens[index].getValue() != "[") throw new Exception("error ps1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "[") throw new Exception("error ps1 at token:" + tok.peep().locate());
+            tok.pop();
 
-            if (tokens[index].getTokenType() == TokenType.ASSIGNMENT)
+            if (tok.peep().getTokenType() == TokenType.ASSIGNMENT)
                 return parseAssignment(scope);
 
-            else if (tokens[index].getTokenType() == TokenType.CONSTRUCT)
+            else if (tok.peep().getTokenType() == TokenType.CONSTRUCT)
                return parseConstruct(scope);
 
-            else if (tokens[index].getTokenType() == TokenType.FUNCTION)
+            else if (tok.peep().getTokenType() == TokenType.FUNCTION)
                 return parseBFunc(scope);
 
-            else if (tokens[index].getTokenType() == TokenType.REF)
+            else if (tok.peep().getTokenType() == TokenType.REF)
                 return parseCall(scope);
 
 
             debugExit("statement");
             // something went wrong if we get here.
-            throw new Exception("error ps2 at token:" + tokens[index].locate());
+            throw new Exception("error ps2 at token:" + tok.peep().locate());
             
         }
 
@@ -275,13 +327,13 @@ namespace Compiler
         {
             debugEntering("BFunc");
 
-            if (tokens[index].getValue() == "stdout")
+            if (tok.peep().getValue() == "stdout")
             {
-                index++;
+                tok.pop();
                 ExpressionNode expr = parseExpression(scope);
 
-                if(tokens[index].getValue()!= "]") throw new Exception("error, expenting a closing brace after stdout call at"+tokens[index].locate());
-                index++;
+                if(tok.peep().getValue()!= "]") throw new Exception("error, expenting a closing brace after stdout call at"+tok.peep().locate());
+                tok.pop();
 
                 return new StdoutNode(expr);
             }
@@ -296,10 +348,10 @@ namespace Compiler
 
             debugEntering("OP");
 
-            //if(tokens[index].getValue() != "[")
-            //    throw new Exception("error, parseOp1 at token:" + tokens[index].locate());
-            Token opToken = tokens[index];
-            index++;
+            //if(tokenizer.peep().getValue() != "[")
+            //    throw new Exception("error, parseOp1 at token:" + tokenizer.peep().locate());
+            Token opToken = tok.peep();
+            tok.pop();
 
             ExpressionNode leftExpr, rightExpr = null;
             leftExpr = parseExpression(scope);
@@ -313,9 +365,9 @@ namespace Compiler
 
 
 
-            if (tokens[index].getValue() != "]")
-                throw new Exception("error, parseOp1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]")
+                throw new Exception("error, parseOp1 at token:" + tok.peep().locate());
+            tok.pop();
 
             debugExit("op");
             return  new OpNode(opToken, leftExpr, rightExpr);
@@ -357,25 +409,25 @@ namespace Compiler
             debugEntering("construct");
 
             //check the curent token for which kind of construct it is.
-            if (tokens[index].getValue() == "while")
+            if (tok.peep().getValue() == "while")
             {
                 debugExit("construct");
                 return parseWhileLoop(scope);
             }
-            //else if (tokens[index].getValue() == "for")
+            //else if (tokenizer.peep().getValue() == "for")
             //    return parseForLoop(scope);
-            else if (tokens[index].getValue() == "if")
+            else if (tok.peep().getValue() == "if")
             {
                 debugExit("construct");
                 return parseIf(scope);
             }
-            else if (tokens[index].getValue() == "let")
+            else if (tok.peep().getValue() == "let")
             {
                 debugExit("construct");
                 return parseLet(scope);
             }
             else
-                throw new Exception("error, unknow construct at token:" + tokens[index].locate());
+                throw new Exception("error, unknow construct at token:" + tok.peep().locate());
         }
 
         /// <summary>
@@ -398,51 +450,51 @@ namespace Compiler
             LinkedList<Node> children;
 
             // check for the opening of the if statement.
-            if (tokens[index].getValue() != "if") throw new Exception("error pi1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "if") throw new Exception("error pi1 at token:" + tok.peep().locate());
+            tok.pop();
             
             // parse the evaluation node
             eval = parseExpression( scope);
 
             // check that the eval node returns a boolean.
-            if (eval.getReturnType() != "bool") throw new Exception("error pi4 at token:" + tokens[index].locate() );
+            if (eval.getReturnType() != "bool") throw new Exception("error pi4 at token:" + tok.peep().locate() );
 
-            if (tokens[index].getValue() != "[") throw new Exception("error pi6 at token:" + tokens[index].locate());
+            if (tok.peep().getValue() != "[") throw new Exception("error pi6 at token:" + tok.peep().locate());
             
 
             // create the if node so that the parse statements call will have a local scope to use.
             ifNode = new IfNode(eval, scope);
 
-            // Parse multi statement if 
-            if (tokens[index + 1].getValue() == "[")
-            {
-                index++;
-                children = parseStatements(ifNode);
+            //// Parse multi statement if 
+            //if (tokens[index + 1].getValue() == "[")
+            //{
+            //    tokenizer.pop();
+            //    children = parseStatements(ifNode);
 
-                // check for closing brace on the internal if statements.
-                if (tokens[index].getValue() != "]") throw new Exception("error pi7 at token:" + tokens[index].locate());
-                index++;
-            }
-            // Parse single statement if
-            else
-            {
+            //    // check for closing brace on the internal if statements.
+            //    if (tokenizer.peep().getValue() != "]") throw new Exception("error pi7 at token:" + tokenizer.peep().locate());
+            //    tokenizer.pop();
+            //}
+            //// Parse single statement if
+            //else
+            //{
                 children = new LinkedList<Node>();
                 children.AddLast(parseStatement(ifNode));
-            }
+            //}
 
             // add the children.
             ifNode.addChildren(children);
 
             // check for an else statement and add it to the IfNode if it exists.
-            if (tokens[index].getValue() == "[")
+            if (tok.peep().getValue() == "[")
             {
                 ifNode.addElse(parseElse(scope));
 
             }
 
             // check for closing brace on the overall if statements.
-            if (tokens[index].getValue() != "]") throw new Exception("error pif3 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pif3 at token:" + tok.peep().locate());
+            tok.pop();
 
             debugExit("if");
             return ifNode;
@@ -466,25 +518,25 @@ namespace Compiler
             LinkedList<Node> children;
 
             // check for the opening of the else statement.
-            if (tokens[index].getValue() != "[") throw new Exception("error pel1 at token:" + tokens[index].locate());
+            if (tok.peep().getValue() != "[") throw new Exception("error pel1 at token:" + tok.peep().locate());
             
 
-            // Parse multi statement else 
-            if (tokens[index + 1].getValue() == "[")
-            {
-                index++;
-                children = parseStatements(elseNode);
+            //// Parse multi statement else 
+            //if (tokens[index + 1].getValue() == "[")
+            //{
+            //    tokenizer.pop();
+            //    children = parseStatements(elseNode);
 
-                // check for closing brace.
-                if (tokens[index].getValue() != "]") throw new Exception("error pel2 at token:" + tokens[index].locate());
-                index++;
-            }
-            // Parse single statement if
-            else
-            {
+            //    // check for closing brace.
+            //    if (tokenizer.peep().getValue() != "]") throw new Exception("error pel2 at token:" + tokenizer.peep().locate());
+            //    tokenizer.pop();
+            //}
+            //// Parse single statement if
+            //else
+            //{
                 children = new LinkedList<Node>();
                 children.AddLast(parseStatement(elseNode));
-            }
+            //}
 
             // add the children to the for loop.
             elseNode.addChildren(children);
@@ -514,16 +566,16 @@ namespace Compiler
             LinkedList<Node> children;
 
             // check for the opening of the while statement.
-            if (tokens[index].getValue() != "while") throw new Exception("error pw1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "while") throw new Exception("error pw1 at token:" + tok.peep().locate());
+            tok.pop();
 
             // parse the evaluation node
             eval = parseExpression(scope);
 
             // check that the eval node returns a boolean.
-            if (eval.getReturnType() != "bool") throw new Exception("error pw4 at token:" + tokens[index].locate());
+            if (eval.getReturnType() != "bool") throw new Exception("error pw4 at token:" + tok.peep().locate());
 
-            if (tokens[index].getValue() != "[") throw new Exception("error pw6 at token:" + tokens[index].locate());
+            if (tok.peep().getValue() != "[") throw new Exception("error pw6 at token:" + tok.peep().locate());
             
 
             // create the if node so that the parse statements call will have a local scope to use.
@@ -535,8 +587,8 @@ namespace Compiler
             wl.addChildren(children);
 
             // check for closing brace 
-            if (tokens[index].getValue() != "]") throw new Exception("error pw9 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pw9 at token:" + tok.peep().locate());
+            tok.pop();
 
             debugExit("while");
             return wl;
@@ -563,10 +615,10 @@ namespace Compiler
             Token varName;
 
             // make sure its an assignment
-            if (tokens[index].getValue() != ":=") throw new Exception("error pa1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != ":=") throw new Exception("error pa1 at token:" + tok.peep().locate());
+            tok.pop();
 
-            varName = tokens[index++];
+            varName = tok.pop();
 
             // check that the token is in scope
             if (!scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + varName.locate() + " is not in scope");
@@ -577,14 +629,14 @@ namespace Compiler
             VariableNode varNode = scope.getVarRef(varName.getValue() );
 
             // check the that the data types match
-            if (expr.getReturnType() != varNode.getReturnType() ) throw new Exception("error pa3 at token:" + tokens[index].locate());
+            if (expr.getReturnType() != varNode.getReturnType() ) throw new Exception("error pa3 at token:" + tok.peep().locate());
 
 
             assignment = new AssignmentNode(varNode, expr);
 
             // make sure its an assignment
-            if (tokens[index].getValue() != "]") throw new Exception("error pa1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pa1 at token:" + tok.peep().locate());
+            tok.pop();
 
 
             debugExit("assign");
@@ -614,42 +666,67 @@ namespace Compiler
 
             
             // check that its has a valid data type
-            if (tokens[index].getTokenType() == TokenType.ASSIGNMENT ) throw new Exception("error pl1 at token:" + tokens[index].locate() );
-            index++;
+            if (tok.peep().getValue() != "let" ) throw new Exception("error pl1 at token:" + tok.peep().locate() );
+            tok.pop();
 
-            while (tokens[index].getValue() != "]") {
+            // make sure its a open brace token.
+            if (tok.peep().getValue() != "[") throw new Exception("error pl6 at token:" + tok.peep().locate());
+            tok.pop();
 
-                // make sure its a open brace token.
-                if (tokens[index].getValue() != "[") throw new Exception("error pl6 at token:" + tokens[index].locate());
-                variableName = tokens[index++];
+            // make sure its a reference token and get its label.
+            if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tok.peep().locate());
+            variableName = tok.pop();
 
-                // make sure its a reference token and get its label.
-                if (tokens[index].getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tokens[index].locate());
-                variableName = tokens[index++];
+            // Check to see if this is a variable declarations. 
+            if (tok.peep().getTokenType() == TokenType.DATATYPE)
+            {
+                while (true)
+                {
+                    
 
-                 // check that its has a valid data type
-                if (tokens[index].getTokenType() != TokenType.DATATYPE ) throw new Exception("error pl3 at token:" + tokens[index].locate() );
-                dataType = tokens[index++];
+                    // check that its has a valid data type
+                    if (tok.peep().getTokenType() != TokenType.DATATYPE) throw new Exception("error pl3 at token:" + tok.peep().locate());
+                    dataType = tok.pop();
 
 
-                // make sure its not in scope.
-                if (scope.varInScope(variableName.getValue()))
-                    throw new Exception("error pl4 at Token " + tokens[index -2].locate() + "  " + variableName.getValue() + " is already in scope.");
+                    // make sure its not in scope.
+                    if (scope.varInScope(variableName.getValue()))
+                        throw new Exception("error pl4 at Token " + variableName.locate() + "  " + variableName.getValue() + " is already in scope.");
 
-                if (tokens[index].getValue() != "]") throw new Exception("error pl5 at token:" + tokens[index].locate() );
-                index++;
+                    if (tok.peep().getValue() != "]") throw new Exception("error pl5 at token:" + tok.peep().locate());
+                    tok.pop();
 
-                // construct the declaration node.
-                DeclarationNode dec = new DeclarationNode(dataType, variableName); 
-            
-                // add the variable to local scope.
-                scope.addToScope(dec);
+                    // construct the declaration node.
+                    DeclarationNode dec = new DeclarationNode(dataType, variableName);
 
-                let.addChild(dec);
+                    // add the variable to local scope.
+                    scope.addToScope(dec);
+
+                    let.addChild(dec);
+
+                    // This is where we check to see if there is another variable declaration
+                    // Its like this because the function declaration diverges from variable declarations.
+                    if (tok.peep().getValue() == "]") break; 
+
+                    // make sure its a open brace token.
+                    if (tok.peep().getValue() != "[") throw new Exception("error pl6 at token:" + tok.peep().locate());
+                    tok.pop();
+
+                    // make sure its a reference token and get its label.
+                    if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tok.peep().locate());
+                    variableName = tok.pop();
+
+                }
             }
+                // chech to see if it is a function declaration.
+            else if (tok.peep().getTokenType() == TokenType.REF || tok.peep().getValue() == "]")
+            {
+                let.addChild(parseFunction(variableName,scope));
+            }else // if its not a variable or function declatation there must be an error.
+                throw new Exception("Token in let stament is incorrect...  "+tok.peep().locate());
 
-            if (tokens[index].getValue() != "]") throw new Exception("error pl6 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pl6 at token:" + tok.peep().locate());
+            tok.pop();
 
             debugExit("let");
             return let;   
@@ -674,32 +751,32 @@ namespace Compiler
             ExpressionNode expr;
 
             // check for a composite expression.
-            if (tokens[index].getValue() == "[")
+            if (tok.peep().getValue() == "[")
             {
-                index++;
-                if (tokens[index].getTokenType() == TokenType.OP)
+                tok.pop();
+                if (tok.peep().getTokenType() == TokenType.OP)
                     expr =  parseOp(scope);
 
-                else if(scope.funcInScope(tokens[index].getValue())){
+                else if(scope.funcInScope(tok.peep().getValue())){
                     expr = parseCall(scope);
                 }
-                else throw new Exception("error pex1 at token:" + tokens[index].locate());
+                else throw new Exception("error pex1 at token:" + tok.peep().locate());
 
                 
             }
 
             // check for a single literal.
-            else if(tokens[index].isLiteral()){
-                expr = new LiteralNode(tokens[index]);
-                index++;
+            else if(tok.peep().isLiteral()){
+                expr = new LiteralNode(tok.peep());
+                tok.pop();
             }
 
             // check for a local variable.
-            else if (scope.varInScope(tokens[index].getValue())){
-                expr = scope.getVarRef(tokens[index].getValue());
-                index++;
+            else if (scope.varInScope(tok.peep().getValue())){
+                expr = scope.getVarRef(tok.peep().getValue());
+                tok.pop();
             }
-            else throw new Exception("error pex2 at token:" + tokens[index].locate());
+            else throw new Exception("error pex2 at token:" + tok.peep().locate());
 
 
             debugExit("expr");
@@ -711,13 +788,13 @@ namespace Compiler
         {
             debugEntering("call");
             
-            if (!scope.funcInScope(tokens[index].getValue())) 
-                throw new Exception("error Function " + tokens[index].getValue() + " does not exist at " + tokens[index].locate());
+            if (!scope.funcInScope(tok.peep().getValue())) 
+                throw new Exception("error Function " + tok.peep().getValue() + " does not exist at " + tok.peep().locate());
            
-            IFunctionNode func = scope.getFuncRef(tokens[index].getValue());
+            IFunctionNode func = scope.getFuncRef(tok.peep().getValue());
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
             
-            index++;
+            tok.pop();
 
             foreach (ParamNode paramLabel in func.getParameters())
             {
@@ -725,7 +802,7 @@ namespace Compiler
                 ExpressionNode paramExpr = parseExpression(scope);
 
                 // make sure the param data type matchs the function signature,
-                if (paramExpr.getReturnType() != paramLabel.getDataType()) throw new Exception("error pex2 at token:" + tokens[index].locate());
+                if (paramExpr.getReturnType() != paramLabel.getDataType()) throw new Exception("error pex2 at token:" + tok.peep().locate());
 
                 parameters.AddLast(paramExpr);
             }
@@ -733,8 +810,8 @@ namespace Compiler
             CallNode call = new CallNode(func, parameters);
 
             // make sure its has closing brace
-            if (tokens[index].getValue() != "]") throw new Exception("error pcall 1 at token:" + tokens[index].locate());
-            index++;
+            if (tok.peep().getValue() != "]") throw new Exception("error pcall 1 at token:" + tok.peep().locate());
+            tok.pop();
 
             debugExit("call");
             return call;
@@ -744,14 +821,14 @@ namespace Compiler
         {
             if (debug) {
                 Console.Write("entering  " + name + " at " );
-                Console.WriteLine( tokens[index].locate());
+                Console.WriteLine( tok.peep().locate());
             }
         }
         public void debugExit(string name)
         {
             if (debug) {
-                Console.Write("Exiting   " + name + " at " );//+ tokens[index].locate());
-                Console.WriteLine( tokens[index].locate());
+                Console.Write("Exiting   " + name + " at " );//+ tokenizer.peep().locate());
+                Console.WriteLine( tok.peep().locate());
             }
 
         }

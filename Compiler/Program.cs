@@ -16,21 +16,25 @@ namespace Compiler
             //{
                 string source = System.IO.File.ReadAllText("../../input.ibtl");
 
-                Console.WriteLine("input:" + source);
+                Console.WriteLine("input:\n" + source);
 
-                Tokenizer t = new Tokenizer();
+                Tokenizer t = new Tokenizer(source);
                 Parser p = new Parser();
 
-                Console.WriteLine("Tokenizing...");
-                Token[] tokens = t.GetTokens(source);
-                Console.WriteLine("Tokenized");
-          
-                Node root = p.parseTokens(tokens);
+                //doMileStone2(t);
+
+                Console.WriteLine("Parsing...");
+                Node root = p.parseT(t);
+
+                Console.WriteLine("Parsing complete.");
 
                 string output;// = root.outputIBTL(1);
                 StringBuilder sb = new StringBuilder();
 
+                Console.WriteLine("generating Gforth...");
                 root.outputGForth(1, sb);
+                Console.WriteLine("");
+
                 output = sb.ToString();
                 Console.WriteLine(output);
 
@@ -41,11 +45,30 @@ namespace Compiler
             //}
             //catch (Exception e)
             //{
-                //Console.WriteLine("\n\n" + e.Message + "");
+            //    Console.WriteLine("\n\n" + e.Message + "");
             //}
             Console.WriteLine("\n\nPress any key to close.");
 
             ConsoleKeyInfo key = Console.ReadKey();
+        }
+
+        private static void doMileStone2(Tokenizer t)
+        {
+            try
+            {
+                Console.WriteLine("Printing Tokens in order...\n");
+                while (true)
+                {
+                    Token tok = t.pop();
+                    Console.WriteLine(tok.getValue()+ " \t\t"+tok.getTokenType()+"\t"+tok.locate());
+                }
+            }
+            catch (EndOfTokensException e)
+            {
+                //throw e;
+            }
+            Console.WriteLine("\n\nPrinting BaseTokens in symbol table...");
+            t.printSymbolTable();
         }
 
     }

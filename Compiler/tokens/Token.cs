@@ -9,17 +9,14 @@ namespace Compiler
     [FlagsAttribute]
     public enum TokenType : byte { INT, FLOAT, BOOL, STRING, REF, OP, DATATYPE, CONSTRUCT, FUNCTION, BRACE,  ASSIGNMENT };
 
-    abstract public class Token
+    abstract public class BaseToken
     {
-        protected int line, num;
-        protected TokenType type;
+         protected TokenType type;
         protected string value;
         protected bool literal =true;
 
-        public Token(string p, int line, int num)
+        public BaseToken(string p)
         {
-            this.line = line;
-            this.num = num;
             value = p;
         }
         public String getValue() { return value; }
@@ -31,16 +28,38 @@ namespace Compiler
                    " \t " + value ;
         }
 
+    }
+
+    public class Token
+    {
+        protected int line, num;
+        BaseToken baseToken;
+        public Token(BaseToken baseToken,int line, int num)
+        {
+            this.baseToken = baseToken;
+            this.line=line;
+            this.num=num;
+                      
+        }
+        public String getValue() { return baseToken.getValue(); }
+        public TokenType getTokenType() { return baseToken.getTokenType(); }
+        public bool isLiteral() { return baseToken.isLiteral(); }
+
+        public virtual String toString()
+        {
+            return baseToken.toString();
+        }
+
         internal string locate()
         {
-            return "  line>"+line + ", token>" + num +"  # "+value;
+            return "  line>" + line + ", token>" + num + "      "+baseToken.getValue();
         }
     }
 
-    class AssignmentToken : Token
+    class AssignmentToken : BaseToken
     {
-        public AssignmentToken(int line, int num)
-            : base(":=", line, num)
+        public AssignmentToken()
+            : base(":=")
         {
             type = TokenType.ASSIGNMENT;
             literal = false;
@@ -48,93 +67,93 @@ namespace Compiler
 
     }
 
-    class DataTypeToken : Token
+    class DataTypeToken : BaseToken
     {
-        public DataTypeToken(string p, int line, int num)
-            : base(p, line, num)
+        public DataTypeToken(string p)
+            : base(p)
         {
             type = TokenType.DATATYPE;
             literal = false;
         }
 
     }
-    class ConstructToken : Token
+    class ConstructToken : BaseToken
     {
-        public ConstructToken(string p, int line, int num)
-            : base(p, line, num)
+        public ConstructToken(string p)
+            : base(p)
         {
             type = TokenType.CONSTRUCT;
             literal = false;
         }
 
-    } 
-    class FunctionToken : Token
+    }
+    class FunctionToken : BaseToken
     {
-        public FunctionToken(string p, int line, int num)
-            : base(p, line, num)
+        public FunctionToken(string p)
+            : base(p)
         {
             type = TokenType.FUNCTION;
             literal = false;
         }
 
     }
-    class IntToken : Token
+    class IntToken : BaseToken
     {
-        public IntToken(string p, int line, int num)
-            : base(p, line, num)
+        public IntToken(string p)
+            : base(p)
         {
             type = TokenType.INT;
         }
 
     }
-    class FloatToken : Token
+    class FloatToken : BaseToken
     {
-        public FloatToken(string p, int line, int num)
-            : base(p, line, num)
+        public FloatToken(string p)
+            : base(p)
         {
             type = TokenType.FLOAT;
         }
     }
-    class BooleanToken : Token
+    class BooleanToken : BaseToken
     {
 
-        public BooleanToken(string p, int line, int num)
-            : base(p, line, num)
+        public BooleanToken(string p)
+            : base(p)
         {
             type = TokenType.BOOL;
         }
         
     }
-    class StringToken : Token
+    class StringToken : BaseToken
     {
-        public StringToken(string p, int line, int num)
-            : base(p, line, num)
+        public StringToken(string p)
+            : base(p)
         {
             type = TokenType.STRING;
         }
     }
-    class OperatorToken : Token
+    class OperatorToken : BaseToken
     {
-        public OperatorToken(string p, int line, int num)
-            : base(p, line, num)
+        public OperatorToken(string p)
+            : base(p)
         {
             type = TokenType.OP;
             literal = false;
         }
     }
-    class ReferenceToken : Token
+    class ReferenceToken : BaseToken
     {
-        public ReferenceToken(string p, int line, int num)
-            : base(p, line, num)
+        public ReferenceToken(string p)
+            : base(p)
         {
             type = TokenType.REF;
             literal = false;
         }
     }
-    class BraceToken : Token
+    class BraceToken : BaseToken
     {
-        public BraceToken(char brace, int line, int num)
-            : base("" + brace, line, num)
+        public BraceToken(string  brace)
+            : base(brace)
         {
             type = TokenType.BRACE;
             literal = false;
