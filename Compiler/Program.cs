@@ -16,40 +16,42 @@ namespace Compiler
             {
 
                 string source;
-
+                string output="";
                 //foreach (string s in args)
                 //    Console.WriteLine(s);
 
                 if (args.Length == 0)
+                    
                     source = System.IO.File.ReadAllText("../../input.ibtl");
                 else
                     source = System.IO.File.ReadAllText(args[0]);
 
-                Console.WriteLine("input:\n" + source);
+                //Console.WriteLine("input:\n" + source);
 
                 Tokenizer t = new Tokenizer(source);
                 Parser p = new Parser();
 
-                //doMileStone2(t);
+                doMileStone2(t);
+                if(false){
+                    Console.WriteLine("Parsing...");
+                    Node root = p.parseT(t);
+                    Console.WriteLine("Parsing complete.");
 
-                Console.WriteLine("Parsing...");
-                Node root = p.parseT(t);
+                    StringBuilder sb = new StringBuilder();
 
-                Console.WriteLine("Parsing complete.");
+                    Console.WriteLine("generating Gforth...");
+                    root.outputGForth(1, sb);
+                    Console.WriteLine("");
 
-                string output;// = root.outputIBTL(1);
-                StringBuilder sb = new StringBuilder();
-
-                Console.WriteLine("generating Gforth...");
-                root.outputGForth(1, sb);
-                Console.WriteLine("");
-
-                output = sb.ToString();
-                Console.WriteLine(output);
-
-                using (StreamWriter outfile = new StreamWriter("../../out.gf"))
+                    output = sb.ToString();
+                    Console.WriteLine(output);
+                }
+                if (args.Length == 0)
                 {
-                    outfile.Write(output);
+                    using (StreamWriter outfile = new StreamWriter("../../out.gf"))
+                    {
+                        outfile.Write(output);
+                    }
                 }
             }
             catch (Exception e)
