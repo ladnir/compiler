@@ -7,7 +7,7 @@
 			[]
 		]
 	]
-	//[ let [x int] [i int]]     
+	[ let [x int] [i int]]     
 	[:= i 4]              
 	[:= x [+ 3  i]]    
 
