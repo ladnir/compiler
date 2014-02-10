@@ -12,9 +12,18 @@ namespace Compiler
         static void Main(string[] args)
         {
 
-            //try
-            //{
-                string source = System.IO.File.ReadAllText("../../input.ibtl");
+            try
+            {
+
+                string source;
+
+                //foreach (string s in args)
+                //    Console.WriteLine(s);
+
+                if (args.Length == 0)
+                    source = System.IO.File.ReadAllText("../../input.ibtl");
+                else
+                    source = System.IO.File.ReadAllText(args[0]);
 
                 Console.WriteLine("input:\n" + source);
 
@@ -42,11 +51,11 @@ namespace Compiler
                 {
                     outfile.Write(output);
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine("\n\n" + e.Message + "");
-            //}
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\n\n" + e.Message + "");
+            }
             Console.WriteLine("\n\nPress any key to close.");
 
             ConsoleKeyInfo key = Console.ReadKey();
