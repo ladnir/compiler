@@ -9,7 +9,7 @@ namespace Compiler
     public interface IFunctionNode
     {
 
-        IEnumerable<ParamNode> getParameters();
+        LinkedList<ParamNode> getParameters();
         string getName();
         string getReturnType();
     }

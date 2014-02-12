@@ -26,7 +26,6 @@ namespace Compiler
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             sb.Append("0 ");
-
             sb.Append("{ " + variableName.getValue() + " }");
         }
 

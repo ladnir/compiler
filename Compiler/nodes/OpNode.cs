@@ -21,7 +21,7 @@ namespace Compiler.parser
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(opToken.getValue() + " ");
+            //if (Parser.debug) Console.Write(opToken.getValue() + " ");
             
             leftExpr.outputGForth(tabCount, sb);
             if(rightExpr!= null) rightExpr.outputGForth(tabCount, sb);

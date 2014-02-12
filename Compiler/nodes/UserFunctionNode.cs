@@ -7,7 +7,8 @@ using Compiler.parser;
 
 namespace Compiler
 {
-    public class UserFunctionNode : Node , ILocalScopeNode ,IFunctionNode
+    //TODO change back to Node
+    public class UserFunctionNode : ExpressionNode , ILocalScopeNode ,IFunctionNode
     {
         private LinkedList<ParamNode> parameters;
 
@@ -15,6 +16,16 @@ namespace Compiler
         private Token functionName;
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
         private ILocalScopeNode scope;
+
+        //TODO remove this.
+        override public string getReturnType(){
+            throw new NotImplementedException();
+        }
+
+        public UserFunctionNode(Token name)
+        { //TODO remove this
+            functionName = name;
+        }
 
         public UserFunctionNode(Token returnType, 
                                 Token functionName, 
@@ -128,7 +139,7 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(functionName.getValue());
+            //if (Parser.debug) Console.Write(functionName.getValue());
 
             sb.Append(": " + functionName.getValue() + " { ");
 
@@ -142,21 +153,21 @@ namespace Compiler
             foreach (Node n in children)
             {
 
-                if (Parser.debug) Console.Write(" t ");
+                //if (Parser.debug) Console.Write(" t ");
 
-                sb.Append(Node.getTabs(tabCount + 1));
-                n.outputGForth(tabCount+1,sb);
+                sb.Append(Node.getTabs(tabCount ));
+                n.outputGForth(tabCount,sb);
                 sb.Append("\n");
             }
 
-            sb.Append(" ; \n");
+            sb.Append(Node.getTabs(tabCount-1)+"; \n");
         }
 
         //============================================================================
         // FunctionNode function
         //============================================================================
 
-        IEnumerable<ParamNode> IFunctionNode.getParameters()
+        LinkedList<ParamNode> IFunctionNode.getParameters()
         {
             return parameters;
         }

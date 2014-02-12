@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    public class AssignmentNode : Node 
+    public class AssignmentNode : ExpressionNode 
     {
         private ExpressionNode expr;
         private VariableNode varNode;
@@ -26,10 +26,15 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(" { " + varNode.getVarName() + " } \n");
+            //if (Parser.debug) Console.Write(" { " + varNode.getVarName() + " } \n");
 
             expr.outputGForth(tabCount, sb);
             sb.Append(" TO "+varNode.getVarName());
+        }
+
+        public override string getReturnType()
+        {
+            throw new NotImplementedException();
         }
     }
 }

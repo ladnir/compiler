@@ -16,7 +16,7 @@ namespace Compiler.parser
         }
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(nameToken.getValue());
+            //if (Parser.debug) Console.Write(nameToken.getValue());
             
             if (nameToken.getTokenType() == TokenType.BOOL){
                 if (nameToken.getValue() == "true") sb.Append("-1 ");

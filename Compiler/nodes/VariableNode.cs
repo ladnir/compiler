@@ -18,7 +18,7 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(dec.getVarName()+" ");
+            //if (Parser.debug) Console.Write(dec.getVarName()+" ");
             
             sb.Append( dec.getVarName() + " ");
         }

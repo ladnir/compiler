@@ -6,43 +6,51 @@ using System.Text;
 namespace Compiler
 {
     public class EndOfTokensException : Exception
-    { public EndOfTokensException(): base("End of file reached.") { } }
+    { public EndOfTokensException(): base("End of file reached without balenced braces.") { } }
 
 
     public class Tokenizer
     {
         private Dictionary<string, BaseToken> symbols = new Dictionary<string, BaseToken>();
 
-        static string[] Functions = { "sin", "cos"," tan", "stdout", "not", "and" , "or", "^"};
+        static string[] Functions = { "sin", "cos"," tan" };
         static string[] dataTypes = { "int", "bool", "float", "string" };
-        static string[] constructs = { "while", "if", "let" , "return" }; 
+        static string[] constructs = { "while", "if", "let" , "return","stdout" }; 
 
-        int index = 0 ;
-        int length;
+       // int index = 0 ;
+       // int length;
         int line = 1,num=1;
-        string source;
+        //string source;
         Token cur;
+        private System.IO.StreamReader stream;
 
+    
+        //public Tokenizer(string source){
+        //    this.source=source;
+        //    length= source.Length;
+        //    cur = getNextToken();
+        //}
+
+        public Tokenizer(System.IO.StreamReader stream)
+        {
+            this.stream = stream;
+            
+            cur = getNextToken();
+        }
         public void printSymbolTable()
         {
 
             foreach (KeyValuePair<string, BaseToken> entry in symbols)
             {
                 BaseToken t = entry.Value;
-                Console.WriteLine(t.getValue() + "\t\t" + t.getTokenType() );
+                Console.WriteLine(t.getValue() + "\t\t" + t.getTokenType());
 
             }
         }
 
-        public Tokenizer(string source){
-            this.source=source;
-            length= source.Length;
-            cur = getNextToken();
-        }
-        
         public Token peep()
         {
-            if (cur == null) throw new EndOfTokensException();
+            if (cur == null)  throw new EndOfTokensException();
             return cur;
         }
 
@@ -52,10 +60,11 @@ namespace Compiler
 
             if ( cur == null)
             {
+                //throw new Exception();
                 throw new EndOfTokensException();
             }
 
-            if (index >= length) cur = null;
+            if (stream.EndOfStream) cur = null;
             else cur = getNextToken();
            
             return r;
@@ -63,33 +72,31 @@ namespace Compiler
 
         private char charPeep()
         {
-            return source[index];
+            return (char)stream.Peek(); //source[index];
         }
+
         private char charPop()
         {
-            return source[index++];
+            return (char)stream.Read(); //source[index++];
         }
-        private bool hasMoreChars()
+
+        private bool endOfStream()
         {
-            return index < length;
-            //try
-            //{
-            //    charPeep();
-            //    return true;
-            //}
-            //catch (System.IndexOutOfRangeException e)
-            //{
-            //    return false;
-            //    //throw e;
-            //}
+            return stream.EndOfStream;
+           
         }
         private Token getNextToken()
         {
             //Console.WriteLine("next");
             Token token;
 
-            skipWhiteSpaceAndComments();
-            if (!hasMoreChars()) return null;
+            skipWhiteSpace();
+            if (endOfStream()) return null;
+
+            if (charPeep() == '/' && (token = skipComment()) != null) return token;
+            else if (isWhiteSpace() || charPeep() == '/') return getNextToken();
+
+            if (endOfStream()) return null;
 
             if (isNumber(charPeep()))           token = getNumber();
             else if (assignment(charPeep()))    token = getAssignment();
@@ -104,24 +111,16 @@ namespace Compiler
             return token;
         }
 
-        private void skipWhiteSpaceAndComments()
+        private void skipWhiteSpace()
         {
-            while(hasMoreChars() &&(isWhiteSpace() || isComment() ))
+            while (!endOfStream() && isWhiteSpace())
             {
-                while (hasMoreChars() && isWhiteSpace() )
+                if (charPeep().Equals('\n'))
                 {
-                    if (charPeep().Equals('\n'))
-                    {
-                        num = 1;
-                        line++;
-                    }
-                    charPop();
+                    num = 1;
+                    line++;
                 }
-
-                if (hasMoreChars() && isComment())
-                {
-                    skipComment();
-                }
+                charPop();
             }
 
 
@@ -154,30 +153,47 @@ namespace Compiler
 
 
 
-        private void skipComment()
+        private Token skipComment()
         {
+            bool ending = false;
+
             charPop();
             if (charPeep() == '*')  // multi line comment
             {
+
                 charPop();
-                while (index+1<length && charPeep() != '*' && source[index + 1] != '/')
+
+                while ( ! (charPeep() == '/' && ending))
                 {
+
+                    if (charPeep() == '*') ending = true;
+                    else ending = false;
+
                     if (charPeep() == '\n')
                     {
                         num = 1;
                         line++;
                     }
-                    index = index ++;
+                    charPop();
                 }
+                charPop();
             }
-            else // inline comment
+            else if (charPeep() == '/') // inline comment
             {
-                while (hasMoreChars() && charPeep() != '\n') charPop();
+                while ( ! endOfStream() && charPeep() != '\n') charPop();
 
                 line++;
                 num = 1;
             }
+            else
+            {  // OK nevermind, its just a /
+                if (symbols.ContainsKey("/")) return new Token(symbols["/"],line,num++);
 
+                BaseToken b = new OperatorToken("/");
+                Token t = new Token(b, line, num++);
+                symbols.Add("/", b);
+            }
+            return null;
         }
 
 
@@ -187,15 +203,16 @@ namespace Compiler
             StringBuilder sb = new StringBuilder();
             charPop();
 
-            while (hasMoreChars() && charPeep() != q) sb.Append(charPop());
+            while ( ! endOfStream() && charPeep() != q) sb.Append(charPop());
 
-            if (index >= length)
+            if (endOfStream())
                 throw new Exception("error t3: end of file while reading a string. add closing quote");
+
             charPop();
 
             string st = sb.ToString();
 
-            if (!symbols.ContainsKey(st))
+            if (symbols.ContainsKey(st))
                 return new Token(symbols[st], line, num);
             
             BaseToken b = new StringToken(st);
@@ -224,7 +241,7 @@ namespace Compiler
             BaseToken r;
             charPop();
 
-            while (hasMoreChars() && (isNumber(charPeep()) || isLetter(charPeep() ) ))
+            while ( ! endOfStream() && (isNumber(charPeep()) || isLetter(charPeep() ) ))
                 sb.Append(charPop());
 
             string word = sb.ToString();
@@ -234,7 +251,7 @@ namespace Compiler
             if (isBool(word))       r = new BooleanToken(word);
             else if (isDataType(word))   r = new DataTypeToken(word );
             else if (isConstruct(word))  r = new ConstructToken(word);
-            else if (isFunction(word))   r = new FunctionToken(word );
+            else if (isFunction(word))   r = new OperatorToken(word );
             else                         r = new ReferenceToken(word);
 
             symbols.Add(word, r);
@@ -246,7 +263,7 @@ namespace Compiler
             StringBuilder sb = new StringBuilder();
             sb.Append(charPeep());
             charPop();
-            if (hasMoreChars())
+            if ( ! endOfStream())
             {
                 switch (sb.ToString())
                 {
@@ -285,12 +302,12 @@ namespace Compiler
             string number;
             BaseToken b;
 
-            while (hasMoreChars() && isNumber(charPeep())) sb.Append(charPop());
+            while ( ! endOfStream() && isNumber(charPeep())) sb.Append(charPop());
 
-            if (hasMoreChars() && isFloat())
+            if (! endOfStream() && isFloat())
             {
                 if (charPeep() == '.') getDot(sb);
-                if (hasMoreChars() && charPeep() == 'e') getE(sb);
+                if ( ! endOfStream() && charPeep() == 'e') getE(sb);
 
                 number = sb.ToString();
                 b = new FloatToken(number);
@@ -316,14 +333,19 @@ namespace Compiler
 
         private void getE(StringBuilder sb)
         {
+            
             sb.Append(charPop());
-            while (hasMoreChars() && isNumber(charPeep())) sb.Append(charPop());
+
+            if (charPeep() == '-')
+                sb.Append(charPop());
+
+            while ( ! endOfStream() && isNumber(charPeep())) sb.Append(charPop());
         }
 
         private void getDot(StringBuilder sb)
         {
             sb.Append(charPop());
-            while (hasMoreChars() && isNumber(charPeep())) sb.Append(charPop());
+            while ( ! endOfStream() && isNumber(charPeep())) sb.Append(charPop());
 
         }
 
@@ -342,29 +364,10 @@ namespace Compiler
             return isInSet(word, dataTypes);
         }
 
-        private bool isComma(char p)
-        {
-            if (charPeep() == ',') return true;
-            return false;
-        }
-
-        private bool isComment()
-        {
-            if (charPeep() == '/' && index +1 < length &&(source[index+1] == '/' ||source[index+1] == '*') ) 
-                return true;
-            return false;
-        }
-
         private bool assignment(char p)
         {
             if (p == ':') return true;
 
-            return false;
-        }
-
-        private bool isSemiColon(char p)
-        {
-            if (p == ';') return true;
             return false;
         }
 
@@ -402,19 +405,11 @@ namespace Compiler
         {
             // or, and, not, sin, cos, tan   will be keywords not operators
 
-            char[] operators = { '+','~', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
+            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
 
             if( isInSet(charPeep(), operators)) return true;
 
             return false;
-        }
-
-        private bool isDeliminator(char p)
-        {
-            char[] deliminators = {' ','~',';',',','\t' ,'&','|', '+','-', '/','*',
-                                      '%','=','!', '<', '>','{','}','[',']' };
-
-            return isInSet(p, deliminators);
         }
 
         private bool isInSet(char p, char[] types)
@@ -434,5 +429,7 @@ namespace Compiler
             }
             return false;
         }
+
+
     }
 }

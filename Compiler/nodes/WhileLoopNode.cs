@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    class WhileLoopNode : Node , ILocalScopeNode
+    //TODO: change back to Node
+    class WhileLoopNode : ExpressionNode , ILocalScopeNode
     {
         private ExpressionNode eval;
         private ILocalScopeNode scope;
@@ -20,7 +21,7 @@ namespace Compiler.parser
         }
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(" while \n");
+            //if (Parser.debug) Console.Write(" while \n");
             
             sb.Append("begin \n"+Node.getTabs(tabCount));
             eval.outputGForth(tabCount, sb);
@@ -40,7 +41,7 @@ namespace Compiler.parser
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ while " + eval.outputIBTL(tabCount) +"\n");
+            sb.Append("[ while " + eval.outputIBTL(tabCount+1) +"\n");
 
             foreach (Node child in children)
             {
@@ -96,6 +97,12 @@ namespace Compiler.parser
             IFunctionNode ifunc = (IFunctionNode)func;
             functions.Add(ifunc.getName(), ifunc);
             //scope.addToScope(func);
+        }
+
+        public override string getReturnType()
+        {
+            //TODO remove this
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Compiler
 {
-    class StdoutNode :Node, IFunctionNode
+    //TODO change back to Node
+    class StdoutNode : ExpressionNode, IFunctionNode
     {
         private ExpressionNode expr;
 
@@ -13,6 +14,11 @@ namespace Compiler
         {
             
             this.expr = expr;
+        }
+
+        public override string outputIBTL(int tabCount)
+        {
+            return "[ stdout " + expr.outputIBTL(tabCount) + "]";
         }
 
         public override void outputGForth(int tabCount, StringBuilder sb)
@@ -25,8 +31,8 @@ namespace Compiler
                 sb.Append("f. ");
             else throw new NotImplementedException();
         }
-       
-        IEnumerable<ParamNode> IFunctionNode.getParameters()
+
+        LinkedList<ParamNode> IFunctionNode.getParameters()
         {
             throw new NotImplementedException();
             //IntToken i = new IntToken("", -1, -1);
@@ -43,10 +49,9 @@ namespace Compiler
             //return "stdout";
         }
 
-        public string getReturnType()
+        public override string getReturnType()
         {
             throw new NotImplementedException();
-            //return "void";
         }
     }
 }

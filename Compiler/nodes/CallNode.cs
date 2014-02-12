@@ -36,7 +36,7 @@ namespace Compiler
         }
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write(" " + func.getName() + " ");
+            //if (Parser.debug) Console.Write(" " + func.getName() + " ");
 
             if (func.getName() == "stdout")
             {

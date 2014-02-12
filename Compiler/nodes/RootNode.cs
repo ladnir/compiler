@@ -33,7 +33,6 @@ namespace Compiler
             //initNotEqu();       // !=
             //initOr();           // or
             //intiAnd();          // and
-            //initNagative();     // ~     or later it will be -
             //initNot();          // not
             //initSin();          // sin
             //initCos();          // cos
@@ -43,7 +42,7 @@ namespace Compiler
 
         //private void initStdout()
         //{
-        //    builtInFunctions.Add("stdput", new StdoutNode());
+        //    builtInFunctions.add("stdout",(IFunctionNode) new StdoutNode() );
         //}
 
         public override void outputGForth(int tabCount, StringBuilder sb)
@@ -62,7 +61,7 @@ namespace Compiler
 
             foreach (Node child in children)
             {
-                sb.Append(Node.getTabs(tabCount) + child.outputIBTL(tabCount+1) + "\n\n");
+                sb.Append( child.outputIBTL(tabCount+1) + "\n");
             }
 
             sb.Append("]\n");

@@ -12,38 +12,38 @@ namespace Compiler
         static void Main(string[] args)
         {
 
+            Node root=null;
+            string output = "";
+
             try
             {
 
-                string source;
-                string output="";
-                //foreach (string s in args)
-                //    Console.WriteLine(s);
+                string path;
 
-                if (args.Length == 0)
-                    
-                    source = System.IO.File.ReadAllText("../../input.ibtl");
+                if (args.Length == 0) 
+                    path = "../../input6.ibtl";
                 else
-                    source = System.IO.File.ReadAllText(args[0]);
+                    path = args[0];
 
-                //Console.WriteLine("input:\n" + source);
+               
+                StreamReader stream = System.IO.File.OpenText(path);
 
-                Tokenizer t = new Tokenizer(source);
+                Tokenizer t = new Tokenizer(stream);
                 Parser p = new Parser();
 
-                doMileStone2(t);
-                if(false){
+                //doMileStone2(t);
+                if(true){
                     Console.WriteLine("Parsing...");
-                    Node root = p.parseT(t);
+                    root = p.parseT(t);
                     Console.WriteLine("Parsing complete.");
 
                     StringBuilder sb = new StringBuilder();
 
-                    Console.WriteLine("generating Gforth...");
-                    root.outputGForth(1, sb);
-                    Console.WriteLine("");
+                    //Console.WriteLine("generating Gforth...");
+                    //root.outputGForth(1, sb);
+                    //output = sb.ToString();
 
-                    output = sb.ToString();
+                    output = root.outputIBTL(0);
                     Console.WriteLine(output);
                 }
                 if (args.Length == 0)
@@ -58,6 +58,9 @@ namespace Compiler
             {
                 Console.WriteLine("\n\n" + e.Message + "");
             }
+
+
+
             Console.WriteLine("\n\nPress any key to close.");
 
             ConsoleKeyInfo key = Console.ReadKey();
