@@ -196,7 +196,7 @@ namespace Compiler
         public void addToScope(DeclarationNode dec)
         {
             if (varInScope(dec.getVarName()))
-                throw new Exception("error fln1 at " + dec.getVarName());
+                throw new Exception("error adding declaration to function node at " + dec.gotToken().locate() + "vaiable is already in scope.");
 
             VariableNode newVar = new VariableNode(dec);
 

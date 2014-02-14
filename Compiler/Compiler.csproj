@@ -71,14 +71,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="input4.ibtl" />
-    <None Include="input5.ibtl" />
-    <None Include="input6.ibtl" />
-    <None Include="input3.ibtl" />
-    <None Include="input2.ibtl" />
+    <None Include="input04.ibtl" />
+    <None Include="input05.ibtl" />
+    <None Include="input07.ibtl" />
+    <None Include="input08.ibtl" />
+    <None Include="input09.ibtl" />
+    <None Include="input10.ibtl" />
+    <None Include="input06.ibtl" />
+    <None Include="input03.ibtl" />
+    <None Include="input02.ibtl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="input1.ibtl" />
+    <None Include="input01.ibtl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

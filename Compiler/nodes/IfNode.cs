@@ -87,7 +87,7 @@ namespace Compiler.parser
         public void addToScope(DeclarationNode dec)
         {
             if (varInScope(dec.getVarName()))
-                throw new Exception("error ifn1 at " + dec.getVarName());
+                throw new Exception("error adding declaration to if node at "+dec.gotToken().locate()+"\nvaiable is already in scope.");
 
             VariableNode newVar = new VariableNode(dec);
 

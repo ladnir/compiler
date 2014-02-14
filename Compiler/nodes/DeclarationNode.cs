@@ -38,6 +38,11 @@ namespace Compiler
         {
             return dataType.getValue();
         }
+
+        internal Token gotToken()
+        {
+            return variableName;
+        }
     }
 }
 

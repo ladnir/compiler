@@ -21,7 +21,7 @@ namespace Compiler
                 string path;
 
                 if (args.Length == 0) 
-                    path = "../../input6.ibtl";
+                    path = "../../input09.ibtl";
                 else
                     path = args[0];
 
