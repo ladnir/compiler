@@ -32,7 +32,7 @@
 	]
 
     [let [Main i ][int int ] 
-        [ let [n int] [s string] ]                   
+        [ let [ [n int] [s string]  ] ]                   
         
 		[cos "hi"]
 		[:= s "hello"]

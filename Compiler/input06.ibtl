@@ -1,7 +1,7 @@
 ﻿[  // stupid test because the grammar sucks unnecessarily
    // for some reason if and while can have stmt as their conditionals  
 	[g]
-	[let [i int]]
+	[let [ [i int] ] ]
 	[:= i 4]
 
 	[if [if [> i 4] 3 0]

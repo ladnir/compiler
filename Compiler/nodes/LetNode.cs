@@ -27,14 +27,14 @@ namespace Compiler.parser
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ let   ");
+            sb.Append("[ let [ ");
 
             foreach (Node child in children)
             {
                 sb.Append(child.outputIBTL(tabCount));
             }
 
-            sb.Append("  ]\n");
+            sb.Append(" ] ]\n");
 
             return sb.ToString();
         }
