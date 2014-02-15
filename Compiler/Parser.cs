@@ -382,6 +382,7 @@ namespace Compiler
                     opToken.getValue() == "sin" ||
                     opToken.getValue() == "cos" ||
                     opToken.getValue() == "tan") throw new Exception("error, not a binary operator. " + opToken.locate());
+
                 if (opToken.getValue() != "+" &&
                     opToken.getValue() != "-" &&
                     opToken.getValue() != "*" &&
@@ -400,20 +401,10 @@ namespace Compiler
 
                 if (symantics && leftExpr.getReturnType() != rightExpr.getReturnType()) throw new Exception("pererr fix this.");
             }
-            else if(opToken.getValue() != "+" ||
-                    opToken.getValue() != "-" ||
-                    opToken.getValue() != "*" ||
-                    opToken.getValue() != "/" ||
-                    opToken.getValue() != "%" ||
-                    opToken.getValue() != "^" ||
-                    opToken.getValue() != "=" ||
-                    opToken.getValue() != ">" ||
-                    opToken.getValue() != ">=" ||
-                    opToken.getValue() != "<" ||
-                    opToken.getValue() != "<=" ||
-                    opToken.getValue() != "!=" ||
-                    opToken.getValue() != "or" ||
-                    opToken.getValue() != "and") throw new Exception("error, Looking for a binary operator at " + opToken.locate());
+            else if (opToken.getValue() != "not" &&
+                    opToken.getValue() != "sin" &&
+                    opToken.getValue() != "cos" &&
+                    opToken.getValue() != "tan")  throw new Exception("error, Looking for a binary operator at " + opToken.locate());
 
             if (tok.peep().getValue() != "]")
                 throw new Exception("error, parseOp1 at token:" + tok.peep().locate() + "\n expecting a ]\n in exprestion "+opToken.getValue());
