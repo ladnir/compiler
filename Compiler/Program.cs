@@ -19,40 +19,43 @@ namespace Compiler
             {
 
                 string path;
-
-                if (args.Length == 0) 
-                    path = "../../input09.ibtl";
-                else
-                    path = args[0];
-
-               
-                StreamReader stream = System.IO.File.OpenText(path);
-
-                Tokenizer t = new Tokenizer(stream);
-                Parser p = new Parser();
-
-                //doMileStone2(t);
-                if(true){
-                    Console.WriteLine("Parsing...");
-                    root = p.parseT(t);
-                    Console.WriteLine("Parsing complete.");
-
-                    StringBuilder sb = new StringBuilder();
-
-                    //Console.WriteLine("generating Gforth...");
-                    //root.outputGForth(1, sb);
-                    //output = sb.ToString();
-
-                    output = root.outputIBTL(0);
-                    Console.WriteLine(output);
-                }
-                if (args.Length == 0)
+                for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
-                    using (StreamWriter outfile = new StreamWriter("../../out.gf"))
+                    if (args.Length == 0)
+                        path = "../../input10.ibtl";
+                    else
+                        path = args[i];
+
+                    StreamReader stream = System.IO.File.OpenText(path);
+
+                    Tokenizer t = new Tokenizer(stream);
+                    Parser p = new Parser();
+
+                    //doMileStone2(t);
+                    if (true)
                     {
-                        outfile.Write(output);
+                        Console.WriteLine("Parsing...");
+                        root = p.parseT(t);
+                        Console.WriteLine("Parsing complete.");
+
+                        StringBuilder sb = new StringBuilder();
+
+                        //Console.WriteLine("generating Gforth...");
+                        //root.outputGForth(1, sb);
+                        //output = sb.ToString();
+
+                        output = root.outputIBTL(0);
+                        Console.WriteLine(output);
+                    }
+                    if (args.Length == 0)
+                    {
+                        using (StreamWriter outfile = new StreamWriter("../../out.gf"))
+                        {
+                            outfile.Write(output);
+                        }
                     }
                 }
+            
             }
             catch (Exception e)
             {

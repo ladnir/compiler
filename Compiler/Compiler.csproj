@@ -76,6 +76,12 @@
     <None Include="input07.ibtl" />
     <None Include="input08.ibtl" />
     <None Include="input09.ibtl" />
+    <None Include="input16.ibtl" />
+    <None Include="input15.ibtl" />
+    <None Include="input14.ibtl" />
+    <None Include="input13.ibtl" />
+    <None Include="input12.ibtl" />
+    <None Include="input11.ibtl" />
     <None Include="input10.ibtl" />
     <None Include="input06.ibtl" />
     <None Include="input03.ibtl" />

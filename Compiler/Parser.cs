@@ -147,17 +147,22 @@ namespace Compiler
         /// <para> Returns a node containing the function.       </para>
         /// </summary>
         /// <returns></returns>
-        private Node parseFunction(Token functionName,ILocalScopeNode scope)
+        private Node parseFunction(ILocalScopeNode scope)
         {
 
 
             debugEntering("func");
+            Token functionName;
+            Token returnType;
 
             UserFunctionNode fn;
-            Token returnType;
             LinkedList<Token> parameterNames;
             LinkedList<Token> parameterTypes;
             LinkedList<Node> children;
+
+            if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pf1 at token:" + tok.peep().locate());
+
+            functionName = tok.pop();
 
             // parse the parameters names. This should return with index pointing to the closing brace.
             parameterNames = parseParameterNames();
@@ -371,17 +376,31 @@ namespace Compiler
             ExpressionNode leftExpr, rightExpr = null;
             leftExpr = parseExpression(scope);
 
-            if ( tok.peep().getValue() != "]")
+            if (tok.peep().getValue() != "]")
             {
                 if (opToken.getValue() == "not" ||
                     opToken.getValue() == "sin" ||
                     opToken.getValue() == "cos" ||
-                    opToken.getValue() == "tan" ) throw new Exception("error, not a binary operator. " + opToken.locate());
+                    opToken.getValue() == "tan") throw new Exception("error, not a binary operator. " + opToken.locate());
 
                 rightExpr = parseExpression(scope);
 
                 if (symantics && leftExpr.getReturnType() != rightExpr.getReturnType()) throw new Exception("pererr fix this.");
             }
+            else if(opToken.getValue() != "+" ||
+                    opToken.getValue() != "-" ||
+                    opToken.getValue() != "*" ||
+                    opToken.getValue() != "/" ||
+                    opToken.getValue() != "%" ||
+                    opToken.getValue() != "^" ||
+                    opToken.getValue() != "=" ||
+                    opToken.getValue() != ">" ||
+                    opToken.getValue() != ">=" ||
+                    opToken.getValue() != "<" ||
+                    opToken.getValue() != "<=" ||
+                    opToken.getValue() != "!=" ||
+                    opToken.getValue() != "or" ||
+                    opToken.getValue() != "and") throw new Exception("error, Looking for a binary operator at " + opToken.locate());
 
             if (tok.peep().getValue() != "]")
                 throw new Exception("error, parseOp1 at token:" + tok.peep().locate() + "\n expecting a ]\n in exprestion "+opToken.getValue());
@@ -684,18 +703,22 @@ namespace Compiler
             tok.pop();
 
             // make sure its a open brace token.
-            if (tok.peep().getValue() != "[") throw new Exception("error pl6 at token:" + tok.peep().locate());
+            if (tok.peep().getValue() != "[") throw new Exception("error pl2 at token:" + tok.peep().locate());
             tok.pop();
 
-            // make sure its a reference token and get its label.
-            if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tok.peep().locate());
-            variableName = tok.pop();
-
             // Check to see if this is a variable declarations. 
-            if (tok.peep().getTokenType() == TokenType.DATATYPE)
+            if (tok.peep().getValue() == "[")
             {
-                while (true)
-                { 
+                while (tok.peep().getValue() == "[")
+                {
+                    // make sure its a open brace token.
+                    if (tok.peep().getValue() != "[") throw new Exception("error pl4 at token:" + tok.peep().locate());
+                    tok.pop();
+
+                    // make sure its a reference token and get its label.
+                    if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tok.peep().locate());
+                    variableName = tok.pop();
+
                     // check that its has a valid data type
                     if (tok.peep().getTokenType() != TokenType.DATATYPE) throw new Exception("error pl3 at token:" + tok.peep().locate());
                     dataType = tok.pop();
@@ -715,28 +738,18 @@ namespace Compiler
                     if(symantics) scope.addToScope(dec);
 
                     let.addChild(dec);
-
-                    // This is where we check to see if there is another variable declaration
-                    // Its like this because the function declaration diverges from variable declarations.
-                    if (tok.peep().getValue() == "]") break; 
-
-                    // make sure its a open brace token.
-                    if (tok.peep().getValue() != "[") throw new Exception("error pl6 at token:" + tok.peep().locate());
-                    tok.pop();
-
-                    // make sure its a reference token and get its label.
-                    if (tok.peep().getTokenType() != TokenType.REF) throw new Exception("error pl2 at token:" + tok.peep().locate());
-                    variableName = tok.pop();
-
                 }
+
+                // make sure its a open brace token.
+                if (tok.peep().getValue() != "]") throw new Exception("error pl7 at token:" + tok.peep().locate());
+
+                tok.pop();
             }
                 // chech to see if it is a function declaration.
-            else if (tok.peep().getTokenType() == TokenType.REF || tok.peep().getValue() == "]")
+            else if (tok.peep().getTokenType() == TokenType.REF )
             {
-
-               
                 // TODO fix this back to be just a node
-               return (ExpressionNode)parseFunction(variableName,scope);
+               return (ExpressionNode)parseFunction(scope);
 
             }else // if its not a variable or function declatation there must be an error.
                 throw new Exception("Token in let stament is incorrect...  "+tok.peep().locate());
