@@ -4,7 +4,7 @@
 
 [let [
 [a int]
-[b real]
+[b float]
 [c bool]
 [d bool]
 ]

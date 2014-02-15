@@ -382,7 +382,20 @@ namespace Compiler
                     opToken.getValue() == "sin" ||
                     opToken.getValue() == "cos" ||
                     opToken.getValue() == "tan") throw new Exception("error, not a binary operator. " + opToken.locate());
-
+                if (opToken.getValue() != "+" &&
+                    opToken.getValue() != "-" &&
+                    opToken.getValue() != "*" &&
+                    opToken.getValue() != "/" &&
+                    opToken.getValue() != "%" &&
+                    opToken.getValue() != "^" &&
+                    opToken.getValue() != "=" &&
+                    opToken.getValue() != ">" &&
+                    opToken.getValue() != ">=" &&
+                    opToken.getValue() != "<" &&
+                    opToken.getValue() != "<=" &&
+                    opToken.getValue() != "!=" &&
+                    opToken.getValue() != "or" &&
+                    opToken.getValue() != "and") throw new Exception("error, Looking for a binary operator at " + opToken.locate());
                 rightExpr = parseExpression(scope);
 
                 if (symantics && leftExpr.getReturnType() != rightExpr.getReturnType()) throw new Exception("pererr fix this.");

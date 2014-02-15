@@ -22,7 +22,7 @@ namespace Compiler
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../input10.ibtl";
+                        path = "../../input16.ibtl";
                     else
                         path = args[i];
 
@@ -49,7 +49,7 @@ namespace Compiler
                     }
                     if (args.Length == 0)
                     {
-                        using (StreamWriter outfile = new StreamWriter("../../out.gf"))
+                        using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
                         {
                             outfile.Write(output);
                         }
