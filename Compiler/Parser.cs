@@ -864,7 +864,7 @@ namespace Compiler
 
             //foreach (ParamNode paramLabel in func.getParameters())
 
-            LinkedListNode<ParamNode> cur;
+            LinkedListNode<ParamNode> cur = null;
 
             if (symantics) cur = func.getParameters().First;
             while(tok.peep().getValue() != "]")
