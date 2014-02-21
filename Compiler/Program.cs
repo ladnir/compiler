@@ -22,7 +22,7 @@ namespace Compiler
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../input14.ibtl";
+                        path = "../../input01.ibtl";
                     else
                         path = args[i];
 
@@ -45,7 +45,7 @@ namespace Compiler
                         //output = sb.ToString();
 
                         output = root.outputIBTL(0);
-                        Console.WriteLine(output);
+                        //Console.WriteLine(output);
                     }
                     if (args.Length == 0)
                     {

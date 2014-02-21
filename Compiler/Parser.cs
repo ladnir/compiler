@@ -8,7 +8,7 @@ namespace Compiler
 {
     public class Parser
     {
-        public const bool debug = true;
+        public const bool debug = false;
         public const bool symantics = false;
       
         private RootNode root;
@@ -870,7 +870,6 @@ namespace Compiler
 
                 parameters.AddLast(paramExpr);
             }
-            Console.WriteLine("call");
             CallNode call = new CallNode(func, parameters);
 
             // make sure its has closing brace
