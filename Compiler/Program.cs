@@ -45,7 +45,7 @@ namespace Compiler
                         //output = sb.ToString();
 
                         output = root.outputIBTL(0);
-                        //Console.WriteLine(output);
+                        Console.WriteLine(output);
                     }
                     if (args.Length == 0)
                     {
