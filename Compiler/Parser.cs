@@ -9,7 +9,7 @@ namespace Compiler
     public class Parser
     {
         public const bool debug = false;
-        public const bool symantics = false;
+        //public const bool symantics = false;
       
         private RootNode root;
         private Tokenizer tok;
@@ -190,7 +190,7 @@ namespace Compiler
             
             // TODO : Need to add support for prototyping. if someone prototype this will throw an error.  <========================================
             // Make sure this function doesnt already exist. 
-            if (symantics && scope.funcInScope(functionName.getValue())) throw new Exception("error pf9 at token:" + tok.peep().locate());
+            if ( scope.funcInScope(functionName.getValue())) throw new Exception("error pf9 at token:" + tok.peep().locate());
         
           
             // parse the internal function statements. provide the function node as a LocalScope object.
@@ -200,7 +200,7 @@ namespace Compiler
             fn.addChildren(children);
 
             // Add the new function to the root node.
-            if (symantics) scope.addToScope(fn);
+            scope.addToScope(fn);
 
             // make sure there is a closing brace.
             if (tok.peep().getValue() != "]") throw new Exception("error 6 at token:" + tok.peep().locate());
@@ -378,33 +378,11 @@ namespace Compiler
 
             if (tok.peep().getValue() != "]")
             {
-                if (opToken.getValue() == "not" ||
-                    opToken.getValue() == "sin" ||
-                    opToken.getValue() == "cos" ||
-                    opToken.getValue() == "tan") throw new Exception("error, not a binary operator. " + opToken.locate());
-
-                if (opToken.getValue() != "+" &&
-                    opToken.getValue() != "-" &&
-                    opToken.getValue() != "*" &&
-                    opToken.getValue() != "/" &&
-                    opToken.getValue() != "%" &&
-                    opToken.getValue() != "^" &&
-                    opToken.getValue() != "=" &&
-                    opToken.getValue() != ">" &&
-                    opToken.getValue() != ">=" &&
-                    opToken.getValue() != "<" &&
-                    opToken.getValue() != "<=" &&
-                    opToken.getValue() != "!=" &&
-                    opToken.getValue() != "or" &&
-                    opToken.getValue() != "and") throw new Exception("error, Looking for a binary operator at " + opToken.locate());
+                if (!isBinOp(opToken) )throw new Exception("error, Looking for a binary operator at " + opToken.locate());
                 rightExpr = parseExpression(scope);
 
-                if (symantics && leftExpr.getReturnType() != rightExpr.getReturnType()) throw new Exception("pererr fix this.");
             }
-            else if (opToken.getValue() != "not" &&
-                    opToken.getValue() != "sin" &&
-                    opToken.getValue() != "cos" &&
-                    opToken.getValue() != "tan")  throw new Exception("error, Looking for a binary operator at " + opToken.locate());
+            else if (! isUnOp(opToken))  throw new Exception("error, Looking for a unnary operator at " + opToken.locate());
 
             if (tok.peep().getValue() != "]")
                 throw new Exception("error, parseOp1 at token:" + tok.peep().locate() + "\n expecting a ]\n in exprestion "+opToken.getValue());
@@ -415,8 +393,6 @@ namespace Compiler
             return  new OpNode(opToken, leftExpr, rightExpr);
         }
 
-
-
         /// <summary>
         /// <para> - </para>
         /// <para> Expects the local scope that it lives in.             </para>
@@ -425,8 +401,8 @@ namespace Compiler
         /// <para> Sets the index AFTER the closing brace.               </para>
         /// <para> Returns a construct node.                             </para>
         /// </summary>
-        private ExpressionNode parseConstruct(ILocalScopeNode scope)
-        { //TODO: change back to Node
+        private Node parseConstruct(ILocalScopeNode scope)
+        {
 
             debugEntering("construct");
 
@@ -452,8 +428,8 @@ namespace Compiler
                 throw new Exception("error, unknow construct at token:" + tok.peep().locate());
         }
 
-        private ExpressionNode parseStdout(ILocalScopeNode scope)
-        {// TODO change back to Node
+        private Node parseStdout(ILocalScopeNode scope)
+        {
             tok.pop();
             ExpressionNode expr = parseExpression(scope);
             if (tok.peep().getValue() != "]") throw new Exception("error, parsing stdout. expecting closing brace ]. " + tok.peep().locate());
@@ -472,8 +448,8 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private ExpressionNode parseIf(ILocalScopeNode scope)
-        { //TODO: change back to Node
+        private Node parseIf(ILocalScopeNode scope)
+        { 
 
             debugEntering("if");
 
@@ -489,7 +465,7 @@ namespace Compiler
             eval = parseExpression( scope);
 
             // check that the eval node returns a boolean.
-            if (symantics && eval.getReturnType() != "bool") throw new Exception("error pi4 at token:" + tok.peep().locate());
+            if ( eval.getReturnType() != "bool") throw new Exception("error pi4 at token:" + tok.peep().locate());
 
             //if (tok.peep().getValue() != "[") throw new Exception("error pi6 at token:" + tok.peep().locate());
             
@@ -588,8 +564,8 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private ExpressionNode parseWhileLoop(ILocalScopeNode scope)
-        { // TODO change back to Node
+        private Node parseWhileLoop(ILocalScopeNode scope)
+        { 
 
             debugEntering("while");
 
@@ -605,7 +581,7 @@ namespace Compiler
             eval = parseExpression(scope);
 
             // check that the eval node returns a boolean.
-            if (symantics && eval.getReturnType() != "bool") throw new Exception("error pw4 at token:" + tok.peep().locate());
+            if (eval.getReturnType() != "bool") throw new Exception("error pw4 at token:" + tok.peep().locate());
 
             
             // create the if node so that the parse statements call will have a local scope to use.
@@ -647,32 +623,34 @@ namespace Compiler
 
             // make sure its an assignment
             if (tok.peep().getValue() != ":=") throw new Exception("error pa1 at token:" + tok.peep().locate());
-            tok.pop();
+            Token loc = tok.pop();
 
             varName = tok.pop();
             if (varName.getTokenType() != TokenType.REF) throw new Exception("LValue must be a variable name. " + varName.locate());
             // check that the token is in scope
-            if (symantics && !scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + varName.locate() + "\nVariable is not in scope");
+            if ( !scope.varInScope(varName.getValue())) throw new Exception("error pa2 at token:" + varName.locate() + "\nVariable is not in scope");
 
             // parse the expression into Node(s)
             expr = parseExpression( scope);
 
-            if (scope.varInScope(varName.getValue()))
-            {  //TODO REMOVE THIS ############################################################################################################ 
-                varNode = scope.getVarRef(varName.getValue());
-            }
-            else
-            {  //TODO REMOVE THIS ############################################################################################################ 
-                DeclarationNode dec = new DeclarationNode(null, varName);
-                varNode = new VariableNode(dec);
-            }
-            // check the that the data types match
-            if (symantics && expr.getReturnType() != varNode.getReturnType()) throw new Exception("error pa3 at token:" + tok.peep().locate()+"\nTypes dont match");
+            //if (scope.varInScope(varName.getValue()))
+            //{  //TODO REMOVE THIS ############################################################################################################ 
+            varNode = scope.getVarRef(varName.getValue());
+            //}
+            //else
+            //{  //TODO REMOVE THIS ############################################################################################################ 
+            //    DeclarationNode dec = new DeclarationNode(null, varName);
+            //    varNode = new VariableNode(dec);
+            //}
 
-            assignment = new AssignmentNode(varNode, expr);
+            //// check the that the data types match
+            //if ( expr.getReturnType() != varNode.getReturnType()) throw new Exception("error pa3 at token:" + tok.peep().locate()+"\nTypes dont match");
+
+            assignment = new AssignmentNode(varNode, expr,loc);
 
             // make sure its an assignment
-            if (tok.peep().getValue() != "]") throw new Exception("error pa1 at token:" + tok.peep().locate());
+            if (tok.peep().getValue() != "]") throw new Exception("error pa1 at token:" + tok.peep().locate()+@"
+After parsing an assignment, an closing brace is expected.");
             tok.pop();
 
 
@@ -691,8 +669,8 @@ namespace Compiler
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private ExpressionNode  parseLet(ILocalScopeNode scope)
-        { // TODO change back to Node
+        private Node  parseLet(ILocalScopeNode scope)
+        { 
 
 
             debugEntering("let");
@@ -729,7 +707,7 @@ namespace Compiler
 
 
                     // make sure its not in scope.
-                    if (symantics && scope.varInScope(variableName.getValue()))
+                    if ( scope.varInScope(variableName.getValue()))
                         throw new Exception("error pl4 at Token " + variableName.locate() + "  " + variableName.getValue() + " is already in scope.");
 
                     if (tok.peep().getValue() != "]") throw new Exception("error pl5 at token:" + tok.peep().locate());
@@ -739,7 +717,7 @@ namespace Compiler
                     DeclarationNode dec = new DeclarationNode(dataType, variableName);
 
                     // add the variable to local scope.
-                    if(symantics) scope.addToScope(dec);
+                    scope.addToScope(dec);
 
                     let.addChild(dec);
                 }
@@ -752,8 +730,7 @@ namespace Compiler
                 // chech to see if it is a function declaration.
             else if (tok.peep().getTokenType() == TokenType.REF )
             {
-                // TODO fix this back to be just a node
-               return (ExpressionNode)parseFunction(scope);
+               return parseFunction(scope);
 
             }else // if its not a variable or function declatation there must be an error.
                 throw new Exception("Token in let stament is incorrect...  "+tok.peep().locate());
@@ -790,18 +767,19 @@ namespace Compiler
                 if (tok.peep().getTokenType() == TokenType.OP)
                     expr =  parseOp(scope);
 
-                else if (tok.peep().getTokenType() == TokenType.ASSIGNMENT)
-                {
-                    expr = parseAssignment(scope);
-                }
-                else if (tok.peep().getTokenType() == TokenType.CONSTRUCT)
-                {
-                    expr = parseConstruct(scope);
-                }
-                else{// if(scope.funcInScope(tok.peep().getValue())){ //TODO: REMOVE THIS ##################################################################
+                //else if (tok.peep().getTokenType() == TokenType.ASSIGNMENT)
+                //{
+                //    expr = parseAssignment(scope);
+                //}
+                //else if (tok.peep().getTokenType() == TokenType.CONSTRUCT)
+                //{
+                //    expr = parseConstruct(scope);
+                //}
+                else if(scope.funcInScope(tok.peep().getValue())){ 
                     expr = parseCall(scope);
                 }
-                //else throw new Exception("error pex1 at token:" + tok.peep().locate());
+                else throw new Exception("error pex1 at token:" + tok.peep().locate()+@"
+Unknown express found, looking for something that evaluates to a value.");
 
                 
             }
@@ -813,19 +791,15 @@ namespace Compiler
             }
 
             // check for a local variable.
-            else{// 
-                if (scope.varInScope(tok.peep().getValue()))
-                {
-                    expr = scope.getVarRef(tok.peep().getValue());
-                }
-                else
-                { // REMOVE THIS #########################################################################################################################
-                    DeclarationNode dec = new DeclarationNode(null, tok.peep());
-                    expr = new VariableNode(dec);
-                }
+            else if (scope.varInScope(tok.peep().getValue()))
+            {
+                expr = scope.getVarRef(tok.peep().getValue()); 
                 tok.pop();
             }
-            //else throw new Exception("error pex2 at token:" + tok.peep().locate());
+            else throw new Exception("error pex2 at token:" + tok.peep().locate()+@"
+An unknown token was found. If its a verable, 
+make sure it has been initialized. 
+Otherwise it is probable out of place");
 
 
             debugExit("expr");
@@ -837,18 +811,15 @@ namespace Compiler
         {
             debugEntering("call");
             Token functionName =tok.peep();
-            if (symantics && !scope.funcInScope(functionName.getValue())) 
+            if (!scope.funcInScope(functionName.getValue())) 
                 throw new Exception("error Function " + tok.peep().getValue() + " does not exist at " + tok.peep().locate());
 
 
             IFunctionNode func=null;
 
-            if (scope.funcInScope(tok.peep().getValue())) 
-                func = scope.getFuncRef(tok.peep().getValue());
-            else
-            {//TODO Remove this ##########################################################################
-                func = new UserFunctionNode( functionName);
-            }
+            
+            func = scope.getFuncRef(tok.peep().getValue());
+           
             LinkedList<ExpressionNode> parameters = new LinkedList<ExpressionNode>();
             
             tok.pop();
@@ -857,16 +828,16 @@ namespace Compiler
 
             LinkedListNode<ParamNode> cur = null;
 
-            if (symantics) cur = func.getParameters().First;
+            cur = func.getParameters().First;
             while(tok.peep().getValue() != "]")
             {
 
                 ExpressionNode paramExpr = parseExpression(scope);
 
                 // make sure the param data type matchs the function signature,
-                if (symantics && paramExpr.getReturnType() != cur.Value.getDataType()) throw new Exception("error pex2 at token:" + tok.peep().locate());
+                if ( paramExpr.getReturnType() != cur.Value.getDataType()) throw new Exception("error pex2 at token:" + tok.peep().locate());
 
-                if (symantics) cur = cur.Next;
+                cur = cur.Next;
 
                 parameters.AddLast(paramExpr);
             }
@@ -879,7 +850,35 @@ namespace Compiler
             debugExit("call");
             return call;
         }
+        private bool isUnOp(Token opToken)
+        {
+            if (opToken.getValue() != "not" ||
+                    opToken.getValue() != "sin" ||
+                    opToken.getValue() != "cos" ||
+                    opToken.getValue() != "tan" ||
+                    opToken.getValue() != "-") return true;
+            return false;
+        }
 
+        private bool isBinOp(Token opToken)
+        {
+            if (opToken.getValue() != "+" ||
+                    opToken.getValue() != "-" ||
+                    opToken.getValue() != "*" ||
+                    opToken.getValue() != "/" ||
+                    opToken.getValue() != "%" ||
+                    opToken.getValue() != "^" ||
+                    opToken.getValue() != "=" ||
+                    opToken.getValue() != ">" ||
+                    opToken.getValue() != ">=" ||
+                    opToken.getValue() != "<" ||
+                    opToken.getValue() != "<=" ||
+                    opToken.getValue() != "!=" ||
+                    opToken.getValue() != "or" ||
+                    opToken.getValue() != "and") return true;
+            return false;
+
+        }
         public void debugEntering(string name)
         {
             if (debug) {

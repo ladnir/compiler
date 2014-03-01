@@ -5,14 +5,16 @@ using System.Text;
 
 namespace Compiler
 {
-    public class AssignmentNode : ExpressionNode 
+    public class AssignmentNode : Node 
     {
         private ExpressionNode expr;
         private VariableNode varNode;
+        private Token location;
 
-        public AssignmentNode(VariableNode varNode, ExpressionNode expr)
+        public AssignmentNode(VariableNode varNode, ExpressionNode expr,Token location)
         {
             // TODO: Complete member initialization
+            this.location = location;
             this.varNode = varNode;
             this.expr = expr;
         }
@@ -29,12 +31,48 @@ namespace Compiler
             //if (Parser.debug) Console.Write(" { " + varNode.getVarName() + " } \n");
 
             expr.outputGForth(tabCount, sb);
+            if(varNode.getReturnType() != expr.getReturnType()){
+                castType(sb);
+            }
             sb.Append(" TO "+varNode.getVarName());
         }
 
-        public override string getReturnType()
+
+        private void castType(StringBuilder sb)
         {
-            throw new NotImplementedException();
+            switch (varNode.getReturnType())
+                {
+                    case "int":
+                        if (expr.getReturnType() == "float") sb.Append(" f>s ");
+                        else throw new Exception("gforth generation error Assnigment Node."+location.locate()+@" 
+int is not compattable with "+expr.getReturnType());
+
+                        break;
+                    case "float":
+                        if (expr.getReturnType() == "int") sb.Append(" s>f ");
+                        else throw new Exception("gforth generation error Assnigment Node." + location.locate() + @" 
+float is not compattable with " + expr.getReturnType());
+
+                        break;
+                    case "bool":
+                        if (expr.getReturnType() == "float") sb.Append(" f>s ");
+                        else if (expr.getReturnType() == "int");
+                        else throw new Exception("gforth generation error Assnigment Node." + location.locate() + @" 
+bool is not compattable with " + expr.getReturnType());
+
+                        break;
+                    case"string":
+                        if (expr.getReturnType() != "string") throw new Exception("gforth generation error Assnigment Node." + location.locate() + @" 
+string is not compattable with " + expr.getReturnType());
+
+                        break;
+                    default:
+                        throw new Exception("gforth generation error Assnigment Node." + location.locate() + @" 
+unknown type at " + varNode.getReturnType());
+                        break;
+                }
         }
+
+      
     }
 }

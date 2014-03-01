@@ -5,14 +5,9 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    //TODO: change back to node
-    class LetNode : ExpressionNode
+    class LetNode : Node
     {
-        // TODO remove this
-        public override string getReturnType()
-        {
-            throw new NotImplementedException();
-        }
+      
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
 

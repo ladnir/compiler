@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    //TODO: change back to Node
-    class WhileLoopNode : ExpressionNode , ILocalScopeNode
+    class WhileLoopNode : Node , ILocalScopeNode
     {
         private ExpressionNode eval;
         private ILocalScopeNode scope;
@@ -97,12 +96,6 @@ namespace Compiler.parser
             IFunctionNode ifunc = (IFunctionNode)func;
             functions.Add(ifunc.getName(), ifunc);
             //scope.addToScope(func);
-        }
-
-        public override string getReturnType()
-        {
-            //TODO remove this
-            throw new NotImplementedException();
         }
     }
 }

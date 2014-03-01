@@ -15,14 +15,14 @@ namespace Compiler
             Node root=null;
             string output = "";
 
-            try
-            {
-
+            //try
+            //{
+            
                 string path;
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../input01.ibtl";
+                        path = "../../tests/ms4/input06.ibtl";
                     else
                         path = args[i];
 
@@ -40,11 +40,11 @@ namespace Compiler
 
                         StringBuilder sb = new StringBuilder();
 
-                        //Console.WriteLine("generating Gforth...");
-                        //root.outputGForth(1, sb);
-                        //output = sb.ToString();
+                        Console.WriteLine("generating Gforth...");
+                        root.outputGForth(1, sb);
+                        output = sb.ToString();
 
-                        output = root.outputIBTL(0);
+                        //output = root.outputIBTL(0);
                         Console.WriteLine(output);
                     }
                     if (args.Length == 0)
@@ -56,11 +56,11 @@ namespace Compiler
                     }
                 }
             
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("\n\n" + e.Message + "");
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("\n\n" + e.Message + "");
+            //}
 
 
 

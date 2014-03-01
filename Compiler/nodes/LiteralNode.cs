@@ -7,59 +7,64 @@ namespace Compiler.parser
 {
     public class LiteralNode : ExpressionNode
     {
-        private Token nameToken;
+        private Token litToken;
 
         public LiteralNode(Token nameToken)
         {
             // TODO: Complete member initialization
-            this.nameToken = nameToken;
+            this.litToken = nameToken;
         }
+
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             //if (Parser.debug) Console.Write(nameToken.getValue());
             
-            if (nameToken.getTokenType() == TokenType.BOOL){
-                if (nameToken.getValue() == "true") sb.Append("-1 ");
+            if (litToken.getTokenType() == TokenType.BOOL){
+                if (litToken.getValue() == "true") sb.Append("-1 ");
                 else sb.Append("0 ");
             }
 
-            else if (nameToken.getTokenType() == TokenType.FLOAT)
-                sb.Append( nameToken.getValue()+" ");
+            else if (litToken.getTokenType() == TokenType.FLOAT)
+            {
+                if(litToken.getValue().Contains('e'))
+                    sb.Append(litToken.getValue() + " ");
+                else
+                    sb.Append(litToken.getValue() + "e ");
+            }
+            else if (litToken.getTokenType() == TokenType.INT)
+                sb.Append(litToken.getValue() + " ");
 
-            else if (nameToken.getTokenType() == TokenType.INT)
-                sb.Append( nameToken.getValue()+ " " );
+            else if (litToken.getTokenType() == TokenType.STRING)
+                throw new NotImplementedException("strings are not supported yet, im soo soo sorry :). ");
 
-            else if (nameToken.getTokenType() == TokenType.STRING)
-                throw new NotImplementedException("strings are not supported");
-
-            else throw new Exception("unknown literal at " + nameToken.locate() + "  "+nameToken.getTokenType());
+            else throw new Exception("unknown literal at " + litToken.locate() + "  " + litToken.getTokenType());
        
         }
         public override string outputIBTL(int tabCount)
         {
-            if (nameToken.getTokenType() == TokenType.BOOL)
-                return nameToken.getValue();
+            if (litToken.getTokenType() == TokenType.BOOL)
+                return litToken.getValue();
 
-            else if (nameToken.getTokenType() == TokenType.FLOAT)
-                return nameToken.getValue();
+            else if (litToken.getTokenType() == TokenType.FLOAT)
+                return litToken.getValue();
 
-            else if (nameToken.getTokenType() == TokenType.INT)
-                return nameToken.getValue();
+            else if (litToken.getTokenType() == TokenType.INT)
+                return litToken.getValue();
 
-            else if (nameToken.getTokenType() == TokenType.STRING)
-                return "\"" + nameToken.getValue() + "\"";
+            else if (litToken.getTokenType() == TokenType.STRING)
+                return "\"" + litToken.getValue() + "\"";
 
-            else throw new Exception("unknown literal at "+nameToken.locate());
+            else throw new Exception("unknown literal at "+litToken.locate());
         }
 
         public override string getReturnType()
         {
-            if (nameToken.getTokenType() == TokenType.INT) return "int";
-            if (nameToken.getTokenType() == TokenType.STRING) return "string";
-            if (nameToken.getTokenType() == TokenType.FLOAT) return "float";
-            if (nameToken.getTokenType() == TokenType.BOOL) return "bool";
+            if (litToken.getTokenType() == TokenType.INT) return "int";
+            if (litToken.getTokenType() == TokenType.STRING) return "string";
+            if (litToken.getTokenType() == TokenType.FLOAT) return "float";
+            if (litToken.getTokenType() == TokenType.BOOL) return "bool";
 
-            throw new Exception("error  literal " + nameToken.locate());
+            throw new Exception("error  literal " + litToken.locate());
         }
     }
 }

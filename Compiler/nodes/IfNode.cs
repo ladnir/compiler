@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Compiler.parser
 {
-    //TODO: change this back to Node
-    class IfNode : ExpressionNode , ILocalScopeNode
+    class IfNode : Node , ILocalScopeNode
     {
 
         private ExpressionNode eval;
@@ -22,11 +21,7 @@ namespace Compiler.parser
             this.eval = eval;
             this.scope = scope;
         }
-        // TODO remove this
-        public override string getReturnType()
-        {
-            throw new NotImplementedException();
-        }
+  
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             //if (Parser.debug) Console.Write("if \n");

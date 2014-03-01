@@ -1,0 +1,9 @@
+﻿[  
+	[sin 3]
+	[sin 3.0]
+	[sin 3.0343e-33]
+	[sin [-2]]
+
+	[- true]
+	[stdout [and true false]]
+]

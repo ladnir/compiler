@@ -1,1 +1,0 @@
-﻿[[+1[^[+2 3]7]][stdout[:=s 3]][if true[stdout"yes"][stdout"no"]][[sin 3.4e-44][[:=c 4][][][[[]]]]][][]]

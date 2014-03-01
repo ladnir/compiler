@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Compiler
 {
-    //TODO change back to Node
     class StdoutNode : ExpressionNode, IFunctionNode
     {
         private ExpressionNode expr;
@@ -26,9 +25,11 @@ namespace Compiler
             expr.outputGForth(tabCount, sb);
 
             if (expr.getReturnType() == "int")
-                sb.Append(". ");
+                sb.Append(" . ");
             else if (expr.getReturnType() == "float")
-                sb.Append("f. ");
+                sb.Append(" f. ");
+            else if (expr.getReturnType() == "bool")
+                sb.Append(" . ");
             else throw new NotImplementedException();
         }
 
@@ -51,7 +52,7 @@ namespace Compiler
 
         public override string getReturnType()
         {
-            throw new NotImplementedException();
+            return "void";
         }
     }
 }

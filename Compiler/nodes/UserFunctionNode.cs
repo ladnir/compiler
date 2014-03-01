@@ -7,8 +7,7 @@ using Compiler.parser;
 
 namespace Compiler
 {
-    //TODO change back to Node
-    public class UserFunctionNode : ExpressionNode , ILocalScopeNode ,IFunctionNode
+    public class UserFunctionNode : Node , ILocalScopeNode ,IFunctionNode
     {
         private LinkedList<ParamNode> parameters;
 
@@ -17,15 +16,11 @@ namespace Compiler
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
         private ILocalScopeNode scope;
 
-        //TODO remove this.
-        override public string getReturnType(){
-            throw new NotImplementedException();
-        }
-
-        public UserFunctionNode(Token name)
-        { //TODO remove this
-            functionName = name;
-        }
+    
+        //public UserFunctionNode(Token name)
+        //{ //TODO remove this
+        //    functionName = name;
+        //}
 
         public UserFunctionNode(Token returnType, 
                                 Token functionName, 

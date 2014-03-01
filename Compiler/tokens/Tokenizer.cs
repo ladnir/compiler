@@ -99,6 +99,7 @@ namespace Compiler
             if (endOfStream()) return null;
 
             if (isNumber(charPeep()))           token = getNumber();
+            else if (isDot(charPeep()))         token = getNumber();
             else if (assignment(charPeep()))    token = getAssignment();
             else if (isQuote(charPeep()))       token = getString();
             else if (isOperator())              token = getOperator();
@@ -109,6 +110,12 @@ namespace Compiler
             num++;
 
             return token;
+        }
+
+        private bool isDot(char p)
+        {
+            if(p=='.')return true;
+            return false;
         }
 
         private void skipWhiteSpace()
@@ -192,6 +199,8 @@ namespace Compiler
                 BaseToken b = new OperatorToken("/");
                 Token t = new Token(b, line, num++);
                 symbols.Add("/", b);
+
+                return t;
             }
             return null;
         }
@@ -296,14 +305,13 @@ namespace Compiler
         private Token getNumber()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(charPeep());
-            charPop();
 
             string number;
             BaseToken b;
 
             while ( ! endOfStream() && isNumber(charPeep())) sb.Append(charPop());
 
+           // Console.WriteLine("float test on " + charPeep());
             if (! endOfStream() && isFloat())
             {
                 if (charPeep() == '.') getDot(sb);

@@ -71,24 +71,56 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="input04.ibtl" />
-    <None Include="input05.ibtl" />
-    <None Include="input07.ibtl" />
-    <None Include="input08.ibtl" />
-    <None Include="input09.ibtl" />
-    <None Include="input16.ibtl" />
-    <None Include="input15.ibtl" />
-    <None Include="input14.ibtl" />
-    <None Include="input13.ibtl" />
-    <None Include="input12.ibtl" />
-    <None Include="input11.ibtl" />
-    <None Include="input10.ibtl" />
-    <None Include="input06.ibtl" />
-    <None Include="input03.ibtl" />
-    <None Include="input02.ibtl" />
+    <None Include="tests\ms4\input01.ibtl" />
+    <None Include="tests\ms4\input02.ibtl" />
+    <None Include="tests\ms4\input03.ibtl" />
+    <None Include="tests\ms4\input04.ibtl" />
+    <None Include="tests\ms4\input05.ibtl" />
+    <None Include="tests\ms4\input06.ibtl" />
+    <None Include="tests\ms4\input07.ibtl" />
+    <None Include="tests\ms4\input08.ibtl" />
+    <None Include="tests\ms4\input09.ibtl" />
+    <None Include="tests\ms4\input10.ibtl" />
+    <None Include="tests\ms4\input11.ibtl" />
+    <None Include="tests\ms4\input12.ibtl" />
+    <None Include="tests\ms4\input13.ibtl" />
+    <None Include="tests\ms4\input14.ibtl" />
+    <None Include="tests\ms4\input15.ibtl" />
+    <None Include="tests\ms4\input16.ibtl" />
+    <None Include="tests\ms3\input04.ibtl" />
+    <None Include="tests\ms3\input05.ibtl" />
+    <None Include="tests\ms3\input07.ibtl" />
+    <None Include="tests\ms3\input08.ibtl" />
+    <None Include="tests\ms3\input09.ibtl" />
+    <None Include="tests\ms3\input16.ibtl" />
+    <None Include="tests\ms3\input15.ibtl" />
+    <None Include="tests\ms3\input14.ibtl" />
+    <None Include="tests\ms3\input13.ibtl" />
+    <None Include="tests\ms3\input12.ibtl" />
+    <None Include="tests\ms3\input11.ibtl" />
+    <None Include="tests\ms3\input10.ibtl" />
+    <None Include="tests\ms3\input06.ibtl" />
+    <None Include="tests\ms3\input03.ibtl" />
+    <None Include="tests\ms3\input02.ibtl" />
+    <None Include="tests\final\input01.ibtl" />
+    <None Include="tests\final\input02.ibtl" />
+    <None Include="tests\final\input03.ibtl" />
+    <None Include="tests\final\input04.ibtl" />
+    <None Include="tests\final\input05.ibtl" />
+    <None Include="tests\final\input06.ibtl" />
+    <None Include="tests\final\input07.ibtl" />
+    <None Include="tests\final\input08.ibtl" />
+    <None Include="tests\final\input09.ibtl" />
+    <None Include="tests\final\input10.ibtl" />
+    <None Include="tests\final\input11.ibtl" />
+    <None Include="tests\final\input12.ibtl" />
+    <None Include="tests\final\input13.ibtl" />
+    <None Include="tests\final\input14.ibtl" />
+    <None Include="tests\final\input15.ibtl" />
+    <None Include="tests\final\input16.ibtl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="input01.ibtl" />
+    <None Include="tests\ms3\input01.ibtl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

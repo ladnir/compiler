@@ -1,0 +1,6 @@
+﻿[
+	[g]
+
+	// operators in wrong order
+	[x= 3 + 66]
+]

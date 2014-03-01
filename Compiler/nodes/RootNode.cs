@@ -50,7 +50,8 @@ namespace Compiler
             foreach (Node n in children)
                 n.outputGForth(tabCount, sb);
 
-            sb.Append("\n\n 1 Main");
+            if(functions.ContainsKey("Main"))
+                sb.Append("\n\n 1 Main");
         }
 
         public override string outputIBTL(int tabCount)
