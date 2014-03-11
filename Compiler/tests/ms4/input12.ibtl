@@ -1,1 +1,22 @@
-﻿
+﻿[
+	
+
+	[let [myFunction a b][int int int]
+		[stdout a]
+		[stdout b]
+
+	]
+
+    [let [Main i ][int int ] 
+        [ let [ [n int] [s string]  ] ]                   
+        
+		[stdout i ]
+		[:= n [myFunction i 9 ]]
+		[while [< i 10 ]
+			[:= i [+ i i]]
+			[stdout i]
+
+		]
+		
+    ]                                 
+]

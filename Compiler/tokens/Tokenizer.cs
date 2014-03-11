@@ -13,7 +13,7 @@ namespace Compiler
     {
         private Dictionary<string, BaseToken> symbols = new Dictionary<string, BaseToken>();
 
-        static string[] Functions = { "sin", "cos"," tan" ,"and","or"};
+        static string[] Functions = { "sin", "cos","tan" ,"and","or"};
         static string[] dataTypes = { "int", "bool", "float", "string" };
         static string[] constructs = { "while", "if", "let" , "return","stdout" }; 
 
