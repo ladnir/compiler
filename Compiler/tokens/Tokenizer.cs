@@ -353,6 +353,7 @@ namespace Compiler
         private void getDot(StringBuilder sb)
         {
             sb.Append(charPop());
+            if(charPeep()!= 'e' && ! isNumber(charPeep())) throw new Exception("Tokenizer error, expecting an e or a number after . \nLine:"+line);
             while ( ! endOfStream() && isNumber(charPeep())) sb.Append(charPop());
 
         }

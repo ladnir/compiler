@@ -30,6 +30,9 @@ namespace Compiler
                 sb.Append(" f. ");
             else if (expr.getReturnType() == "bool")
                 sb.Append(" . ");
+            else if (expr.getReturnType() == "string") 
+                sb.Append(" type ");
+
             else throw new NotImplementedException();
         }
 

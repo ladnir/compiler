@@ -15,14 +15,14 @@ namespace Compiler
             Node root=null;
             string output = "";
 
-            //try
-            //{
+            try
+            {
             
                 string path;
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../tests/ms4/input06.ibtl";
+                        path = "../../tests/ms4/input02.ibtl";
                     else
                         path = args[i];
 
@@ -55,12 +55,12 @@ namespace Compiler
                         }
                     }
                 }
-            
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine("\n\n" + e.Message + "");
-            //}
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\n\n" + e.Message + "");
+            }
 
 
 

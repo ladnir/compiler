@@ -1,3 +1,7 @@
-﻿[  
-	[and true "this statement is false..."]
+﻿[
+	//[/ "hello" 23]
+	//[^ 3.0 "32"]
+	//[and true 5.0]
+	[and true true]
+	[and 4.0 false]
 ]

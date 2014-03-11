@@ -371,6 +371,7 @@ namespace Compiler
             debugEntering("OP");
 
             Token opToken = tok.peep();
+
             tok.pop();
 
             ExpressionNode leftExpr, rightExpr = null;
@@ -388,9 +389,16 @@ namespace Compiler
                 throw new Exception("error, parseOp1 at token:" + tok.peep().locate() + "\n expecting a ]\n in exprestion "+opToken.getValue());
 
             tok.pop();
-
+            if (opToken.getValue() == "^") definePowerFunction(scope,leftExpr,rightExpr);
+           
             debugExit("op");
             return  new OpNode(opToken, leftExpr, rightExpr);
+        }
+
+        private void definePowerFunction(ILocalScopeNode scope,ExpressionNode left, ExpressionNode right)
+        {
+            if (left.getReturnType() == "float" || right.getReturnType() == "float") scope.defineFunc("f^");
+            else  scope.defineFunc("f^");
         }
 
         /// <summary>

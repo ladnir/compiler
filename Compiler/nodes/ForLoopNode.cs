@@ -65,5 +65,9 @@ namespace Compiler
             scope.addToScope(func);
         }
 
+        public void defineFunc(string name)
+        {
+            scope.defineFunc(name);
+        }
     }
 }

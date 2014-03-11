@@ -97,5 +97,10 @@ namespace Compiler.parser
             functions.Add(ifunc.getName(), ifunc);
             //scope.addToScope(func);
         }
+
+        public void defineFunc(string name)
+        {
+            scope.defineFunc(name);
+        }
     }
 }

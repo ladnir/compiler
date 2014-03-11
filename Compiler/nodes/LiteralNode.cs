@@ -18,15 +18,16 @@ namespace Compiler.parser
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             //if (Parser.debug) Console.Write(nameToken.getValue());
-            
-            if (litToken.getTokenType() == TokenType.BOOL){
+
+            if (litToken.getTokenType() == TokenType.BOOL)
+            {
                 if (litToken.getValue() == "true") sb.Append("-1 ");
                 else sb.Append("0 ");
             }
 
             else if (litToken.getTokenType() == TokenType.FLOAT)
             {
-                if(litToken.getValue().Contains('e'))
+                if (litToken.getValue().Contains('e'))
                     sb.Append(litToken.getValue() + " ");
                 else
                     sb.Append(litToken.getValue() + "e ");
@@ -35,7 +36,7 @@ namespace Compiler.parser
                 sb.Append(litToken.getValue() + " ");
 
             else if (litToken.getTokenType() == TokenType.STRING)
-                throw new NotImplementedException("strings are not supported yet, im soo soo sorry :). ");
+                sb.Append("s\" "+litToken.getValue()+"\"" );
 
             else throw new Exception("unknown literal at " + litToken.locate() + "  " + litToken.getTokenType());
        

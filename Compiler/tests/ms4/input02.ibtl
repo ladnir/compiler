@@ -1,4 +1,15 @@
 ﻿[
 	[if false 16 0]
+
+	[if true 
+		[if true 
+			[stdout "hello world"] 
+			[stdout "goodbuy world"]
+		]
+
+		[while [> 4 3]
+			[stdout "loop..."]
+		]
+	]
 ]
 

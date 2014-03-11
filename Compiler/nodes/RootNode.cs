@@ -11,6 +11,9 @@ namespace Compiler
         Dictionary<string, IFunctionNode> builtInFunctions = new Dictionary<string, IFunctionNode>();
         Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
+        bool fPow = false;
+        bool iPow = false;
+
         public RootNode()
         {
             InitBuiltInFunctions();
@@ -47,6 +50,9 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
+            if(iPow) sb.Append(": ^ {  input ex } 1 { sum } begin ex 0 > while sum input * TO sum ex 1 - TO ex repeat sum ; \n");
+            if(fPow) sb.Append(": f^ { F: input  ex } 1.0e { F: sum } begin ex 0 > while sum input f* TO sum ex 1 - TO ex repeat sum ; \n");
+
             foreach (Node n in children)
                 n.outputGForth(tabCount, sb);
 
@@ -119,6 +125,12 @@ namespace Compiler
             if (Parser.debug) Console.WriteLine("Root adding func " + ifunc.getName());
            
             functions.Add(ifunc.getName(), func);
+        }
+        public void defineFunc(string name)
+        {
+            if (name == "f^") fPow = true;
+            else if (name == "^") iPow = true;
+
         }
     }
 }

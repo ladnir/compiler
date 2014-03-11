@@ -1,41 +1,15 @@
 ﻿[
-	[let [[i int][x int] [kk int][ii int][j int]]]
-	[
-		[
-			[:= i 4.442]              
-			[:= x [+ 3  i]]    
-
-		]
-		[:= i 4]              
-		[:= x [+ i  i]]    
-
-	]
 	
-	[:= i 4]              
-	[:= x [+ 3  i]]    
-	[
-		[ 
-			[
-				[+ 2 7 ]
-				[kk]
-				[kk ii 	kk]
-				j  kk
-			]
-		]
-	] 
 
 	[let [myFunction a b][int int int]
 		[stdout a]
 		[stdout b]
 
-		//[return 1]
 	]
 
     [let [Main i ][int int ] 
         [ let [ [n int] [s string]  ] ]                   
         
-		//[cos "hi"]
-		//[:= s "hello"]
 		[stdout i ]
 		[:= n [myFunction i 9 ]]
 		[while [< i 10 ]
@@ -43,7 +17,6 @@
 			[stdout i]
 
 		]
-		//[return 1]
+		
     ]                                 
 ]
-// hi

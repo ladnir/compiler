@@ -120,5 +120,10 @@ namespace Compiler.parser
         {
             this.elseNode = elseNode;
         }
+
+        public void defineFunc(string name)
+        {
+            scope.defineFunc(name);
+        }
     }
 }
