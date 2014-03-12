@@ -25,8 +25,20 @@ namespace Compiler
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            sb.Append("0 ");
-            sb.Append("{ " + variableName.getValue() + " }");
+            if (dataType.getValue() == "float")
+            {
+                sb.Append("0.0e ");
+                sb.Append("{ f: " + variableName.getValue() + " }");
+            }
+            else if (dataType.getValue() == "string")
+            {
+                throw new Exception("havent done string dec yet" + dataType.locate());
+            }
+            else
+            {
+                sb.Append("0 ");
+                sb.Append("{ " + variableName.getValue() + " }");
+            }
         }
 
         public virtual string getVarName()

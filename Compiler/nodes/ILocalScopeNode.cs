@@ -21,5 +21,7 @@ namespace Compiler
         void defineFunc(string name);
 
 
+
+        UserFunctionNode getParentFunc();
     }
 }

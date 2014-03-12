@@ -23,9 +23,9 @@ namespace Compiler.parser
 
             if (children.Count > 1) throw new NotImplementedException("multi statemnet else blocks are nto supported");
 
-            sb.Append("\n" + Node.getTabs(tabCount + 1));
+            sb.Append("\n" + Node.getTabs(tabCount) + "else\n" + Node.getTabs(tabCount+1));
 
-            children.First.Value.outputGForth(tabCount,sb);
+            children.First.Value.outputGForth(tabCount+1,sb);
         }
 
 
@@ -104,6 +104,11 @@ namespace Compiler.parser
         public void defineFunc(string name)
         {
             scope.defineFunc(name);
+        }
+
+        public UserFunctionNode getParentFunc()
+        {
+            return scope.getParentFunc();
         }
     }
 }

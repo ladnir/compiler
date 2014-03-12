@@ -37,7 +37,7 @@ namespace Compiler
 
             // check param counts
             if (parameterNames.Count != parameterTypes.Count)
-                throw new Exception("error fn1, paramiter name count doesnt match paramter type count for function "+functionName.getValue() );
+                throw new Exception("error fn1, parameter name count doesnt match paramter type count for function "+functionName.getValue() );
 
             // add the parameters to the function.
             //LinkedList<Token>.Enumerator types = parameterTypes.GetEnumerator();
@@ -140,7 +140,9 @@ namespace Compiler
 
             foreach (ParamNode p in parameters)
             {
-                
+                if (p.getReturnType() == "float") sb.Append("f: ");
+                else if (p.getReturnType() == "string") throw new Exception("string param passing is not supported yet");
+               
                 sb.Append(p.getVarName() + " ");
             }
 
@@ -226,5 +228,16 @@ namespace Compiler
             scope.defineFunc(name);
         }
 
+
+
+        public UserFunctionNode getParentFunc()
+        {
+            return this;
+        }
+
+        public string getReturnType()
+        {
+            return returnType.getValue();
+        }
     }
 }

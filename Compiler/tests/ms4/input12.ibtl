@@ -1,22 +1,23 @@
 ﻿[
-	
-
 	[let [myFunction a b][int int int]
 		[stdout a]
 		[stdout b]
 
+		[return 4]
 	]
 
     [let [Main i ][int int ] 
         [ let [ [n int] [s string]  ] ]                   
-        
-		[stdout i ]
-		[:= n [myFunction i 9 ]]
-		[while [< i 10 ]
+		[stdout "initial input was "]
+		[stdout i]
+		[stdout " - "]
+		[while [myFunction i 9 ]
 			[:= i [+ i i]]
 			[stdout i]
 
 		]
-		
-    ]                                 
+		[return 3]
+    ]      
+
+	[Main 1]
 ]

@@ -107,10 +107,38 @@ namespace Compiler.parser
                 sb.Append(" ");
 
             }
+            else if ((leftExpr.getReturnType() == "float" ||
+                      rightExpr.getReturnType() == "float") 
+                    &&
+                    (opToken.getValue() == "<" ||
+                    opToken.getValue() == "<=" ||
+                    opToken.getValue() == ">"  ||
+                    opToken.getValue() == ">=" ||
+                    opToken.getValue() == "="  ||
+                    opToken.getValue() == "!=" ) ){
+
+                        outputFloatBoolGForth(tabCount, sb);
+            }
             else
             {
                 throw new Exception("OpNode error, unknown special oper type" + opToken.locate());
             }
+        }
+
+        private void outputFloatBoolGForth(int tabCount, StringBuilder sb)
+        {
+            leftExpr.outputGForth(tabCount, sb);
+            if(leftExpr.getReturnType() != "float"){
+                if(leftExpr.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation."+opToken.locate());
+                sb.Append("s>f ");
+            }
+            rightExpr.outputGForth(tabCount,sb);
+            if(rightExpr.getReturnType() != "float"){
+                if (rightExpr.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation." + opToken.locate());
+                sb.Append("s>f ");
+            }
+
+            sb.Append("f"+opToken.getValue()+" ");
         }
 
         private void outputStringConcatination(int tabCount, StringBuilder sb)
@@ -125,19 +153,7 @@ namespace Compiler.parser
         {
             if (leftExpr.getReturnType() != "float" && leftExpr.getReturnType() != "int") throw new Exception("OpNode error, exponent base must be an int or float." + opToken.locate());
             if (rightExpr.getReturnType() != "int") throw new Exception("OpNode error, exponent power must be an int." + opToken.locate());
-            //long power;
-            //try
-            //{
-            //    power = Convert.ToInt64(((LiteralNode)rightExpr).outputIBTL(tabCount));
-              
-            //}
-            //catch (Exception e)
-            //{
-            //    throw new Exception("OpNode error, expontent must be a non negative integer." + opToken.locate());
-            //}
-            //if (power < 0) throw new Exception("OpNode error, exponent power must be non negative." + opToken.locate());
-
-
+    
             leftExpr.outputGForth(tabCount, sb);
             sb.Append(" ");
             rightExpr.outputGForth(tabCount, sb);
@@ -194,10 +210,21 @@ namespace Compiler.parser
                 opToken.getValue() == "cos" ||
                 opToken.getValue() == "tan" ||
                 opToken.getValue() == "and" ||
-                opToken.getValue() == "or" ||
+                opToken.getValue() == "or"  ||
                 opToken.getValue() == "^"   ||
                 opToken.getValue() == "%"   ||
                 opToken.getValue() == "!="   ) return true;
+
+            if (leftExpr.getReturnType() == "float" || 
+                rightExpr.getReturnType() == "float")
+            {
+                if( opToken.getValue() == "<"  ||
+                    opToken.getValue() == "<=" ||
+                    opToken.getValue() == ">"  ||
+                    opToken.getValue() == ">=" ||
+                    opToken.getValue() == "="  ||
+                    opToken.getValue() == "!="  ) return true;
+            }
 
             if (opToken.getValue() == "-"   && 
                 rightExpr == null)          return true;

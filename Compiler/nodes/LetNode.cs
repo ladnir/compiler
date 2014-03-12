@@ -13,8 +13,14 @@ namespace Compiler.parser
 
             foreach (Node child in children)
             {
-                child.outputGForth(tabCount, sb);
-                sb.Append( "\n" + Node.getTabs(tabCount));
+                if (child is BlankNode)
+                {
+                }
+                else
+                { 
+                    child.outputGForth(tabCount, sb);
+                    sb.Append("\n" + Node.getTabs(tabCount));
+                }
             }
         }
 

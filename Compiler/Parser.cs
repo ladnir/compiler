@@ -66,6 +66,8 @@ namespace Compiler
                         s.addChild(parseConstruct(scope));
                     else if (tok.peep().getTokenType() == TokenType.OP)
                         s.addChild(parseOp(scope));
+                    else if (tok.peep().getTokenType() == TokenType.REF && scope.funcInScope(tok.peep().getValue()) )
+                        s.addChild(parseCall(scope));
 
                     else // ok, We now know that the open brace belongs to S
                     {
@@ -92,16 +94,12 @@ namespace Compiler
                 }
                 
             } 
-            
-
-
             debugExit("parseS");
             return s;
         }
 
         /// <summary>
-        /// Entery point.
-        /// 
+        /// Entery point for function only programs.
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
@@ -432,10 +430,48 @@ namespace Compiler
                 debugExit("construct");
                 return parseLet(scope);
             }
-            else
+            else if (tok.peep().getValue() == "return")
+            {
+                return parseReturn(scope);
+            }else
                 throw new Exception("error, unknow construct at token:" + tok.peep().locate());
         }
 
+        /// <summary>
+        /// <para> - </para>
+        /// <para> Expects the local scope that it lives in.        </para>
+        /// <para> Expects the index to point at the return token.  </para>
+        /// <para> - </para>
+        /// <para> Sets the index AFTER the closing brace.          </para>
+        /// <para> Returns an returnNode node.                      </para>
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private Node parseReturn(ILocalScopeNode scope)
+        {
+            Token r = tok.pop();
+
+            ExpressionNode returnExpr = parseExpression(scope);
+            UserFunctionNode func;
+
+            try { func = scope.getParentFunc();
+            } catch (Exception e) { throw new Exception(e.Message + r.locate()); }
+
+            if (tok.peep().getValue() != "]") throw new Exception("error, parsing stdout. expecting closing brace ]. " + tok.peep().locate());
+            tok.pop();
+
+            return new ReturnNode(returnExpr,r,func);
+        }
+        /// <summary>
+        /// <para> - </para>
+        /// <para> Expects the local scope that it lives in.    </para>
+        /// <para> Expects the index to point at the stdout token.  </para>
+        /// <para> - </para>
+        /// <para> Sets the index AFTER the closing brace.      </para>
+        /// <para> Returns an stdNode node.                          </para>
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
         private Node parseStdout(ILocalScopeNode scope)
         {
             tok.pop();
@@ -738,7 +774,8 @@ After parsing an assignment, an closing brace is expected.");
                 // chech to see if it is a function declaration.
             else if (tok.peep().getTokenType() == TokenType.REF )
             {
-               return parseFunction(scope);
+               parseFunction(scope);
+               return new BlankNode();
 
             }else // if its not a variable or function declatation there must be an error.
                 throw new Exception("Token in let stament is incorrect...  "+tok.peep().locate());
@@ -842,6 +879,8 @@ Otherwise it is probable out of place");
 
                 ExpressionNode paramExpr = parseExpression(scope);
 
+                // make sure the signature has another param
+                if (cur == null) throw new Exception("error parsing function call.\n Too many parameters were given.\n" + tok.peep().locate());
                 // make sure the param data type matchs the function signature,
                 if ( paramExpr.getReturnType() != cur.Value.getDataType()) throw new Exception("error pex2 at token:" + tok.peep().locate());
 
@@ -849,6 +888,9 @@ Otherwise it is probable out of place");
 
                 parameters.AddLast(paramExpr);
             }
+            if (cur != null) throw new Exception("error parsing function call.\n Too few parameters were given.\n" + tok.peep().locate());
+               
+
             CallNode call = new CallNode(func, parameters);
 
             // make sure its has closing brace

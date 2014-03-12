@@ -1,7 +1,36 @@
 ﻿[
-	[-3.14e-159]
-	[and 4x]
-	[:= x4 [<= 10.1.1]]
-]
+	[let[calcWidth a b n][float float float int]
+		[let [[width float] ]]
 
-//[[+1[^[+2 3]7]][stdout[:=s 3]][if true[stdout"yes"][stdout"no"]][[sin 3.4e-44][[:=c 4][][][[[]]]]][][]]
+		[:= width [- b a]]
+		[:= width [/ width n]]
+
+		[return width]
+	]
+
+	[let[calcArea x area][float float float]
+
+		[return[+ area [^ x 2]]]
+	]
+
+	[let[main][int]
+		
+		[let[[n int]
+			[a float][b float][area float][width float][x float]
+		]]
+		
+		[:= n 100]
+		[:= b 1]
+
+		[:= width [calcWidth a b n]]
+		
+		[while [< x b]
+			[:= area [calcArea x area]]
+			[:= x [+ x width]]
+		]
+		
+		[stdout area]
+	]
+
+	[main]
+]

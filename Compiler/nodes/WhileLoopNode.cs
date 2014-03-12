@@ -102,5 +102,9 @@ namespace Compiler.parser
         {
             scope.defineFunc(name);
         }
+        public UserFunctionNode getParentFunc()
+        {
+            return scope.getParentFunc();
+        }
     }
 }

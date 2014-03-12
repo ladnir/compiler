@@ -51,13 +51,23 @@ namespace Compiler
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             if(iPow) sb.Append(": ^ {  input ex } 1 { sum } begin ex 0 > while sum input * TO sum ex 1 - TO ex repeat sum ; \n");
-            if(fPow) sb.Append(": f^ { F: input  ex } 1.0e { F: sum } begin ex 0 > while sum input f* TO sum ex 1 - TO ex repeat sum ; \n");
+            if(fPow) sb.Append(": f^ { F: input  ex } 1.0e { F: sum } begin ex 0 > while sum input f* TO sum ex 1 - TO ex repeat sum ; \n\n");
 
+            foreach (KeyValuePair<string, IFunctionNode> entry in functions)
+            {
+                IFunctionNode func = entry.Value;
+
+                Node funcNode = (Node)func;
+                funcNode.outputGForth(tabCount, sb);
+                sb.Append("\n");
+            }
+
+            sb.Append(": main___ \n");
             foreach (Node n in children)
                 n.outputGForth(tabCount, sb);
 
-            if(functions.ContainsKey("Main"))
-                sb.Append("\n\n 1 Main");
+           // if(functions.ContainsKey("Main"))
+            sb.Append("\n; \n\n  main___ cr");
         }
 
         public override string outputIBTL(int tabCount)
@@ -131,6 +141,12 @@ namespace Compiler
             if (name == "f^") fPow = true;
             else if (name == "^") iPow = true;
 
+        }
+
+
+        public UserFunctionNode getParentFunc()
+        {
+            throw new Exception("root error, return can only be used inside of a fucntion");
         }
     }
 }
