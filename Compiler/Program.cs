@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Compiler
 
         static void Main(string[] args)
         {
-
+            
             Node root=null;
             string output = "";
 
@@ -51,13 +52,13 @@ namespace Compiler
                         //output = root.outputIBTL(0);
                         Console.WriteLine(output);
                     }
-                    if (args.Length == 0)
+                    
+                    using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
                     {
-                        using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
-                        {
-                            outfile.Write(output);
-                        }
+                        outfile.Write(output);
+                        Process.Start(@"C:\Program Files (x86)\gforth\gforth.exe", "../../out_" + i + ".gf");
                     }
+                    
                 }
 
             }
@@ -68,9 +69,20 @@ namespace Compiler
 
 
 
-           // Console.WriteLine("\n\nPress any key to close.");
+            Console.WriteLine("\n\nPress any key to close.");
 
-            //ConsoleKeyInfo key = Console.ReadKey();
+            ConsoleKeyInfo key = Console.ReadKey();
+            
+            foreach (Process proc in Process.GetProcessesByName("gforth"))
+            {
+                try
+                {
+                    proc.Kill();
+                }
+                catch (Exception e) { }
+            }
+            
+            
         }
 
         private static void doMileStone2(Tokenizer t)
