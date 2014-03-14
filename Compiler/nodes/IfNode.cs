@@ -30,13 +30,13 @@ namespace Compiler.parser
 
             eval.outputGForth(tabCount,sb);
             sb.Append(" if \n");
-            sb.Append( Node.getTabs(tabCount + 1));
-            children.First.Value.outputGForth(tabCount+1, sb);
+            sb.Append( Node.getTabs(tabCount));
+            children.First.Value.outputGForth(tabCount, sb);
 
             if (elseNode != null) 
-                elseNode.outputGForth(tabCount , sb);
+                elseNode.outputGForth(tabCount-1 , sb);
 
-            sb.Append("\n" +  Node.getTabs(tabCount) + "endif");
+            sb.Append("\n" +  Node.getTabs(tabCount-1) + "endif");
         }
 
         public override string outputIBTL(int tabCount)

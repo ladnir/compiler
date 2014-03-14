@@ -32,7 +32,8 @@ namespace Compiler
             }
             else if (dataType.getValue() == "string")
             {
-                throw new Exception("havent done string dec yet" + dataType.locate());
+                sb.Append("s\" \" { d: " + variableName.getValue() + " } ");
+                //throw new Exception("havent done string dec yet" + dataType.locate());
             }
             else
             {

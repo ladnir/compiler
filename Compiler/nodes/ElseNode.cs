@@ -39,7 +39,7 @@ namespace Compiler.parser
 
                 foreach (Node child in children)
                 {
-                    sb.Append(Node.getTabs(tabCount + 1) + child.outputIBTL(tabCount + 1) + "\n");
+                    sb.Append(Node.getTabs(tabCount ) + child.outputIBTL(tabCount + 1) + "\n");
                 }
 
                 sb.Append(Node.getTabs(tabCount) + "] \n");
