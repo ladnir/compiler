@@ -1,46 +1,16 @@
 ﻿[
-/* some text */	
-	[g]
-	[] 
-	[
-		[
-			[ 
-				[
-					[
-						[
-							[
-	/* some text */				[
-									[]	// some text 
-								]
-							]
-						][
-							[
-								[
-			/* some text */			[]
-								]
-							]
-						]
-					]
-				][											/* some text */	
-					[
-						[
-							[
-								[
-									[]
-								]
-							]
-						][
-	/* some text */			[						/* some text */	
-								[
-									[]
-								]
-							]
-						]
-					]
-				][
-					[]
-				]
-			]
-		]
+	[let [[b bool][x int]]]
+	[:= b true]
+
+	[while b 
+		[:=b false]
+
+		[let [[x int]]]
+		[:= x 44]
+		[stdout "inside while "]
+		[stdoutnl x]
 	]
+	[stdout "ouside while"]
+	[stdoutnl x]
+
 ]

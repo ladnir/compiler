@@ -21,7 +21,8 @@ namespace Compiler.parser
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
             //if (Parser.debug) Console.Write(" while \n");
-            
+
+            if (Program.cStyleScoping) sb.Append("scope ");
             sb.Append("begin \n"+Node.getTabs(tabCount));
             eval.outputGForth(tabCount, sb);
             sb.Append(" while \n");
@@ -33,7 +34,10 @@ namespace Compiler.parser
                 sb.Append("\n");
             }
 
-            sb.Append(Node.getTabs(tabCount) + "repeat \n");
+            sb.Append(Node.getTabs(tabCount) + "repeat ");
+
+            if (Program.cStyleScoping) sb.Append("endscope\n");
+            else sb.Append("\n");
         }
 
         public override string outputIBTL(int tabCount)
@@ -52,7 +56,10 @@ namespace Compiler.parser
             return sb.ToString();
         }
 
-
+        public bool varInImmediateScope(string name){
+            if (localVars.ContainsKey(name)) return true;
+            return false;
+        }
         public bool varInScope(string name)
         {
             if (localVars.ContainsKey(name)) return true;
@@ -63,8 +70,11 @@ namespace Compiler.parser
 
         public void addToScope(DeclarationNode dec)
         {
-            if (varInScope(dec.getVarName()))
-                throw new Exception("error adding declaration to while node at " + dec.gotToken().locate() + "vaiable is already in scope.");
+            if (this.varInImmediateScope(dec.getVarName()) ||
+                   (!Program.cStyleScoping &&
+                     scope.varInScope(dec.getVarName())
+                   )
+               ) throw new Exception("error adding declaration to while node at " + dec.gotToken().locate() + "vaiable is already in scope.");
 
             VariableNode newVar = new VariableNode(dec);
 

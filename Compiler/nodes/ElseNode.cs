@@ -19,7 +19,7 @@ namespace Compiler.parser
 
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
-            if (Parser.debug) Console.Write("else\n");
+            if (Program.parserDebug) Console.Write("else\n");
 
             if (children.Count > 1) throw new NotImplementedException("multi statemnet else blocks are nto supported");
 
@@ -54,7 +54,11 @@ namespace Compiler.parser
         }
 
 
-
+        public bool varInImmediateScope(string name)
+        {
+            if (localVars.ContainsKey(name)) return true;
+            return false;
+        }
         public bool varInScope(string name)
         {
             if (localVars.ContainsKey(name)) return true;

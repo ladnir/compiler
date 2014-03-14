@@ -10,6 +10,7 @@ namespace Compiler
     {
         // vars
         bool varInScope(string name);
+        bool varInImmediateScope(string name);
         VariableNode getVarRef(string name);
         void addToScope(DeclarationNode localVar);
 

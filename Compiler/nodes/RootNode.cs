@@ -67,7 +67,7 @@ namespace Compiler
                 n.outputGForth(tabCount, sb);
 
            // if(functions.ContainsKey("Main"))
-            sb.Append("\n; \n\n  main___ cr");
+            sb.Append("\n; \n\n cr  main___ cr");
         }
 
         public override string outputIBTL(int tabCount)
@@ -84,6 +84,12 @@ namespace Compiler
             sb.Append("]\n");
 
             return sb.ToString();
+        }
+
+        public bool varInImmediateScope(string name)
+        {
+            if (localVars.ContainsKey(name)) return true;
+            return false;
         }
 
         public bool varInScope(string name)
@@ -115,7 +121,7 @@ namespace Compiler
         {
             bool b =functions.ContainsKey(token); 
             
-            if (Parser.debug) Console.WriteLine("Root funcInScope " + token +" "+b);
+            if (Program.parserDebug) Console.WriteLine("Root funcInScope " + token +" "+b);
 
             if (!b) builtInFunctions.ContainsKey(token);
 
@@ -132,7 +138,7 @@ namespace Compiler
         public void addToScope(UserFunctionNode func)
         {
             IFunctionNode ifunc = (IFunctionNode)func;
-            if (Parser.debug) Console.WriteLine("Root adding func " + ifunc.getName());
+            if (Program.parserDebug) Console.WriteLine("Root adding func " + ifunc.getName());
            
             functions.Add(ifunc.getName(), func);
         }

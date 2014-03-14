@@ -71,6 +71,12 @@ namespace Compiler.parser
             return sb.ToString();
         }
 
+        public bool varInImmediateScope(string name)
+        {
+            if (localVars.ContainsKey(name)) return true;
+            return false;
+        }
+
         public bool varInScope(string name)
         {
             if (localVars.ContainsKey(name)) return true;

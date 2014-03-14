@@ -28,7 +28,7 @@
 			[:= area [calcArea x area]]
 			[:= x [+ x width]]
 		]
-		
+		[:= area [* area width]]
 		[stdout area]
 	]
 
