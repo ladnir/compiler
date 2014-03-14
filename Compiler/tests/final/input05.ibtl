@@ -1,5 +1,10 @@
 ﻿[
+	[let [[x float]]]
 	[
-		[:= 3 [:= name 5]]
+		[let [[x int]]]
+		[stdout "inside S "]
+		[stdoutnl x]
 	]
+	[stdout "outside S "]
+	[stdoutnl x]
 ]

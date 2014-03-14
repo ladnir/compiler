@@ -9,20 +9,24 @@ namespace Compiler
 {
     class Program
     {
+
+        public  const bool parserDebug = false;
+        public  const bool cStyleScoping = true;
+
         static void Main(string[] args)
         {
 
             Node root=null;
             string output = "";
 
-            //try
-            //{
+            try
+            {
             
                 string path;
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../tests/final/input02.ibtl";
+                        path = "../../tests/final/input05.ibtl";
                     else
                         path = args[i];
 
@@ -56,17 +60,17 @@ namespace Compiler
                     }
                 }
 
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine("\n\n" + e.Message + "");
-            //}
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\n\n" + e.Message + "");
+            }
 
 
 
-            Console.WriteLine("\n\nPress any key to close.");
+           // Console.WriteLine("\n\nPress any key to close.");
 
-            ConsoleKeyInfo key = Console.ReadKey();
+            //ConsoleKeyInfo key = Console.ReadKey();
         }
 
         private static void doMileStone2(Tokenizer t)

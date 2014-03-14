@@ -8,10 +8,10 @@ namespace Compiler
     class StdoutNode : ExpressionNode, IFunctionNode
     {
         private ExpressionNode expr;
-
-        public StdoutNode(ExpressionNode expr)
+        private bool newline;
+        public StdoutNode(ExpressionNode expr,bool ln)
         {
-            
+            this.newline = ln;
             this.expr = expr;
         }
 
@@ -32,8 +32,9 @@ namespace Compiler
                 sb.Append(" . ");
             else if (expr.getReturnType() == "string") 
                 sb.Append(" type ");
-
             else throw new NotImplementedException();
+
+            if(newline) sb.Append("cr ");
         }
 
         LinkedList<ParamNode> IFunctionNode.getParameters()

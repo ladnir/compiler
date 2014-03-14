@@ -15,7 +15,7 @@ namespace Compiler
 
         static string[] Functions = { "sin", "cos","tan" ,"and","or"};
         static string[] dataTypes = { "int", "bool", "float", "string" };
-        static string[] constructs = { "while", "if", "let" , "return","stdout" }; 
+        static string[] constructs = { "while", "if", "let" , "return","stdout" ,"stdoutnl"}; 
 
        // int index = 0 ;
        // int length;
@@ -48,7 +48,7 @@ namespace Compiler
             }
         }
 
-        public Token peep()
+        public Token peak()
         {
             if (cur == null)  throw new EndOfTokensException();
             return cur;

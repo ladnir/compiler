@@ -5,9 +5,17 @@ using System.Text;
 
 namespace Compiler
 {
-    public class SNode : Node
+    public class SNode : Node , ILocalScopeNode
     {
         private bool braces = false;
+        private ILocalScopeNode scope;
+        private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
+        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
+
+        public SNode(ILocalScopeNode scope)
+        {
+            this.scope = scope;
+        }
 
         public void setBraces()
         {
@@ -50,11 +58,14 @@ namespace Compiler
 
             if (children != null)
             {
+                sb.Append(" scope ");
                 foreach (Node child in children)
                 {
                     sb.Append("\n" + Node.getTabs(tabCount));
                     child.outputGForth(tabCount + 1, sb);
                 }
+                
+                sb.Append("\n"+Node.getTabs(tabCount-1 ) + "endscope ");
             }
             //if (braces) sb.Append(Node.getTabs(tabCount) + "\n]");
         }
@@ -62,6 +73,68 @@ namespace Compiler
         internal bool hasBraces()
         {
             return braces;
+        }
+
+        public bool varInImmediateScope(string name)
+        {
+            if (localVars.ContainsKey(name)) return true;
+            return false;
+        }
+        public bool varInScope(string name)
+        {
+            if (localVars.ContainsKey(name)) return true;
+            if (scope.varInScope(name)) return true;
+
+            return false;
+        }
+
+        public void addToScope(DeclarationNode dec)
+        {
+            if (this.varInImmediateScope(dec.getVarName()) ||
+                   (!Program.cStyleScoping &&
+                     scope.varInScope(dec.getVarName())
+                   )
+               ) throw new Exception("error adding declaration to while node at " + dec.gotToken().locate() + "vaiable is already in scope.");
+
+            VariableNode newVar = new VariableNode(dec);
+
+            localVars.Add(dec.getVarName(), newVar);
+        }
+
+        public VariableNode getVarRef(string token)
+        {
+            if (localVars.ContainsKey(token))
+                return localVars[token];
+            else return scope.getVarRef(token);
+        }
+
+        public bool funcInScope(string token)
+        {
+            if (functions.ContainsKey(token)) return true;
+            return scope.funcInScope(token);
+        }
+
+        public IFunctionNode getFuncRef(string token)
+        {
+            if (functions.ContainsKey(token)) return functions[token];
+            return scope.getFuncRef(token);
+        }
+
+        public void addToScope(UserFunctionNode func)
+        {
+
+            IFunctionNode ifunc = (IFunctionNode)func;
+            functions.Add(ifunc.getName(), ifunc);
+            //scope.addToScope(func);
+        }
+
+        public void defineFunc(string name)
+        {
+            scope.defineFunc(name);
+        }
+        public UserFunctionNode getParentFunc()
+        {
+            return scope.getParentFunc();
         }
     }
 }
