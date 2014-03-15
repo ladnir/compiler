@@ -22,14 +22,22 @@ clean:
 	ls Compiler
 
 stutest.out: compiler
-	cat Compiler/input01.ibtl
+	cat Compiler/tests/final/input01.ibtl
 	
-	-$(RUNTIME) $(EXE) Compiler/input01.ibtl > stutest1.out
-	cat stutest1.out
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input01.ibtl
+	cat out_0.gf
 
-	cat Compiler/input02.ibtl
-	-$(RUNTIME) $(EXE) Compiler/input02.ibtl > stutest2.out
-	cat stutest2.out
+	cat Compiler/tests/final/input02.ibtl
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl 
+	cat out_1.gf
+
+	cat stutest3.out/final/input03.ibtl
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl 
+	cat out_2.gf
+
+	cat stutest4.out/final/input04.ibtl
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl
+	cat out_3.gf
 
 proftest.out: compiler
 	echo  $(PROFTEST)
