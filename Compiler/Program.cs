@@ -43,13 +43,13 @@ namespace Compiler
 
                     //doMileStone2(t);
                     
-                    Console.WriteLine("Parsing...");
+                    //Console.WriteLine("Parsing...");
                     root = p.parseT(t);
-                    Console.WriteLine("Parsing complete.");
+                    //Console.WriteLine("Parsing complete.");
 
                     StringBuilder sb = new StringBuilder();
 
-                    Console.WriteLine("generating Gforth...");
+                    //Console.WriteLine("generating Gforth...");
                     root.outputGForth(1, sb);
                     output = sb.ToString();
 
@@ -81,7 +81,7 @@ namespace Compiler
 #endif
 
 
-                Console.WriteLine("\n\nPress any key to close.");
+                //Console.WriteLine("\n\nPress any key to close.");
 
             ConsoleKeyInfo key = Console.ReadKey();
             
