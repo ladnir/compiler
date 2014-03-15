@@ -31,11 +31,11 @@ stutest.out: compiler
 	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl > Compiler/out_1.gf
 	cat Compiler/out_1.gf
 
-	cat Compiler/final/input03.ibtl
+	cat Compiler/testsfinal/input03.ibtl
 	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl >Compiler/out_2.gf
 	cat Compiler/out_2.gf
 
-	cat Compiler/final/input04.ibtl
+	cat Compiler/testsfinal/input04.ibtl
 	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl >Compiler/out_3.gf
 	cat Compiler/out_3.gf
 
