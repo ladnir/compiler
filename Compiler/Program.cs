@@ -27,7 +27,7 @@ namespace Compiler
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../tests/final/input05.ibtl";
+                        path = "../../tests/final/input01.ibtl";
                     else
                         path = args[i];
 
@@ -56,7 +56,11 @@ namespace Compiler
                     using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
                     {
                         outfile.Write(output);
-                        Process.Start(@"C:\Program Files (x86)\gforth\gforth.exe", "../../out_" + i + ".gf");
+                        try
+                        { //
+                            Process.Start(@"C:\Program Files (x86)\gforth\gforth.exe", "../../out_" + i + ".gf");
+                        }
+                        catch (Exception e) { }
                     }
                     
                 }

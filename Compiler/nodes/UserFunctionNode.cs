@@ -141,7 +141,7 @@ namespace Compiler
             foreach (ParamNode p in parameters)
             {
                 if (p.getReturnType() == "float") sb.Append("f: ");
-                else if (p.getReturnType() == "string") throw new Exception("string param passing is not supported yet");
+                else if (p.getReturnType() == "string") sb.Append("d: ");
                
                 sb.Append(p.getVarName() + " ");
             }

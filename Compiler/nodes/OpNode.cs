@@ -144,9 +144,9 @@ namespace Compiler.parser
         private void outputStringConcatination(int tabCount, StringBuilder sb)
         {
             leftExpr.outputGForth(tabCount, sb);
-            sb.Append(" ");
+            sb.Append(" pad place ");
             rightExpr.outputGForth(tabCount, sb);
-            sb.Append(" append \n");
+            sb.Append(" pad +place pad count ");
         }
 
         private void outputPowerGForth(int tabCount, StringBuilder sb)

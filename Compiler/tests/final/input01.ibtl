@@ -1,22 +1,33 @@
 ﻿[
-	
+	[let [myFunction a b][int string int]
 
-	[let [myFunction a b][int int int]
-		[stdout a]
-		[stdout b]
-
+		[stdout [+"inside myFunction. recieved > " a]]
+		[stdoutnl " < as a parameter."]
+		[return 2]
 	]
 
     [let [Main i ][int int ] 
-        [ let [ [n int] [s string]  ] ]                   
-        
-		[stdout i ]
-		[:= n [myFunction i 9 ]]
-		[while [< i 10 ]
-			[:= i [+ i i]]
-			[stdout i]
-
-		]
 		
-    ]                                 
+		// program explanation
+		[stdoutnl "This demo is intended to show the functionality"]
+		[stdoutnl "of passing stings. "]
+		[stdoutnl "Also note that stdoutnl is a keyword for stdout "]
+		[stdoutnl "with a new line at the end."]
+		[stdoutnl ""]
+
+		// init variables
+        [ let [ [n int] [s string]]] 
+		[:= s "passed string"]
+		
+		// string concatination can calling a function
+		[stdoutnl [+ "calling myFunction with >" s]]
+		[:= n [myFunction s 9 ]]
+		
+		[stdoutnl ""]
+		[stdoutnl "back in main"]
+		[stdoutnl i]
+
+		[return 3]
+    ]       
+	[Main 1]                          
 ]
