@@ -70,8 +70,9 @@ namespace Compiler
 
                         }
                         catch (Exception e) { }
-                    }
 #endif
+                    }
+
                 }
 #if USETRY
             }
