@@ -1,5 +1,5 @@
 ﻿
-//#define USETRY
+#define USETRY
 
 using System;
 using System.Collections.Generic;
