@@ -10,7 +10,7 @@
 		[stdout "inside while "]
 		[stdoutnl x]
 	]
-	[stdout "ouside while"]
+	[stdout "ouside while "]
 	[stdoutnl x]
 
 ]

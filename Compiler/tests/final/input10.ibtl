@@ -1,3 +1,5 @@
-﻿[  
-	[and true "this statement is false..."]
+﻿[
+	[let [[x int]]]
+	[: = x 10]
+	[stdout[-20 x]]
 ]

@@ -102,9 +102,8 @@ namespace Compiler.parser
             }
             else if (opToken.getValue() == "-" && rightExpr == null)
             {
-                sb.Append("-");
                 leftExpr.outputGForth(tabCount, sb);
-                sb.Append(" ");
+                sb.Append(" negate ");
 
             }
             else if ((leftExpr.getReturnType() == "float" ||
@@ -216,7 +215,7 @@ namespace Compiler.parser
                 opToken.getValue() == "!="   ) return true;
 
             if (leftExpr.getReturnType() == "float" || 
-                rightExpr.getReturnType() == "float")
+                (rightExpr != null && rightExpr.getReturnType() == "float"))
             {
                 if( opToken.getValue() == "<"  ||
                     opToken.getValue() == "<=" ||

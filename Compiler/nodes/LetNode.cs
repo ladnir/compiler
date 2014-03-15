@@ -19,7 +19,7 @@ namespace Compiler.parser
                 else
                 { 
                     child.outputGForth(tabCount, sb);
-                    sb.Append("\n" + Node.getTabs(tabCount));
+                    sb.Append("\n" + Node.getTabs(tabCount-1));
                 }
             }
         }

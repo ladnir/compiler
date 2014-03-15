@@ -1,12 +1,25 @@
-﻿[  
-	[let [
-		[x int]
-		[x int]
-		[x int]
-		[x string]
-		[x int]
-		[x float]
-		[x int]
-		] 
-	] 
+﻿[
+  [
+    if
+    [
+      <=
+      1200e-6
+      1
+    ]
+    [
+      stdout
+      [
+        sin
+        [-.5236]
+      ]
+    ]
+    [
+      stdout
+      [
+        or
+        true
+        false
+      ]
+    ]
+  ]
 ]

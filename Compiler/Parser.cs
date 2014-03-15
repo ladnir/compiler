@@ -396,7 +396,7 @@ namespace Compiler
         private void definePowerFunction(ILocalScopeNode scope,ExpressionNode left, ExpressionNode right)
         {
             if (left.getReturnType() == "float" || right.getReturnType() == "float") scope.defineFunc("f^");
-            else  scope.defineFunc("f^");
+            else  scope.defineFunc("^");
         }
 
         /// <summary>

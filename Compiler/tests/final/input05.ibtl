@@ -1,5 +1,9 @@
 ﻿[
+	[let[[x int][x4 bool]]]
 	[
-		[if true[stdout 3] 5]
+		[-3.14e-159]
+		[and 4x]
+		[: = x4[<= 10.1.1]]
 	]
+	[stdout x4]
 ]

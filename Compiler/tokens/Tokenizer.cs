@@ -145,6 +145,7 @@ namespace Compiler
         {
             
             if (charPop() != ':') throw new Exception("expecting assignment 1 at line " + line);
+            skipWhiteSpace();
             if (charPop() != '=') throw new Exception("expecting assignment 2 at line " + line);
 
             if (symbols.ContainsKey(":="))

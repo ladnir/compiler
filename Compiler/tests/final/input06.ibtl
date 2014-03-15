@@ -1,14 +1,10 @@
-﻿[  // stupid test because the grammar sucks unnecessarily
-   // for some reason if and while can have stmt as their conditionals  
-	[g]
-	[let [ [i int] ] ]
-	[:= i 4]
-
-	[if [if [> i 4] 3 0]
-		[while [if true 1]
-			[stdout i]
-			[stdout "\n"]
-			[:= i [+ i 1]]
-		]
+﻿[
+	[let[[x int][c int]]]
+	[: = x[-1]]
+	[: = c 10]
+	[while[> c 0]
+		[: = x[-x]]
+		[stdout x]
+		[: = c[-c 1]]
 	]
 ]

@@ -23,18 +23,18 @@ namespace Compiler.parser
             //if (Parser.debug) Console.Write(" while \n");
 
             if (Program.cStyleScoping) sb.Append("scope ");
-            sb.Append("begin \n"+Node.getTabs(tabCount));
+            sb.Append("begin \n"+Node.getTabs(tabCount-1));
             eval.outputGForth(tabCount, sb);
             sb.Append(" while \n");
 
             foreach (Node n in children)
             {
-                sb.Append(Node.getTabs(tabCount + 1));
+                sb.Append(Node.getTabs(tabCount));
                 n.outputGForth(tabCount, sb);
                 sb.Append("\n");
             }
 
-            sb.Append(Node.getTabs(tabCount) + "repeat ");
+            sb.Append(Node.getTabs(tabCount-1) + "repeat ");
 
             if (Program.cStyleScoping) sb.Append("endscope\n");
             else sb.Append("\n");

@@ -1,3 +1,6 @@
 ﻿[
-	  [while "hello, world" [stdout "hello, world"]]
+	[if[> 2 3]
+		[stdout "yes"]
+		[stdout "no"]
+	] 
 ]
