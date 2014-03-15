@@ -24,19 +24,19 @@ clean:
 stutest.out: compiler
 	cat Compiler/tests/final/input01.ibtl
 	
-	-$(RUNTIME) $(EXE) Compiler/tests/final/input01.ibtl
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input01.ibtl > Compiler/out_0.gf
 	cat Compiler/out_0.gf
 
 	cat Compiler/tests/final/input02.ibtl
-	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl 
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl > Compiler/out_1.gf
 	cat Compiler/out_1.gf
 
 	cat stutest3.out/final/input03.ibtl
-	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl 
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl >Compiler/out_2.gf
 	cat Compiler/out_2.gf
 
 	cat stutest4.out/final/input04.ibtl
-	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl
+	-$(RUNTIME) $(EXE) Compiler/tests/final/input02.ibtl >Compiler/out_3.gf
 	cat Compiler/out_3.gf
 
 proftest.out: compiler
