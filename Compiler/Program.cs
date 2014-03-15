@@ -60,6 +60,7 @@ namespace Compiler
                     using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
                     {
                         outfile.Write(output);
+#if !__MonoCS__
                         try
                         { // 
                             Process gforth = new Process();
@@ -70,7 +71,7 @@ namespace Compiler
                         }
                         catch (Exception e) { }
                     }
-
+#endif
                 }
 #if USETRY
             }
