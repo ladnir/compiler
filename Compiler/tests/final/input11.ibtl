@@ -1,2 +1,13 @@
-﻿
-[ a ]
+﻿[
+	[let [[x int]]]
+
+	[ // s block
+		[let [[x int]]]
+		[:= x 11]
+		[stdout "inside s "]
+		[stdoutnl x]
+	]
+	
+	[stdout "outside s "]
+	[stdoutnl x]
+]

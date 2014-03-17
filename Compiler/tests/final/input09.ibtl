@@ -1,6 +1,5 @@
 ﻿[
-	[if[> 2 3]
-		[stdout "yes"]
+		[stdoutnl [- 1e]]
 		[stdout "no"]
-	] 
+	
 ]

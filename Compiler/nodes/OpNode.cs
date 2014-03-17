@@ -103,7 +103,9 @@ namespace Compiler.parser
             else if (opToken.getValue() == "-" && rightExpr == null)
             {
                 leftExpr.outputGForth(tabCount, sb);
-                sb.Append(" negate ");
+                if (leftExpr.getReturnType() == "float") sb.Append(" fnegate ");
+                else
+                    sb.Append(" negate ");
 
             }
             else if ((leftExpr.getReturnType() == "float" ||
