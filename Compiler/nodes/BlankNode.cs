@@ -17,5 +17,14 @@ namespace Compiler
 
             return "";
         }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+        }
+
+        public override string outputIBTL(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

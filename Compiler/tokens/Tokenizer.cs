@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Compiler
 {
@@ -48,7 +49,7 @@ namespace Compiler
             }
         }
 
-        public Token peak()
+        public Token peep()
         {
             if (cur == null)  throw new EndOfTokensException();
             return cur;
@@ -108,6 +109,8 @@ namespace Compiler
             else throw new Exception("unknow char at line " + line + " , token " + (num + 1) + " >" + charPeep() + "< ");
 
             num++;
+
+            //Console.WriteLine(token.toString());
 
             return token;
         }
@@ -371,7 +374,13 @@ namespace Compiler
 
         private bool isDataType(string word)
         {
-            return isInSet(word, dataTypes);
+            return isInSet(word, dataTypes) || isVarInt(word);
+        }
+
+        private bool isVarInt(string word)
+        {
+            Match match = Regex.Match(word,"int[0-9]+");
+            return match.Success;
         }
 
         private bool assignment(char p)
@@ -415,7 +424,7 @@ namespace Compiler
         {
             // or, and, not, sin, cos, tan   will be keywords not operators
 
-            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' };
+            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' ,'#', '$'};
 
             if( isInSet(charPeep(), operators)) return true;
 

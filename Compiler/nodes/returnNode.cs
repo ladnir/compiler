@@ -7,7 +7,7 @@ namespace Compiler
 {
     class ReturnNode :Node
     {
-        private ExpressionNode returnExpr;
+        public ExpressionNode returnExpr;
         private Token r;
         private UserFunctionNode func;
 
@@ -17,7 +17,17 @@ namespace Compiler
             this.returnExpr = returnExpr;
             this.r = r;
             this.func = func;
+            func.SetReturn(this);
         }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            if (returnExpr.getReturnType() != func.getReturnType())
+                throw new Exception();
+
+            returnExpr.toCircuit(gates, ref nextWireID,dot);
+        }
+
         override public void outputGForth(int tabCount, StringBuilder sb)
         {
             returnExpr.outputGForth(tabCount, sb);
@@ -59,6 +69,15 @@ namespace Compiler
             sb.Append("\n" + Node.getTabs(tabCount) + "exit \n");
 
         }
-   
+
+        public override string outputIBTL(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

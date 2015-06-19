@@ -18,7 +18,9 @@
 		// init variables
         [ let [ [n int] [s string]]] 
 		[:= s "passed string"]
-		
+	
+
+
 		// string concatination can calling a function
 		[stdoutnl [+ "calling myFunction with >" s]]
 		[:= n [myFunction s 9 ]]
@@ -28,6 +30,14 @@
 		[stdoutnl i]
 
 		[return 3]
-    ]       
+    ]  
+	
+	[let [ [n int] ]]
+	[
+		[:= n 3]
+	]
+	     
+	[stdoutnl n]
+
 	[Main 1]                          
 ]

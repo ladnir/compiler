@@ -60,7 +60,7 @@ namespace Compiler
             return scope.funcInScope(token);
         }
 
-        public IFunctionNode getFuncRef(string token)
+        public UserFunctionNode getFuncRef(string token)
         {
             return scope.getFuncRef(token);
         }
@@ -77,6 +77,26 @@ namespace Compiler
         public UserFunctionNode getParentFunc()
         {
             return scope.getParentFunc();
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string outputIBTL(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void outputGForth(int tabCount, StringBuilder sb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

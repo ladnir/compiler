@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Compiler
 {
-    class StdoutNode : ExpressionNode, IFunctionNode
+    class StdoutNode : Node
     {
         private ExpressionNode expr;
         private bool newline;
@@ -14,6 +14,17 @@ namespace Compiler
             this.newline = ln;
             this.expr = expr;
         }
+
+
+        //public override List<Gate> ExpressionNode.NodeOutGates
+        //{
+        //    get { throw new Exception(); }
+        //}
+
+        //List<Gate> IFunctionNode.NodeOutGates
+        //{
+        //    get { throw new Exception(); }
+        //}
 
         public override string outputIBTL(int tabCount)
         {
@@ -37,16 +48,16 @@ namespace Compiler
             if(newline) sb.Append("cr ");
         }
 
-        LinkedList<ParamNode> IFunctionNode.getParameters()
-        {
-            throw new NotImplementedException();
-            //IntToken i = new IntToken("", -1, -1);
-            //LinkedList<ParamNode> param = new LinkedList<ParamNode>();
-            //ParamNode integer = new ParamNode(i, new ReferenceToken("", -1, -1));
-            //param.AddFirst(integer);
+        //LinkedList<ParamNode> IFunctionNode.getParameters()
+        //{
+        //    throw new NotImplementedException();
+        //    //IntToken i = new IntToken("", -1, -1);
+        //    //LinkedList<ParamNode> param = new LinkedList<ParamNode>();
+        //    //ParamNode integer = new ParamNode(i, new ReferenceToken("", -1, -1));
+        //    //param.AddFirst(integer);
 
-            //return param;
-        }
+        //    //return param;
+        //}
 
         public string getName()
         {
@@ -54,9 +65,19 @@ namespace Compiler
             //return "stdout";
         }
 
-        public override string getReturnType()
+        //public override string getReturnType()
+        //{
+        //    return "void";
+        //}
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
         {
-            return "void";
+            throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

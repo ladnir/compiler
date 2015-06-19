@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gates\Gate.cs" />
     <Compile Include="nodes\BlankNode.cs" />
     <Compile Include="nodes\IFunctionNode.cs" />
     <Compile Include="nodes\AssignmentNode.cs" />
@@ -73,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="tests\circuit\circuit1.ibtl" />
     <None Include="tests\ms4\input01.ibtl" />
     <None Include="tests\ms4\input02.ibtl" />
     <None Include="tests\ms4\input03.ibtl" />

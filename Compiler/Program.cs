@@ -1,5 +1,5 @@
 ﻿
-#define USETRY
+//#define USETRY
 
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace Compiler
                 for (int i = 0; i < args.Length || (i==0 && args.Length == 0); i++)
                 {
                     if (args.Length == 0)
-                        path = "../../tests/final/input09.ibtl";
+                        path = "C:\\Users\\peter\\Source\\Repos\\compiler\\Compiler\\tests\\circuit\\circuit1.ibtl";
                     else
                         path = args[i];
 
@@ -48,29 +48,37 @@ namespace Compiler
                     //Console.WriteLine("Parsing complete.");
 
                     StringBuilder sb = new StringBuilder();
-
+                    sb.Append("digraph{\n");
                     //Console.WriteLine("generating Gforth...");
-                    root.outputGForth(1, sb);
+                    //root.outputGForth(1, sb);
+                    int wireIDStart = 0;
+                    List<Gate> gates = new List<Gate>();
+
+                    root.toCircuit(gates,ref wireIDStart, sb);
+
+                    sb.Append("}\n");
+
+
                     output = sb.ToString();
 
                     //output = root.outputIBTL(0);
                     Console.WriteLine(output);
-                    
-                    
-                    using (StreamWriter outfile = new StreamWriter("../../out_"+i+".gf"))
+
+
+                    using (StreamWriter outfile = new StreamWriter("C:\\Users\\peter\\Source\\Repos\\compiler\\Compiler\\tests\\circuit\\circuit1.dot"))
                     {
                         outfile.Write(output);
-#if !__MonoCS__
-                        try
-                        { // 
-                            Process gforth = new Process();
-                            gforth.StartInfo.FileName = @"C:\Program Files (x86)\gforth\gforth.exe";
-                            gforth.StartInfo.Arguments = "../../out_" + i + ".gf";
-                            gforth.Start();
+                        //#if !__MonoCS__
+                        //                        try
+                        //                        { // 
+                        //                            Process gforth = new Process();
+                        //                            gforth.StartInfo.FileName = @"C:\Program Files (x86)\gforth\gforth.exe";
+                        //                            gforth.StartInfo.Arguments = "../../out_" + i + ".gf";
+                        //                            gforth.Start();
 
-                        }
-                        catch (Exception e) { }
-#endif
+                        //                        }
+                        //                        catch (Exception e) { }
+                        //#endif
                     }
 
                 }
@@ -85,16 +93,16 @@ namespace Compiler
 
                 //Console.WriteLine("\n\nPress any key to close.");
 
-            ConsoleKeyInfo key = Console.ReadKey();
+            //ConsoleKeyInfo key = Console.ReadKey();
             
-            foreach (Process proc in Process.GetProcessesByName("gforth"))
-            {
-                try
-                {
-                    proc.Kill();
-                }
-                catch (Exception e) { }
-            }
+            //foreach (Process proc in Process.GetProcessesByName("gforth"))
+            //{
+            //    try
+            //    {
+            //        proc.Kill();
+            //    }
+            //    catch (Exception e) { }
+            //}
             
             
         }

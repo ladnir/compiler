@@ -8,6 +8,8 @@ namespace Compiler
     public class VariableNode : ExpressionNode
     {
         private DeclarationNode dec;
+        private List<Gate> mGates;
+        private List<Gate> mOutGates;
 
 
         public VariableNode(DeclarationNode dec)
@@ -35,6 +37,43 @@ namespace Compiler
         public override string getReturnType()
         {
             return dec.getDataType();
+        }
+
+        internal void SetOutGates(List<Gate> list, ref int nextWireID, List<Gate> output)
+        {
+            mOutGates = list;
+
+            var bitCount =  dec.GetBitCount();
+            while (mOutGates.Count < bitCount)
+            {
+                mOutGates.Add(new LiteralWire(nextWireID++, false, output));
+            }
+
+            if (mOutGates.Count > bitCount)
+                throw new Exception("narrowing scope exception");
+        }
+
+        public override List<Gate> NodeOutGates
+        {
+            get 
+            {
+                return mOutGates; 
+            }
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal int GetBitCount()
+        {
+            return dec.GetBitCount();
         }
     }
 }

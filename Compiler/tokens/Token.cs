@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Compiler
@@ -33,7 +33,7 @@ namespace Compiler
     public class Token
     {
         protected int line, num;
-        BaseToken baseToken;
+        public BaseToken baseToken;
         public Token(BaseToken baseToken,int line, int num)
         {
             this.baseToken = baseToken;
@@ -52,7 +52,12 @@ namespace Compiler
 
         internal string locate()
         {
-            return "  line>" + line + ", token>" + num + "      "+baseToken.getValue();
+            return "  line:" + line + ", token:" + num + "      "+baseToken.getValue();
+        }
+
+        internal string locateShort()
+        {
+            return "l" + line + "t" + num;
         }
     }
 
@@ -69,11 +74,32 @@ namespace Compiler
 
     class DataTypeToken : BaseToken
     {
+        public int length;
+
         public DataTypeToken(string p)
             : base(p)
         {
+            if (isVarInt(p))
+            {
+                length = Int32.Parse(p.Substring(3));
+                value = "int";
+
+                if (length == 0)
+                    throw new Exception();
+            }
+            else if (p == "int")
+            {
+                length = 32;
+            }
+
             type = TokenType.DATATYPE;
             literal = false;
+        }
+
+        private bool isVarInt(string word)
+        {
+            Match match = Regex.Match(word, "int[0-9]+");
+            return match.Success;
         }
 
     }

@@ -56,6 +56,22 @@ namespace Compiler
         {
             return variableName;
         }
+
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal int GetBitCount()
+        {
+            return ((DataTypeToken)dataType.baseToken).length;
+        }
     }
 }
 

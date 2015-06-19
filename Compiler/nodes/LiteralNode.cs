@@ -7,12 +7,55 @@ namespace Compiler.parser
 {
     public class LiteralNode : ExpressionNode
     {
-        private Token litToken;
+        public Token litToken;
+        private List<Gate> gates;
+        private int mBitCount;
 
         public LiteralNode(Token nameToken)
         {
             // TODO: Complete member initialization
             this.litToken = nameToken;
+            mBitCount = -1;
+        }
+
+        public override List<Gate> NodeOutGates
+        {
+            get { return gates; }
+        }
+
+        public override void toCircuit(List<Gate> output, ref int nextWireID, StringBuilder dot)
+        {
+            if (gates != null)
+                throw new Exception();
+
+            gates = new List<Gate>();
+
+            if(litToken.getTokenType() == TokenType.INT)
+            {
+                dot.Append("subgraph cluster_" + litToken.locateShort() + " {\n label=\"literal_" + litToken.locateShort() + "\";\n");
+
+                UInt64 value = UInt64.Parse( litToken.getValue());
+                UInt64 mask = 1;
+
+                while (value > 0)
+                {
+                    dot.Append("g" + nextWireID+";\n");
+                    gates.Add(new LiteralWire(nextWireID++, (value & mask) != 0, output));
+                    value >>= 1;
+                }
+
+                while (gates.Count < mBitCount)
+                {
+                    dot.Append("g" + nextWireID + ";\n");
+                    gates.Add(new LiteralWire(nextWireID++, false, output));
+                }
+
+                dot.Append("}\n");
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public override void outputGForth(int tabCount, StringBuilder sb)
@@ -66,6 +109,16 @@ namespace Compiler.parser
             if (litToken.getTokenType() == TokenType.BOOL) return "bool";
 
             throw new Exception("error  literal " + litToken.locate());
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetBits(int p)
+        {
+            mBitCount = p;
         }
     }
 }

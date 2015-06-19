@@ -7,19 +7,28 @@ using Compiler.parser;
 
 namespace Compiler
 {
-    public class UserFunctionNode : Node , ILocalScopeNode ,IFunctionNode
+    public class UserFunctionNode : ExpressionNode , ILocalScopeNode ,IFunctionNode
     {
-        private LinkedList<ParamNode> parameters;
+        private List<ParamNode> parameters;
 
         private Token returnType;
-        private Token functionName;
+        public Token functionName;
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
         private ILocalScopeNode scope;
+        private ReturnNode mReturn;
 
     
         //public UserFunctionNode(Token name)
         //{ //TODO remove this
         //    functionName = name;
+        //}
+
+        //List<Gate> IFunctionNode.NodeOutGates
+        //{
+        //    get
+        //    {
+        //        return mReturn.returnExpr.NodeOutGates;
+        //    }
         //}
 
         public UserFunctionNode(Token returnType, 
@@ -29,7 +38,7 @@ namespace Compiler
                                 ILocalScopeNode scope)
         {
             //UserFunctionNode std = new StdoutNode();
-            this.parameters = new LinkedList<ParamNode>();
+            this.parameters = new List<ParamNode>();
 
             this.scope = scope;
             this.returnType = returnType;
@@ -49,7 +58,7 @@ namespace Compiler
                 ParamNode param = new ParamNode(hack[i++], name);
               //  types.MoveNext();
 
-                parameters.AddLast(param);
+                parameters.Add(param);
                 localVars.Add(name.getValue(), param);
             }
         }
@@ -66,23 +75,18 @@ namespace Compiler
             sb.Append(functionName.getValue());
             sb.Append(" ");
 
-            LinkedListNode<ParamNode> cur = parameters.First;
             for (int i = 0; i < parameters.Count; i++)
             {
-                sb.Append(cur.Value.getVarName() + " ");
-
-                cur = cur.Next;
+                sb.Append(parameters[i].getVarName() + " ");
             }
 
             sb.Append("] [ ");
 
             sb.Append(returnType.getValue() + " ");
-            cur = parameters.First;
             for (int i = 0; i < parameters.Count; i++)
             {
-                sb.Append(cur.Value.getReturnType() + " ");
-
-                cur = cur.Next;
+                sb.Append(parameters[i].getReturnType() + " ");
+                 
             }
 
             sb.Append("] \n");
@@ -110,13 +114,11 @@ namespace Compiler
             sb.Append(functionName.getValue());
             sb.Append("(");
 
-            LinkedListNode<ParamNode> cur = parameters.First;
             for (int i = 0; i < parameters.Count; i++)
             {
                 if (i != 0) sb.Append(",");
-                sb.Append(cur.Value.outputIBTL(tabCount));
-
-                cur = cur.Next;
+                sb.Append(parameters[i].outputIBTL(tabCount));
+                 
             }
 
             sb.Append("){ \n");
@@ -164,7 +166,7 @@ namespace Compiler
         // FunctionNode function
         //============================================================================
 
-        LinkedList<ParamNode> IFunctionNode.getParameters()
+        public  List<ParamNode> getParameters()
         {
             return parameters;
         }
@@ -217,7 +219,7 @@ namespace Compiler
             return scope.funcInScope(token);
         }
 
-        public IFunctionNode getFuncRef(string token)
+        public UserFunctionNode getFuncRef(string token)
         {
             return scope.getFuncRef(token);
         }
@@ -239,9 +241,34 @@ namespace Compiler
             return this;
         }
 
-        public string getReturnType()
+        public override string getReturnType()
         {
             return returnType.getValue();
+        }
+
+        internal void SetReturn(ReturnNode returnNode)
+        {
+            mReturn = returnNode;
+        }
+
+        internal ReturnNode GetReturn()
+        {
+            return mReturn;
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+
+
+            foreach (var child in children)
+            {
+                child.toCircuit(gates, ref nextWireID,dot);
+            }
+        }
+
+        public override List<Gate> NodeOutGates
+        {
+            get {return mReturn.returnExpr.NodeOutGates; }
         }
     }
 }

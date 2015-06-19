@@ -5,18 +5,229 @@ using System.Text;
 
 namespace Compiler.parser
 {
+
+
+
     class OpNode : ExpressionNode
     {
+        private List<Gate> gates;
         private Token opToken;
-        private ExpressionNode leftExpr;
-        private ExpressionNode rightExpr;
+        private ExpressionNode expr1;
+        private ExpressionNode expr2;
+        private ExpressionNode expr3;
 
-        public OpNode(Token opToken, ExpressionNode leftExpr, ExpressionNode rightExpr)
+        public OpNode(Token opToken, ExpressionNode ex1, ExpressionNode ex2, ExpressionNode ex3)
         {
             // TODO: Complete member initialization
             this.opToken = opToken;
-            this.leftExpr = leftExpr;
-            this.rightExpr = rightExpr;
+            this.expr1 = ex1;
+            this.expr2 = ex2;
+            this.expr3 = ex3;
+        }
+
+
+        public override List<Gate> NodeOutGates
+        {
+            get { return gates; }
+        }
+
+
+        public override void toCircuit(List<Gate> output, ref int nextWireID, StringBuilder dot)
+        {
+            gates = new List<Gate>();
+
+            if (this.opToken.getValue() == "+")
+            {
+                nextWireID = CircuitAdd(output, nextWireID, dot);
+            }
+            else if (this.opToken.getValue() == "-")
+            {
+                nextWireID = CircuitSubtract(output, nextWireID, dot);
+            }
+            else if (opToken.getValue() == "*")
+            {
+                nextWireID = CircuitMultiply(output, nextWireID, dot);
+            }
+            else if (opToken.getValue() == "^")
+            {
+                if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                    throw new Exception();
+
+                for(int i = 0; i < expr1.NodeOutGates.Count; i++)
+                {
+                    gates.Add(new XorGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output));
+                }
+            }
+            else if (opToken.getValue() == "#")
+            {
+
+                VariableNode var = (VariableNode)expr1;
+                int startIdx = Int32.Parse(((LiteralNode)expr2).litToken.getValue());
+                int bitCount = Int32.Parse(((LiteralNode)expr3).litToken.getValue());
+
+                NodeOutGates.AddRange(var.NodeOutGates.GetRange(startIdx, bitCount).ToList());
+            }
+            else if (opToken.getValue() == "$")
+            {
+                VariableNode var1 = (VariableNode)expr1;
+                VariableNode var2 = (VariableNode)expr1;
+
+                NodeOutGates.AddRange(var1.NodeOutGates);
+                NodeOutGates.AddRange(var2.NodeOutGates);
+            }
+            else
+                throw new NotImplementedException();
+        }
+
+        private int CircuitMultiply(List<Gate> output, int nextWireID, StringBuilder dot)
+        {
+            if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                throw new Exception();
+
+            //List<Gate> temp = new List<Gate>();
+            List<Gate> runningTotal = new List<Gate>();
+
+            for (int j = 0; j < expr2.NodeOutGates.Count; j++)
+            {
+                runningTotal.Add(new AndGate(nextWireID++, expr1.NodeOutGates[0], expr2.NodeOutGates[j], output));
+            }
+
+            for (int i = 1; i < expr1.NodeOutGates.Count; i++)
+            {
+                Gate carry = null;
+                for (int j = 0; j < expr2.NodeOutGates.Count - i; j++)
+                {
+                    var b  = new AndGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[j], output);
+                    var a = runningTotal[i + j];
+
+                    var abXOR = new XorGate(nextWireID++, a, b, output);
+
+                    if(j == 0)
+                    {
+                        runningTotal[i + j] = abXOR;
+                        carry = new AndGate(nextWireID++, a, b, output);
+                    }
+                    else
+                    {
+
+                    }
+                    
+                }
+
+                
+            }
+
+                return nextWireID;
+        }
+
+        private int CircuitSubtract(List<Gate> output, int nextWireID, StringBuilder dot)
+        {
+            if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                throw new Exception();
+
+            expr1.toCircuit(output, ref nextWireID, dot);
+            expr2.toCircuit(output, ref nextWireID, dot);
+
+            Gate a = expr1.NodeOutGates[0];
+            Gate b = expr2.NodeOutGates[0];
+
+            Gate sum = new XorGate(nextWireID++, a, b, output);
+            NodeOutGates.Add(sum);
+
+            if (expr1.NodeOutGates.Count > 1)
+            {
+                Gate bor = new AndNot2Gate(nextWireID++, a, b, output);
+
+                for (int i = 1; i < expr1.NodeOutGates.Count; i++)
+                {
+                    a = expr1.NodeOutGates[i];
+                    b = expr2.NodeOutGates[i];
+
+                    Gate abXOR = new XorGate(nextWireID++, a, b, output);
+                    sum = new XorGate(nextWireID++, abXOR, bor, output);
+
+                    NodeOutGates.Add(sum);
+
+                    // carry gates
+                    if (i < expr1.NodeOutGates.Count - 1)
+                    {
+                        Gate abANDNot2 = new AndNot2Gate(nextWireID++, a, b, output);
+                        Gate abXORcANDNot2 = new AndNot2Gate(nextWireID++, bor, abXOR, output);
+                        bor = new OrGate(nextWireID++, abANDNot2, abXORcANDNot2, output);
+                    }
+                }
+            }
+            return nextWireID;
+        }
+
+        private int CircuitAdd(List<Gate> output, int nextWireID, StringBuilder dot)
+        {
+            //dot.append("subgraph cluster_" + opToken.locateShort() + " {\n label=\"add_" + opToken.locateShort() + "\";\n");
+
+            if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                throw new Exception();
+
+            expr1.toCircuit(output, ref nextWireID, dot);
+            expr2.toCircuit(output, ref nextWireID, dot);
+
+            Gate a = expr1.NodeOutGates[0];
+            Gate b = expr2.NodeOutGates[0];
+
+            Gate sum = new XorGate(nextWireID++, a, b, output);
+            NodeOutGates.Add(sum);
+
+            //dot.append("g" + sum.mID + "[label=\"sum0\"];\n");
+            //dot.append("g" + a.mID + " -> g" + sum.mID + ";\n");
+            //dot.append("g" + b.mID + " -> g" + sum.mID + ";\n");
+
+            if (expr1.NodeOutGates.Count > 1)
+            {
+                Gate carry = new AndGate(nextWireID++, a, b, output);
+
+                //dot.append("g" + a.mID + " -> g" + carry.mID + ";\n");
+                //dot.append("g" + b.mID + " -> g" + carry.mID + ";\n");
+
+                for (int i = 1; i < expr1.NodeOutGates.Count; i++)
+                {
+                    a = expr1.NodeOutGates[i];
+                    b = expr2.NodeOutGates[i];
+
+                    Gate abXOR = new XorGate(nextWireID++, a, b, output);
+
+                    //dot.append("g" + a.mID + " -> g" + abXOR.mID + ";\n");
+                    //dot.append("g" + b.mID + " -> g" + abXOR.mID + ";\n");
+
+                    sum = new XorGate(nextWireID++, abXOR, carry, output);
+
+                    //dot.append("g" + abXOR.mID + " -> g" + sum.mID + ";\n");
+                    //dot.append("g" + carry.mID + " -> g" + sum.mID + ";\n");
+                    //dot.append("g" + sum.mID + "[label=\"sum"+i+"\"];\n");
+
+                    NodeOutGates.Add(sum);
+
+                    // carry gates
+                    if (i < expr1.NodeOutGates.Count - 1)
+                    {
+                        Gate abAND = new AndGate(nextWireID++, a, b, output);
+
+                        //dot.append("g" + a.mID + " -> g" + abAND.mID + ";\n");
+                        //dot.append("g" + b.mID + " -> g" + abAND.mID + ";\n");
+
+                        Gate abXORcAND = new AndGate(nextWireID++, abXOR, carry, output);
+
+                        //dot.append("g" + abXOR.mID + " -> g" + abXORcAND.mID + ";\n");
+                        //dot.append("g" + carry.mID + " -> g" + abXORcAND.mID + ";\n");
+
+                        carry = new OrGate(nextWireID++, abAND, abXORcAND, output);
+
+                        //dot.append("g" + abAND.mID + " -> g" + carry.mID + ";\n");
+                        //dot.append("g" + abXORcAND.mID + " -> g" + carry.mID + ";\n");
+                    }
+                }
+            }
+
+            //dot.append("}");
+            return nextWireID;
         }
 
         public override void outputGForth(int tabCount, StringBuilder sb)
@@ -29,14 +240,14 @@ namespace Compiler.parser
             }
             else
             {   // general bin or unnary opperators
-                leftExpr.outputGForth(tabCount, sb);
-                if (rightExpr != null)
+                expr1.outputGForth(tabCount, sb);
+                if (expr2 != null)
                 {
-                    if (leftExpr.getReturnType() != rightExpr.getReturnType())
-                        castTypes(leftExpr, rightExpr, sb);
-                    rightExpr.outputGForth(tabCount, sb);
-                    if (leftExpr.getReturnType() != rightExpr.getReturnType())
-                        castTypes(rightExpr,leftExpr,  sb);
+                    if (expr1.getReturnType() != expr2.getReturnType())
+                        castTypes(expr1, expr2, sb);
+                    expr2.outputGForth(tabCount, sb);
+                    if (expr1.getReturnType() != expr2.getReturnType())
+                        castTypes(expr2,expr1,  sb);
 
                 }
                 if(this.getReturnType() == "int" || this.getReturnType() == "bool")
@@ -54,27 +265,27 @@ namespace Compiler.parser
                 outputModGForth(tabCount, sb);
             else if (opToken.getValue() == "and" || opToken.getValue() == "or")
             {
-                if (leftExpr.getReturnType() != "int" && leftExpr.getReturnType() != "bool")
+                if (expr1.getReturnType() != "int" && expr1.getReturnType() != "bool")
                     throw new Exception("casting error on '" + opToken.getValue() + "'. return type must be bool or int.\n" + opToken.locate());
-                if (rightExpr.getReturnType() != "int" && rightExpr.getReturnType() != "bool")
+                if (expr2.getReturnType() != "int" && expr2.getReturnType() != "bool")
                     throw new Exception("casting error on '" + opToken.getValue() + "'. return type must be bool or int.\n" + opToken.locate());
 
-                leftExpr.outputGForth(tabCount, sb);
+                expr1.outputGForth(tabCount, sb);
                 sb.Append(" ");
-                rightExpr.outputGForth(tabCount, sb);
+                expr2.outputGForth(tabCount, sb);
                 sb.Append(" "+opToken.getValue() +" ");
                 
             }
-            else if (opToken.getValue() == "-" && leftExpr.getReturnType() == "bool" && rightExpr == null)
+            else if (opToken.getValue() == "-" && expr1.getReturnType() == "bool" && expr2 == null)
             {
-                leftExpr.outputGForth(tabCount, sb);
+                expr1.outputGForth(tabCount, sb);
                 sb.Append(" 0= ");
             }
 
             else  if (opToken.getValue() == "+" &&
-                rightExpr != null &&
-                rightExpr.getReturnType() == "string" &&
-                leftExpr.getReturnType() == "string")
+                expr2 != null &&
+                expr2.getReturnType() == "string" &&
+                expr1.getReturnType() == "string")
             {
                 outputStringConcatination(tabCount, sb);
             }
@@ -86,30 +297,30 @@ namespace Compiler.parser
                 opToken.getValue() == "cos" ||
                 opToken.getValue() == "tan")
             {
-                leftExpr.outputGForth(tabCount, sb);
-                if (leftExpr.getReturnType() == "int")
+                expr1.outputGForth(tabCount, sb);
+                if (expr1.getReturnType() == "int")
                     sb.Append("s>f ");
-                else if (leftExpr.getReturnType() != "float") throw new Exception("OpNode error, trig functions only work with int ad float values.");
+                else if (expr1.getReturnType() != "float") throw new Exception("OpNode error, trig functions only work with int ad float values.");
                 sb.Append("f" + opToken.getValue() + " ");
 
             }
             else if (opToken.getValue() == "!=")
             {
-                leftExpr.outputGForth(tabCount, sb);
-                rightExpr.outputGForth(tabCount, sb);
+                expr1.outputGForth(tabCount, sb);
+                expr2.outputGForth(tabCount, sb);
                 sb.Append(" <>");
 
             }
-            else if (opToken.getValue() == "-" && rightExpr == null)
+            else if (opToken.getValue() == "-" && expr2 == null)
             {
-                leftExpr.outputGForth(tabCount, sb);
-                if (leftExpr.getReturnType() == "float") sb.Append(" fnegate ");
+                expr1.outputGForth(tabCount, sb);
+                if (expr1.getReturnType() == "float") sb.Append(" fnegate ");
                 else
                     sb.Append(" negate ");
 
             }
-            else if ((leftExpr.getReturnType() == "float" ||
-                      rightExpr.getReturnType() == "float") 
+            else if ((expr1.getReturnType() == "float" ||
+                      expr2.getReturnType() == "float") 
                     &&
                     (opToken.getValue() == "<" ||
                     opToken.getValue() == "<=" ||
@@ -128,14 +339,14 @@ namespace Compiler.parser
 
         private void outputFloatBoolGForth(int tabCount, StringBuilder sb)
         {
-            leftExpr.outputGForth(tabCount, sb);
-            if(leftExpr.getReturnType() != "float"){
-                if(leftExpr.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation."+opToken.locate());
+            expr1.outputGForth(tabCount, sb);
+            if(expr1.getReturnType() != "float"){
+                if(expr1.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation."+opToken.locate());
                 sb.Append("s>f ");
             }
-            rightExpr.outputGForth(tabCount,sb);
-            if(rightExpr.getReturnType() != "float"){
-                if (rightExpr.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation." + opToken.locate());
+            expr2.outputGForth(tabCount,sb);
+            if(expr2.getReturnType() != "float"){
+                if (expr2.getReturnType() == "string") throw new Exception("strings can not be used in boolean operation." + opToken.locate());
                 sb.Append("s>f ");
             }
 
@@ -144,57 +355,57 @@ namespace Compiler.parser
 
         private void outputStringConcatination(int tabCount, StringBuilder sb)
         {
-            leftExpr.outputGForth(tabCount, sb);
+            expr1.outputGForth(tabCount, sb);
             sb.Append(" pad place ");
-            rightExpr.outputGForth(tabCount, sb);
+            expr2.outputGForth(tabCount, sb);
             sb.Append(" pad +place pad count ");
         }
 
         private void outputPowerGForth(int tabCount, StringBuilder sb)
         {
-            if (leftExpr.getReturnType() != "float" && leftExpr.getReturnType() != "int") throw new Exception("OpNode error, exponent base must be an int or float." + opToken.locate());
-            if (rightExpr.getReturnType() != "int") throw new Exception("OpNode error, exponent power must be an int." + opToken.locate());
+            if (expr1.getReturnType() != "float" && expr1.getReturnType() != "int") throw new Exception("OpNode error, exponent base must be an int or float." + opToken.locate());
+            if (expr2.getReturnType() != "int") throw new Exception("OpNode error, exponent power must be an int." + opToken.locate());
     
-            leftExpr.outputGForth(tabCount, sb);
+            expr1.outputGForth(tabCount, sb);
             sb.Append(" ");
-            rightExpr.outputGForth(tabCount, sb);
+            expr2.outputGForth(tabCount, sb);
 
-            if (leftExpr.getReturnType() == "int") sb.Append( " ^");
+            if (expr1.getReturnType() == "int") sb.Append( " ^");
             else sb.Append(" f^");
             
         }
 
         private void outputModGForth(int tabCount, StringBuilder sb)
         {
-            if (leftExpr == null || rightExpr == null) throw new Exception("OpNode error, mod expects two arguments." + opToken.locate());
+            if (expr1 == null || expr2 == null) throw new Exception("OpNode error, mod expects two arguments." + opToken.locate());
 
-            switch (leftExpr.getReturnType())
+            switch (expr1.getReturnType())
             {
                 case "float":   // algorithm for  (float % float ) or (float % int)
                     // looks like:   11e % 10e = 11e 11e 10e f/ f>s s>f 10e f* f-
 
-                    leftExpr.outputGForth(tabCount, sb);
+                    expr1.outputGForth(tabCount, sb);
                     sb.Append(" ");
-                    rightExpr.outputGForth(tabCount, sb);
-                    if (rightExpr.getReturnType() == "int")
+                    expr2.outputGForth(tabCount, sb);
+                    if (expr2.getReturnType() == "int")
                         sb.Append(" s>f");
                     sb.Append("  fmod");
                     
 
                     break;
                 case "int":
-                    if (rightExpr.getReturnType() == "int")
+                    if (expr2.getReturnType() == "int")
                     {
-                        leftExpr.outputGForth(tabCount, sb);
+                        expr1.outputGForth(tabCount, sb);
                         sb.Append(" ");
-                        rightExpr.outputGForth(tabCount, sb);
+                        expr2.outputGForth(tabCount, sb);
                         sb.Append(" mod ");
                     }
-                    else if (rightExpr.getReturnType() == "float")
+                    else if (expr2.getReturnType() == "float")
                     {
-                        leftExpr.outputGForth(tabCount, sb);
+                        expr1.outputGForth(tabCount, sb);
                         sb.Append(" s>f ");
-                        rightExpr.outputGForth(tabCount, sb);
+                        expr2.outputGForth(tabCount, sb);
                         sb.Append(" fmod ");
 
                     }
@@ -216,8 +427,8 @@ namespace Compiler.parser
                 opToken.getValue() == "%"   ||
                 opToken.getValue() == "!="   ) return true;
 
-            if (leftExpr.getReturnType() == "float" || 
-                (rightExpr != null && rightExpr.getReturnType() == "float"))
+            if (expr1.getReturnType() == "float" || 
+                (expr2 != null && expr2.getReturnType() == "float"))
             {
                 if( opToken.getValue() == "<"  ||
                     opToken.getValue() == "<=" ||
@@ -228,12 +439,12 @@ namespace Compiler.parser
             }
 
             if (opToken.getValue() == "-"   && 
-                rightExpr == null)          return true;
+                expr2 == null)          return true;
 
             if (opToken.getValue() == "+"               && 
-                rightExpr != null                       && 
-                rightExpr.getReturnType() == "string"   && 
-                leftExpr.getReturnType() == "string")   return true;
+                expr2 != null                       && 
+                expr2.getReturnType() == "string"   && 
+                expr1.getReturnType() == "string")   return true;
 
             return false;
         }
@@ -279,11 +490,11 @@ unknown type at " + node.getReturnType() + "   \n  " + opToken.locate());
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("[ " + opToken.getValue() + " " + leftExpr.outputIBTL(tabCount) );
+            sb.Append("[ " + opToken.getValue() + " " + expr1.outputIBTL(tabCount) );
 
-            if (rightExpr != null)
+            if (expr2 != null)
             {
-                sb.Append(" " + rightExpr.outputIBTL(tabCount));
+                sb.Append(" " + expr2.outputIBTL(tabCount));
             }
 
             sb.Append(" ] ");
@@ -307,22 +518,27 @@ unknown type at " + node.getReturnType() + "   \n  " + opToken.locate());
                 opToken.getValue() == "tan") return "float";
             
 
-            if (rightExpr != null)
+            if (expr2 != null)
             {
-                if ((leftExpr.getReturnType() == "string" || rightExpr.getReturnType() == "string")
+                if ((expr1.getReturnType() == "string" || expr2.getReturnType() == "string")
                     && opToken.getValue() == "+")
                     return "string";
 
-                if (leftExpr.getReturnType() == "float" || rightExpr.getReturnType() == "float")
+                if (expr1.getReturnType() == "float" || expr2.getReturnType() == "float")
                     return "float";
 
-                if (leftExpr.getReturnType() == "int" || rightExpr.getReturnType() == "int")
+                if (expr1.getReturnType() == "int" || expr2.getReturnType() == "int")
                     return "int";
 
                 
                 throw new Exception("OpNode error, reuturn type know know." + opToken.locate());
 
-            } return leftExpr.getReturnType();
+            } return expr1.getReturnType();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

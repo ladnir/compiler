@@ -15,20 +15,13 @@ namespace Compiler
             
         }
 
-        virtual public string outputIBTL(int tabCount)
-        {
-            throw new NotImplementedException();
-        }
-        virtual public void outputGForth(int tabCount, StringBuilder sb)
-        {
+        abstract public void toCircuit(List<Compiler.Gate> gates, ref int nextWireID, StringBuilder dotString);
 
-            throw new NotImplementedException();
-        }
-        virtual public string outputC(int tabCount)
-        {
+        abstract public string outputIBTL(int tabCount);
 
-            throw new NotImplementedException();
-        }
+        abstract public void outputGForth(int tabCount, StringBuilder sb);
+
+        abstract public string outputC(int tabCount);
 
         virtual public void addChild(Node child)
         {

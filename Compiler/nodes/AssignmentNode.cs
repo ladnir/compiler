@@ -17,6 +17,8 @@ namespace Compiler
             this.location = location;
             this.varNode = varNode;
             this.expr = expr;
+
+            //varNode.SetOutGates( expr.NodeOutGates);
         }
 
         public override string outputIBTL(int tabCount)
@@ -73,6 +75,25 @@ unknown type at " + varNode.getReturnType());
                 }
         }
 
-      
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+
+            if (expr is Compiler.parser.LiteralNode)
+            {
+                var lit = (Compiler.parser.LiteralNode)expr;
+
+                lit.SetBits(varNode.GetBitCount());
+            }
+
+            expr.toCircuit(gates, ref nextWireID, dot);
+            varNode.SetOutGates(expr.NodeOutGates, ref nextWireID, gates);
+            //throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

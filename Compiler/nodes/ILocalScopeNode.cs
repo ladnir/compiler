@@ -17,7 +17,7 @@ namespace Compiler
 
         // functions
         bool funcInScope(string token);
-        IFunctionNode getFuncRef(string name);
+        UserFunctionNode getFuncRef(string name);
         void addToScope(UserFunctionNode func);
         void defineFunc(string name);
 

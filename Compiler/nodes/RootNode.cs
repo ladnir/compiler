@@ -7,7 +7,7 @@ namespace Compiler
 {
     public class RootNode : Node , ILocalScopeNode
     {
-        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
+        Dictionary<string, UserFunctionNode> functions = new Dictionary<string, UserFunctionNode>();
         Dictionary<string, IFunctionNode> builtInFunctions = new Dictionary<string, IFunctionNode>();
         Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
 
@@ -53,9 +53,9 @@ namespace Compiler
             if(iPow) sb.Append(": ^ {  input ex } 1 { sum } begin ex 0 > while sum input * TO sum ex 1 - TO ex repeat sum ; \n");
             if(fPow) sb.Append(": f^ { F: input  ex } 1.0e { F: sum } begin ex 0 > while sum input f* TO sum ex 1 - TO ex repeat sum ; \n\n");
 
-            foreach (KeyValuePair<string, IFunctionNode> entry in functions)
+            foreach (KeyValuePair<string, UserFunctionNode> entry in functions)
             {
-                IFunctionNode func = entry.Value;
+                UserFunctionNode func = entry.Value;
 
                 Node funcNode = (Node)func;
                 funcNode.outputGForth(tabCount, sb);
@@ -128,19 +128,20 @@ namespace Compiler
             return b;
         }
 
-        public IFunctionNode getFuncRef(string token)
+        public UserFunctionNode getFuncRef(string token)
         {
             if(functions.ContainsKey(token))return functions[token];
-            return builtInFunctions[token];
+
+            throw new NotImplementedException();
+            //return builtInFunctions[token];
            
         }
 
         public void addToScope(UserFunctionNode func)
         {
-            IFunctionNode ifunc = (IFunctionNode)func;
-            if (Program.parserDebug) Console.WriteLine("Root adding func " + ifunc.getName());
+            if (Program.parserDebug) Console.WriteLine("Root adding func " + func.functionName.toString());
            
-            functions.Add(ifunc.getName(), func);
+            functions.Add(func.functionName.getValue(), func);
         }
         public void defineFunc(string name)
         {
@@ -153,6 +154,19 @@ namespace Compiler
         public UserFunctionNode getParentFunc()
         {
             throw new Exception("root error, return can only be used inside of a fucntion");
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            foreach (Node child in children)
+            {
+                child.toCircuit(gates, ref nextWireID,dot);
+            }
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

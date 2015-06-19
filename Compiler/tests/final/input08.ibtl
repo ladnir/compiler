@@ -1,7 +1,7 @@
 ﻿[
 	[if false 16 0]
 
-	[if true 
+	[if false 
 		[if true 
 			[stdout "hello world"] 
 			[stdout "goodbuy world"]

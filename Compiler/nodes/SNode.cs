@@ -10,7 +10,7 @@ namespace Compiler
         private bool braces = false;
         private ILocalScopeNode scope;
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
-        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
+        Dictionary<string, UserFunctionNode> functions = new Dictionary<string, UserFunctionNode>();
 
         public SNode(ILocalScopeNode scope)
         {
@@ -21,6 +21,18 @@ namespace Compiler
         {
             braces = true;
         }
+
+        //public override void outputCircuit(int tabCount, StringBuilder sb, ref int nextWireID)
+        //{
+        //    if (children != null)
+        //    {
+        //        foreach (Node child in children)
+        //        {
+        //            sb.Append("\n" + Node.getTabs(tabCount));
+        //            child.outputCircuit(tabCount + 1, sb,ref nextWireID);
+        //        }
+        //    }
+        //}
 
         public override string outputIBTL(int tabCount)
         {
@@ -114,7 +126,7 @@ namespace Compiler
             return scope.funcInScope(token);
         }
 
-        public IFunctionNode getFuncRef(string token)
+        public UserFunctionNode getFuncRef(string token)
         {
             if (functions.ContainsKey(token)) return functions[token];
             return scope.getFuncRef(token);
@@ -123,8 +135,7 @@ namespace Compiler
         public void addToScope(UserFunctionNode func)
         {
 
-            IFunctionNode ifunc = (IFunctionNode)func;
-            functions.Add(ifunc.getName(), ifunc);
+            functions.Add(func.functionName.toString(), func);
             //scope.addToScope(func);
         }
 
@@ -135,6 +146,19 @@ namespace Compiler
         public UserFunctionNode getParentFunc()
         {
             return scope.getParentFunc();
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            foreach(var child in children)
+            {
+                child.toCircuit(gates,ref nextWireID, dot);
+            }
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

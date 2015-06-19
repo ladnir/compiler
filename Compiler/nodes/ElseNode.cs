@@ -10,7 +10,7 @@ namespace Compiler.parser
         private ILocalScopeNode scope;
 
         private Dictionary<string, VariableNode> localVars = new Dictionary<string, VariableNode>();
-        Dictionary<string, IFunctionNode> functions = new Dictionary<string, IFunctionNode>();
+        Dictionary<string, UserFunctionNode> functions = new Dictionary<string, UserFunctionNode>();
 
         public ElseNode(ILocalScopeNode scope)
         {
@@ -91,7 +91,7 @@ namespace Compiler.parser
             return scope.funcInScope(token);
         }
 
-        public IFunctionNode getFuncRef(string token)
+        public UserFunctionNode getFuncRef(string token)
         {
             if (functions.ContainsKey(token)) return functions[token];
             return scope.getFuncRef(token);
@@ -99,8 +99,7 @@ namespace Compiler.parser
 
         public void addToScope(UserFunctionNode func)
         {
-            IFunctionNode ifunc = (IFunctionNode)func;
-            functions.Add(ifunc.getName(), ifunc);
+            functions.Add(func.functionName.toString(), func);
             //scope.addToScope(func);
         }
 
@@ -113,6 +112,16 @@ namespace Compiler.parser
         public UserFunctionNode getParentFunc()
         {
             return scope.getParentFunc();
+        }
+
+        public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string outputC(int tabCount)
+        {
+            throw new NotImplementedException();
         }
     }
 }

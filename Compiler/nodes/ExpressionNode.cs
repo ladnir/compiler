@@ -9,6 +9,12 @@ namespace Compiler
     {
         public abstract string getReturnType();
 
-       
+
+        //public abstract void toCircuit(List<Gate> output, ref int nextGateID, int bitCount);
+
+        public abstract List<Gate> NodeOutGates
+        {
+            get;
+        }
     }
 }

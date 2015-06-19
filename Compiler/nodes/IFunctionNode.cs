@@ -9,8 +9,12 @@ namespace Compiler
     public interface IFunctionNode
     {
 
-        LinkedList<ParamNode> getParameters();
+        List<ParamNode> getParameters();
         string getName();
         string getReturnType();
+
+        //List<Gate> NodeOutGates { get; }
+
+        //void toCiruit(List<Gate> gates, int nextWireID);
     }
 }
