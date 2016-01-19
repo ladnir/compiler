@@ -16,8 +16,7 @@ namespace Compiler
 
         public RootNode()
         {
-            InitBuiltInFunctions();
-
+            InitBuiltInFunctions(); 
         }
 
         private void InitBuiltInFunctions()

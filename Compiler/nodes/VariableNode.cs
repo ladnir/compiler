@@ -7,7 +7,7 @@ namespace Compiler
 {
     public class VariableNode : ExpressionNode
     {
-        private DeclarationNode dec;
+        public DeclarationNode dec;
         private List<Gate> mGates;
         private List<Gate> mOutGates;
 
@@ -41,7 +41,23 @@ namespace Compiler
 
         internal void SetOutGates(List<Gate> list, ref int nextWireID, List<Gate> output)
         {
+            if (mOutGates != null)
+            {
+                for (int i = 0; i < mOutGates.Count; i++ )
+                {
+                    mOutGates[i].SetAsInternal();
+                }
+            }
+
             mOutGates = list;
+
+            if(dec.let == parser.LetType.Output)
+            {
+                for(int i = 0; i < mOutGates.Count; i++)
+                {
+                    mOutGates[i].SetAsOutput(getVarName() + "_" + i);
+                }
+            }
 
             var bitCount =  dec.GetBitCount();
             while (mOutGates.Count < bitCount)

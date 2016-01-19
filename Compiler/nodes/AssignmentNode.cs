@@ -88,6 +88,7 @@ unknown type at " + varNode.getReturnType());
 
             expr.toCircuit(gates, ref nextWireID, dot);
             varNode.SetOutGates(expr.NodeOutGates, ref nextWireID, gates);
+
             //throw new NotImplementedException();
         }
 

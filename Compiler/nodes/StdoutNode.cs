@@ -72,7 +72,8 @@ namespace Compiler
 
         public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
         {
-            throw new NotImplementedException();
+            expr.toCircuit(gates, ref nextWireID, dot);
+            new PrintGate(nextWireID++, expr.NodeOutGates, gates);
         }
 
         public override string outputC(int tabCount)

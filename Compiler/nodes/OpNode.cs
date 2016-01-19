@@ -58,9 +58,8 @@ namespace Compiler.parser
                     gates.Add(new XorGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output));
                 }
             }
-            else if (opToken.getValue() == "#")
+            else if (opToken.getValue() == "@")
             {
-
                 VariableNode var = (VariableNode)expr1;
                 int startIdx = Int32.Parse(((LiteralNode)expr2).litToken.getValue());
                 int bitCount = Int32.Parse(((LiteralNode)expr3).litToken.getValue());
@@ -75,8 +74,117 @@ namespace Compiler.parser
                 NodeOutGates.AddRange(var1.NodeOutGates);
                 NodeOutGates.AddRange(var2.NodeOutGates);
             }
+            else if (opToken.getValue() == ">>")
+            {
+                int shiftCount = Int32.Parse(((LiteralNode)expr2).litToken.getValue());
+                NodeOutGates.AddRange(expr1.NodeOutGates.GetRange(shiftCount, expr1.NodeOutGates.Count - shiftCount));
+
+                for (int i = 0; i < shiftCount; i++)
+                    NodeOutGates.Add(new LiteralWire(nextWireID++, false, output));
+            }
+            else if (opToken.getValue() == "<<")
+            {
+                int shiftCount = Int32.Parse(((LiteralNode)expr2).litToken.getValue());
+
+                for (int i = 0; i < shiftCount; i++)
+                    NodeOutGates.Add(new LiteralWire(nextWireID++, false, output));
+
+                NodeOutGates.AddRange(expr1.NodeOutGates.GetRange(0, expr1.NodeOutGates.Count - shiftCount));
+            }
+            else if (opToken.getValue() == "!=")
+            {
+                if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                    throw new Exception();
+
+                Gate prev = new XorGate(nextWireID++, expr1.NodeOutGates[0], expr2.NodeOutGates[0], output);
+
+                for (int i = 1; i < expr1.NodeOutGates.Count; ++i)
+                {
+                    var xor = new XorGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output);
+                    prev = new OrGate(nextWireID++, prev, xor, output);
+                }
+
+                NodeOutGates.Add(prev);
+            }
+            else if (opToken.getValue() == "=")
+            {
+                if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
+                    throw new Exception();
+
+                Gate prev = new NXorGate(nextWireID++, expr1.NodeOutGates[0], expr2.NodeOutGates[0], output);
+
+                for (int i = 1; i < expr1.NodeOutGates.Count; ++i)
+                {
+                    var xor = new NXorGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output);
+                    prev = new AndGate(nextWireID++, prev, xor, output);
+                }
+
+                NodeOutGates.Add(prev);
+            }
+            else if (opToken.getValue() == ">")
+            {
+                CircuitGreaterThan(expr1, expr2, ref nextWireID, output);
+            }
+            else if (opToken.getValue() == "<")
+            {
+                CircuitGreaterThan(expr2, expr1, ref nextWireID, output);
+            }
+            else if (opToken.getValue() == ">=")
+            {
+                CircuitGreaterThanEq(expr1, expr2, ref nextWireID, output);
+            }
+            else if (opToken.getValue() == "<=")
+            {
+                CircuitGreaterThanEq(expr2, expr1, ref nextWireID, output);
+            }
             else
                 throw new NotImplementedException();
+        }
+
+        private void CircuitGreaterThan(ExpressionNode expr1, ExpressionNode expr2, ref int nextWireID, List<Gate> output)
+        {
+            Gate gtFlag = new LiteralWire(nextWireID++, false, output);
+            Gate ltFlaf = new LiteralWire(nextWireID++, false, output);
+
+            for(int i = expr1.NodeOutGates.Count-1; i >= 0; i--)
+            {
+                var aAndNotb = new AndNot2Gate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output);
+                var aAndNotbAndNotl = new AndNot2Gate(nextWireID++, aAndNotb, ltFlaf, output);
+                gtFlag = new OrGate(nextWireID++, aAndNotbAndNotl, gtFlag, output);
+
+                var notaAndb = new AndNot2Gate(nextWireID++, expr2.NodeOutGates[i], expr1.NodeOutGates[i], output);
+                var notaAndbAndNotg = new AndNot2Gate(nextWireID++, notaAndb, gtFlag, output);
+                ltFlaf = new OrGate(nextWireID++, notaAndbAndNotg, ltFlaf, output);
+            }
+
+            NodeOutGates.Add(gtFlag);
+        }
+
+        private void CircuitGreaterThanEq(ExpressionNode expr1, ExpressionNode expr2, ref int nextWireID, List<Gate> output)
+        {
+            Gate gtFlag = new LiteralWire(nextWireID++, false, output);
+            Gate ltFlaf = new LiteralWire(nextWireID++, false, output);
+
+            for (int i = expr1.NodeOutGates.Count - 1; i > 0; i--)
+            {
+                var aAndNotb = new AndNot2Gate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[i], output);
+                var aAndNotbAndNotl = new AndNot2Gate(nextWireID++, aAndNotb, ltFlaf, output);
+                gtFlag = new OrGate(nextWireID++, aAndNotbAndNotl, gtFlag, output);
+
+                var notaAndb = new AndNot2Gate(nextWireID++, expr2.NodeOutGates[i], expr1.NodeOutGates[i], output);
+                var notaAndbAndNotg = new AndNot2Gate(nextWireID++, notaAndb, gtFlag, output);
+                ltFlaf = new OrGate(nextWireID++, notaAndbAndNotg, ltFlaf, output);
+            }
+
+            var aAndNotb2 = new AndNot2Gate(nextWireID++, expr1.NodeOutGates[0], expr2.NodeOutGates[0], output);
+            var aAndNotbAndNotl2 = new AndNot2Gate(nextWireID++, aAndNotb2, ltFlaf, output);
+            gtFlag = new OrGate(nextWireID++, aAndNotbAndNotl2, gtFlag, output);
+
+            var notaAndb2 = new AndNot2Gate(nextWireID++, expr2.NodeOutGates[0], expr1.NodeOutGates[0], output);
+            var notaAndbAndNotg2 = new AndNot2Gate(nextWireID++, notaAndb2, gtFlag, output);
+            var greaterThenEq = new NorGate(nextWireID++, notaAndbAndNotg2, ltFlaf, output);
+
+            NodeOutGates.Add(greaterThenEq);
         }
 
         private int CircuitMultiply(List<Gate> output, int nextWireID, StringBuilder dot)
@@ -84,40 +192,37 @@ namespace Compiler.parser
             if (expr1.NodeOutGates.Count != expr2.NodeOutGates.Count)
                 throw new Exception();
 
-            //List<Gate> temp = new List<Gate>();
-            List<Gate> runningTotal = new List<Gate>();
-
-            for (int j = 0; j < expr2.NodeOutGates.Count; j++)
-            {
-                runningTotal.Add(new AndGate(nextWireID++, expr1.NodeOutGates[0], expr2.NodeOutGates[j], output));
-            }
+            expr2.NodeOutGates.ForEach( gate => {gates.Add(new AndGate(nextWireID++, expr1.NodeOutGates[0], gate, output));});
 
             for (int i = 1; i < expr1.NodeOutGates.Count; i++)
             {
                 Gate carry = null;
-                for (int j = 0; j < expr2.NodeOutGates.Count - i; j++)
+
+                var b = new AndGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[0], output);
+                var a = gates[i];
+                var abXOR = new XorGate(nextWireID++, a, b, output);
+
+                gates[i] = abXOR;
+                carry = new AndGate(nextWireID++, a, b, output);
+
+                for (int j = 1; j < expr2.NodeOutGates.Count - i; j++)
                 {
-                    var b  = new AndGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[j], output);
-                    var a = runningTotal[i + j];
+                    b  = new AndGate(nextWireID++, expr1.NodeOutGates[i], expr2.NodeOutGates[j], output);
+                    a = gates[i + j];
+                    abXOR = new XorGate(nextWireID++, a, b, output);
+                    gates[i + j] = new XorGate(nextWireID++, abXOR, carry, output);
 
-                    var abXOR = new XorGate(nextWireID++, a, b, output);
-
-                    if(j == 0)
+                    if(i+j != gates.Count - 1)
                     {
-                        runningTotal[i + j] = abXOR;
-                        carry = new AndGate(nextWireID++, a, b, output);
-                    }
-                    else
-                    {
+                        var abAND = new AndGate(nextWireID++, a, b, output);
+                        var abXORcAND = new AndGate(nextWireID++, abXOR, carry, output);
 
+                        carry = new OrGate(nextWireID++, abAND, abXORcAND, output);
                     }
-                    
                 }
-
-                
             }
 
-                return nextWireID;
+            return nextWireID;
         }
 
         private int CircuitSubtract(List<Gate> output, int nextWireID, StringBuilder dot)

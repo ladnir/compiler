@@ -10,7 +10,7 @@ namespace Compiler
         
 
         public ParamNode(Token paramType, Token paramName)
-            : base(new DeclarationNode(paramType,paramName))
+            : base(new DeclarationNode(paramType,paramName, parser.LetType.Local))
         {
             
         }

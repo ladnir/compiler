@@ -40,45 +40,31 @@ namespace Compiler
 
                     Tokenizer t = new Tokenizer(stream);
                     Parser p = new Parser();
-
-                    //doMileStone2(t);
-                    
-                    //Console.WriteLine("Parsing...");
                     root = p.parseT(t);
-                    //Console.WriteLine("Parsing complete.");
-
                     StringBuilder sb = new StringBuilder();
                     sb.Append("digraph{\n");
-                    //Console.WriteLine("generating Gforth...");
-                    //root.outputGForth(1, sb);
+
                     int wireIDStart = 0;
                     List<Gate> gates = new List<Gate>();
-
                     root.toCircuit(gates,ref wireIDStart, sb);
 
                     sb.Append("}\n");
 
+                    SetInputVar("message", 12345, gates);
+
+
+                    foreach (var gate in gates)
+                        gate.Evalutate();
 
                     output = sb.ToString();
 
                     //output = root.outputIBTL(0);
-                    Console.WriteLine(output);
+                    //Console.WriteLine(output);
 
 
                     using (StreamWriter outfile = new StreamWriter("C:\\Users\\peter\\Source\\Repos\\compiler\\Compiler\\tests\\circuit\\circuit1.dot"))
                     {
                         outfile.Write(output);
-                        //#if !__MonoCS__
-                        //                        try
-                        //                        { // 
-                        //                            Process gforth = new Process();
-                        //                            gforth.StartInfo.FileName = @"C:\Program Files (x86)\gforth\gforth.exe";
-                        //                            gforth.StartInfo.Arguments = "../../out_" + i + ".gf";
-                        //                            gforth.Start();
-
-                        //                        }
-                        //                        catch (Exception e) { }
-                        //#endif
                     }
 
                 }
@@ -89,22 +75,27 @@ namespace Compiler
                 Console.WriteLine("\n\n" + e.Message + "");
             }
 #endif
+        }
 
+        private static void SetInputVar(string varName, int value,List<Gate> gates )
+        {
+            int mask = 1;
+            int idx =0;
 
-                //Console.WriteLine("\n\nPress any key to close.");
+            while (gates[idx].mOutLabel != (varName + "_" + 0))
+                idx++;
 
-            //ConsoleKeyInfo key = Console.ReadKey();
-            
-            //foreach (Process proc in Process.GetProcessesByName("gforth"))
-            //{
-            //    try
-            //    {
-            //        proc.Kill();
-            //    }
-            //    catch (Exception e) { }
-            //}
-            
-            
+            int i = 0;
+            while(value != 0)
+            {
+                gates[idx].Value = ((value & mask) == 1);
+                
+                if (gates[idx].mOutLabel != (varName + "_" + i))
+                    throw new Exception();
+
+                idx++;
+                i++;
+            }
         }
 
         public static string ShellExecute(string path, string command,  params string[] arguments)

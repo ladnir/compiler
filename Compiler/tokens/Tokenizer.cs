@@ -16,7 +16,7 @@ namespace Compiler
 
         static string[] Functions = { "sin", "cos","tan" ,"and","or"};
         static string[] dataTypes = { "int", "bool", "float", "string" };
-        static string[] constructs = { "while", "if", "let" , "return","stdout" ,"stdoutnl"}; 
+        static string[] constructs = { "while", "if", "let" , "return","stdout" ,"stdoutnl", "let_in", "let_out"}; 
 
        // int index = 0 ;
        // int length;
@@ -285,9 +285,11 @@ namespace Compiler
                         break;
                     case "<":
                         if (charPeep() == '=') sb.Append(charPop());
+                        else if (charPeep() == '<') sb.Append(charPop());
                         break;
                     case ">":
                         if (charPeep() == '=') sb.Append(charPop());
+                        else if (charPeep() == '>') sb.Append(charPop());
                         break;
                   
                     default:
@@ -424,7 +426,7 @@ namespace Compiler
         {
             // or, and, not, sin, cos, tan   will be keywords not operators
 
-            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' ,'#', '$'};
+            char[] operators = { '+', '-', '/', '*', '^', '%', '=', '!', '<', '>' ,'@', '$'};
 
             if( isInSet(charPeep(), operators)) return true;
 

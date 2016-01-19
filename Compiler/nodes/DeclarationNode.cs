@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Compiler.parser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,10 @@ namespace Compiler
     {
         private Token dataType;
         private Token variableName;
+        public LetType let;
+        public List<Gate> mDecGates;
 
-        public DeclarationNode(Token dataType, Token variableName)
+        public DeclarationNode(Token dataType, Token variableName, LetType type)
         {
             // TODO: Complete member initialization
             this.dataType = dataType;
@@ -60,7 +63,15 @@ namespace Compiler
 
         public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
         {
-            throw new NotImplementedException();
+            if (let == LetType.Input)
+            {
+                mDecGates = new List<Gate>();
+
+                for (int i = 0; i < GetBitCount(); i++ )
+                    mDecGates.Add( new InputWire(nextWireID++, variableName.getValue() + "_"+i, gates));
+            }
+            //if (let == LetType.Output)
+            //    new OutputWire(nextWireID++, GetBitCount(), variableName.getValue(), gates);
         }
 
         public override string outputC(int tabCount)

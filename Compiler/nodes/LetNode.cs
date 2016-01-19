@@ -5,9 +5,10 @@ using System.Text;
 
 namespace Compiler.parser
 {
+        public enum LetType { Local, Input, Output };
     class LetNode : Node
     {
-      
+
         public override void outputGForth(int tabCount, StringBuilder sb)
         {
 
@@ -43,7 +44,12 @@ namespace Compiler.parser
 
         public override void toCircuit(List<Gate> gates, ref int nextWireID, StringBuilder dot)
         {
-            //throw new NotImplementedException();
+
+            foreach(var node in children)
+            {
+                node.toCircuit(gates, ref nextWireID, dot);
+            }
+            
         }
 
         public override string outputC(int tabCount)

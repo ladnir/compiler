@@ -1,31 +1,12 @@
 ﻿[
    
-   [let [add a b][int32 int32 int32]
-      [return [+ a b]]
-   ]
+   [let_in [[message int512]]]
+   [let_out [[hash int160]]]
 
-
-   [let[
-      [a int32]
-      [b int32]
-      [b1 int1]
-      [b2 int1]
-      [b3 int2]
-      [ret int32]
-   ]]
    
-   [:= a 33]
-   [:= b 22]
+   [:= hash [@ message 0 160]]
 
-   [:= b1 [# b 0 1]]
-   [:= b2 [# b 1 1]]
 
-   [:= b3 [$ b1 b2]]
 
-   [:= ret [+ b1 b2]]
-
-   [:= ret [+ a b]]
-
-   [:= a [+ a ret]]
 
 ]
